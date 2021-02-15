@@ -2,6 +2,7 @@
     #include<stdio.h>
     #include<stdlib.h>
     #define BRED "\e[1;31m"
+    #define BMAG "\e[1;35m"
     #define reset "\e[0m"
     int line = 1;
     int column = 1;
@@ -47,103 +48,103 @@ OUT     write|writeln
 }
 
 {DIGIT}+ {
-    printf("Integer: %s\n", yytext);
+    printf("Int number:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 {DIGIT}+"."{DIGIT}+ {
-    printf("Float: %s\n", yytext);
+    printf("Float number:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 {EMPTY} {
-    printf("Empty const: %s\n", yytext);
+    printf("Empty const:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 {KEYWORD} {
-    printf("Keyword: %s\n", yytext);
+    printf("Keyword:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 {OUT} {
-    printf("Write: %s\n", yytext);
+    printf("Write:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 {IN} {
-    printf("Read: %s\n", yytext);
+    printf("Read:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 {TYPE} {
-    printf("Type: %s\n", yytext);
+    printf("Type:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 {ID} {
-    printf("Identifier: %s\n", yytext);
+    printf("Identifier:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 {ARITHMETIC_OP} {
-    printf("Arithmetic Operator: %s\n", yytext);
+    printf("Arithmetic Operator:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 {LOGICAL_OP} {
-    printf("Logical Operator: %s\n", yytext);
+    printf("Logical Operator:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 {RELATIONAL_OP} {
-    printf("Relational Operator: %s\n", yytext);
+    printf("Relational Operator:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 {ASSIGN_OP} {
-    printf("Assignment Operator: %s\n", yytext);
+    printf("Assignment Operator:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 {INLINE_COMMENT} {
-    printf("Inline comment block: %s\n", yytext);
+    printf("Inline comment block:"BMAG" %s\n"reset, yytext);
 }
 
 "["|"]" {
-    printf("Open/Close bracket: %s\n", yytext);
+    printf("Bracket:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 "{"|"}" {
-    printf("Open/Close curly bracket: %s\n", yytext);
+    printf("Curly bracket:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 "("|")" {
-    printf("Open/Close parenthesis: %s\n", yytext);
+    printf("Parenthesis:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 "\""|"\'" {
-    printf("String/Char delimiter: %s\n", yytext);
+    printf("String/Char delimiter:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 ";" {
-    printf("Semi-colon: %s\n", yytext);
+    printf("Semi-colon:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 "," {
-    printf("Comma: %s\n", yytext);
+    printf("Comma:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
 . {
     errors++;
-    printf(BRED "ERROR\t--> " reset);
-    printf("line %d | column %d\tcharacter not expected: %s\n", line, column, yytext);
+    printf(BRED"ERROR\t--> "reset);
+    printf("line %d | column %d\tcharacter not expected:"BMAG" %s\n"reset, line, column, yytext);
 }
 
 %%
