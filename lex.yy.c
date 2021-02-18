@@ -493,8 +493,8 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "lexico.l"
-#line 2 "lexico.l"
+#line 1 "clang_lexical.l"
+#line 2 "clang_lexical.l"
     #include<stdio.h>
     #include<stdlib.h>
     #define BRED "\e[1;31m"
@@ -721,7 +721,7 @@ YY_DECL
 		}
 
 	{
-#line 37 "lexico.l"
+#line 37 "clang_lexical.l"
 
 
 
@@ -784,7 +784,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 40 "lexico.l"
+#line 40 "clang_lexical.l"
 {
     column += yyleng;
 }
@@ -792,7 +792,7 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 45 "lexico.l"
+#line 45 "clang_lexical.l"
 {
     line++;
     column = 1;
@@ -800,7 +800,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 50 "lexico.l"
+#line 50 "clang_lexical.l"
 {
     printf("Int number:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -808,7 +808,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 55 "lexico.l"
+#line 55 "clang_lexical.l"
 {
     printf("Float number:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -816,7 +816,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 60 "lexico.l"
+#line 60 "clang_lexical.l"
 {
     printf("Empty const:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -824,7 +824,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 65 "lexico.l"
+#line 65 "clang_lexical.l"
 {
     printf("Keyword:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -832,7 +832,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 70 "lexico.l"
+#line 70 "clang_lexical.l"
 {
     printf("Write:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -840,7 +840,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 75 "lexico.l"
+#line 75 "clang_lexical.l"
 {
     printf("Read:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -848,7 +848,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 80 "lexico.l"
+#line 80 "clang_lexical.l"
 {
     printf("Type:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -856,7 +856,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 85 "lexico.l"
+#line 85 "clang_lexical.l"
 {
     printf("Identifier:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -864,7 +864,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 90 "lexico.l"
+#line 90 "clang_lexical.l"
 {
     printf("Arithmetic Operator:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -872,7 +872,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 95 "lexico.l"
+#line 95 "clang_lexical.l"
 {
     printf("Logical Operator:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -880,7 +880,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 100 "lexico.l"
+#line 100 "clang_lexical.l"
 {
     printf("Relational Operator:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -888,7 +888,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 105 "lexico.l"
+#line 105 "clang_lexical.l"
 {
     printf("Assignment Operator:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -896,14 +896,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 110 "lexico.l"
+#line 110 "clang_lexical.l"
 {
     printf("Inline comment block:"BMAG" %s\n"reset, yytext);
 }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 114 "lexico.l"
+#line 114 "clang_lexical.l"
 {
     printf("Bracket:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -911,7 +911,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 119 "lexico.l"
+#line 119 "clang_lexical.l"
 {
     printf("Curly bracket:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -919,7 +919,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 124 "lexico.l"
+#line 124 "clang_lexical.l"
 {
     printf("Parenthesis:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -927,7 +927,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 129 "lexico.l"
+#line 129 "clang_lexical.l"
 {
     printf("String/Char delimiter:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -935,7 +935,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 134 "lexico.l"
+#line 134 "clang_lexical.l"
 {
     printf("Semi-colon:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -943,7 +943,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 139 "lexico.l"
+#line 139 "clang_lexical.l"
 {
     printf("Comma:"BMAG" %s\n"reset, yytext);
     column += yyleng;
@@ -951,19 +951,20 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 144 "lexico.l"
+#line 144 "clang_lexical.l"
 {
     errors++;
     printf(BRED"ERROR\t--> "reset);
     printf("line %d | column %d\tcharacter not expected:"BMAG" %s\n"reset, line, column, yytext);
+    column += yyleng;
 }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 150 "lexico.l"
+#line 151 "clang_lexical.l"
 ECHO;
 	YY_BREAK
-#line 967 "lex.yy.c"
+#line 968 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1968,7 +1969,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 150 "lexico.l"
+#line 151 "clang_lexical.l"
 
 
 int main(int argc, char **argv){

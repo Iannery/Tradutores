@@ -15,15 +15,15 @@ ID      [a-zA-Z_][a-z0-9A-Z]*
 
 EMPTY   EMPTY
 
-KEYWORD if|else|for|forall|return
+KEYWORD if|else|for|forall|return|in|add|remove|exists
 
-ARITHMETIC_OP   [+]{2}|[-]{2}|[+*/-]
+ARITHMETIC_OP   [+*/-]
 
 LOGICAL_OP      [&]{2}|[|]{2}|[!]
 
 RELATIONAL_OP   [=]{2}|(!=)|(>=)|(<=)|[>]|[<]
 
-ASSIGN_OP       [+*/-]?[=]{1}
+ASSIGN_OP       [=]{1}
 
 INLINE_COMMENT  [/]{2}.*
 
@@ -117,7 +117,7 @@ OUT     write|writeln
 }
 
 "{"|"}" {
-    printf("Curly bracket:"BMAG" %s\n"reset, yytext);
+    printf("Curly braces:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 
@@ -145,6 +145,7 @@ OUT     write|writeln
     errors++;
     printf(BRED"ERROR\t--> "reset);
     printf("line %d | column %d\tcharacter not expected:"BMAG" %s\n"reset, line, column, yytext);
+    column += yyleng;
 }
 
 %%
