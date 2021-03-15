@@ -1,2 +1,3 @@
-logfile.out
-a.out
+sintatico/clang_syntax.output
+sintatico/test
+.gitignore
