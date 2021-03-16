@@ -54,33 +54,32 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    MAIN = 258,                    /* MAIN  */
-    INT = 259,                     /* INT  */
-    FLOAT = 260,                   /* FLOAT  */
-    EMPTY = 261,                   /* EMPTY  */
-    IF_KW = 262,                   /* IF_KW  */
-    ELSE_KW = 263,                 /* ELSE_KW  */
-    FOR_KW = 264,                  /* FOR_KW  */
-    FORALL_KW = 265,               /* FORALL_KW  */
-    RETURN_KW = 266,               /* RETURN_KW  */
-    IN_KW = 267,                   /* IN_KW  */
-    ISSET_KW = 268,                /* ISSET_KW  */
-    ADD_KW = 269,                  /* ADD_KW  */
-    REMOVE_KW = 270,               /* REMOVE_KW  */
-    EXISTS_KW = 271,               /* EXISTS_KW  */
-    OUT = 272,                     /* OUT  */
-    IN = 273,                      /* IN  */
-    TYPE = 274,                    /* TYPE  */
-    ID = 275,                      /* ID  */
-    SUM_OP = 276,                  /* SUM_OP  */
-    MUL_OP = 277,                  /* MUL_OP  */
-    BIN_LOG_OP = 278,              /* BIN_LOG_OP  */
-    UN_LOG_OP = 279,               /* UN_LOG_OP  */
-    REL_OP = 280,                  /* REL_OP  */
-    ASS_OP = 281,                  /* ASS_OP  */
-    COMMENT = 282,                 /* COMMENT  */
-    STRING = 283,                  /* STRING  */
-    CHAR = 284                     /* CHAR  */
+    INT = 258,                     /* INT  */
+    FLOAT = 259,                   /* FLOAT  */
+    EMPTY = 260,                   /* EMPTY  */
+    IF_KW = 261,                   /* IF_KW  */
+    ELSE_KW = 262,                 /* ELSE_KW  */
+    FOR_KW = 263,                  /* FOR_KW  */
+    FORALL_KW = 264,               /* FORALL_KW  */
+    RETURN_KW = 265,               /* RETURN_KW  */
+    IN_KW = 266,                   /* IN_KW  */
+    ISSET_KW = 267,                /* ISSET_KW  */
+    ADD_KW = 268,                  /* ADD_KW  */
+    REMOVE_KW = 269,               /* REMOVE_KW  */
+    EXISTS_KW = 270,               /* EXISTS_KW  */
+    OUT = 271,                     /* OUT  */
+    IN = 272,                      /* IN  */
+    TYPE = 273,                    /* TYPE  */
+    ID = 274,                      /* ID  */
+    SUM_OP = 275,                  /* SUM_OP  */
+    MUL_OP = 276,                  /* MUL_OP  */
+    BIN_LOG_OP = 277,              /* BIN_LOG_OP  */
+    UN_LOG_OP = 278,               /* UN_LOG_OP  */
+    REL_OP = 279,                  /* REL_OP  */
+    ASS_OP = 280,                  /* ASS_OP  */
+    COMMENT = 281,                 /* COMMENT  */
+    STRING = 282,                  /* STRING  */
+    CHAR = 283                     /* CHAR  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -92,23 +91,9 @@ typedef int YYSTYPE;
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
-/* Location type.  */
-#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
-typedef struct YYLTYPE YYLTYPE;
-struct YYLTYPE
-{
-  int first_line;
-  int first_column;
-  int last_line;
-  int last_column;
-};
-# define YYLTYPE_IS_DECLARED 1
-# define YYLTYPE_IS_TRIVIAL 1
-#endif
-
 
 extern YYSTYPE yylval;
-extern YYLTYPE yylloc;
+
 int yyparse (void);
 
 #endif /* !YY_YY_CLANG_SYNTAX_TAB_H_INCLUDED  */

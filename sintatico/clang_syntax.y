@@ -1,23 +1,14 @@
-%define parse.error verbose
 %debug
-%locations
+%define parse.error verbose
 %define lr.type canonical-lr
 %{
     #include "global_vars.h"
-    #include <stdlib.h>
-    #include <stdio.h>
-    #include <string.h>
-
-    extern int yylex();
-    extern FILE *yyin;
-    extern int yylex_destroy();
-    void yyerror(const char* msg) {
-        fprintf(stderr, "%s\n", msg);
-    }
-
+    #include "global_methods.h"
+    #include "symbol_table.h"
+    symbol symbolTable[1000];
+    
 %}
 
-%token MAIN
 %token INT
 %token FLOAT
 %token EMPTY
@@ -35,10 +26,10 @@
 %token IN
 %token TYPE
 %token ID
-%token SUM_OP
-%token MUL_OP
-%token BIN_LOG_OP
-%token UN_LOG_OP
+%left  SUM_OP
+%left  MUL_OP
+%left  BIN_LOG_OP
+%right UN_LOG_OP
 %token REL_OP
 %token ASS_OP
 %token COMMENT
@@ -53,7 +44,7 @@
 
 %%
 program: 
-    declarationList MAIN compoundStmt {printf("%d %d %d", $1, $2, $3);}
+    declarationList {printf("%d", $1);}
 ;
 
 declarationList:
@@ -171,7 +162,6 @@ forallOP:
 expression:
     assignExp {printf("%d", $1);}
     | simpleExp {printf("%d", $1);}
-    | constOP {printf("%d", $1);}
     | inOP {printf("%d", $1);}
     | outOP {printf("%d", $1);}
 ;
@@ -181,8 +171,7 @@ assignExp:
 ;
 
 simpleExp:
-    logicalExp {printf("%d", $1);}
-    | relationalExp {printf("%d", $1);}
+    binLogicalExp {printf("%d", $1);}
 ;
 
 constOP:
@@ -204,13 +193,18 @@ outConst:
     | CHAR {printf("%d", $1);}
 ;
 
-logicalExp:
-    simpleExp BIN_LOG_OP simpleExp {printf("%d %d %d", $1, $2, $3);}
-    | UN_LOG_OP simpleExp {printf("%d %d", $1, $2);}
+binLogicalExp:
+    binLogicalExp BIN_LOG_OP unLogicalExp {printf("%d %d %d", $1, $2, $3);}
+    | unLogicalExp {printf("%d", $1);}
+;
+
+unLogicalExp:
+    UN_LOG_OP unLogicalExp {printf("%d %d", $1, $2);}
+    | relationalExp {printf("%d", $1);}
 ;
 
 relationalExp:
-    simpleExp REL_OP sumExp {printf("%d %d %d", $1, $2, $3);}
+    relationalExp REL_OP sumExp {printf("%d %d %d", $1, $2, $3);}
     | sumExp {printf("%d", $1);}
 ;
 
@@ -238,15 +232,17 @@ functionCall:
 
 %%
 
+
+
 int main(int argc, char **argv){
-    line = 1;
-    column = 1;
-    errors = 0;
     FILE *fp = fopen(argv[1], "r");
+    symbolTable[0].s_line = 1;
+    fillTable(symbolTable);
     if(argc > 1){
         if(fp){
             yyin = fp;
-            yylex();
+            // yylex();
+            yyparse();
             printf("\nLexical analysis completed with %d error(s)\n", errors);
         }
         else{

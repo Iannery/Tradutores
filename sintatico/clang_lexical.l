@@ -1,13 +1,17 @@
 %option noinput nounput
 %option noyywrap
 %{
-    #include "global_vars.h"
-    #include<stdio.h>
-    #include<stdlib.h>
-    #include<string.h>
-    #define BRED "\e[1;31m"
-    #define BMAG "\e[1;35m"
-    #define reset "\e[0m"
+    #include    "global_vars.h"
+    #include    "clang_syntax.tab.h"
+    #include    <stdio.h>
+    #include    <stdlib.h>
+    #include    <string.h>
+    #define     BRED "\e[1;31m"
+    #define     BMAG "\e[1;35m"
+    #define     reset "\e[0m"
+    int     line = 1;
+    int     column = 1;
+    int     errors = 0;
 %}
 
 
@@ -58,16 +62,11 @@ OUT     write|writeln
     column = 1;
 }
 
-"main()" {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Main function:"BMAG" %s\n"reset, yytext);
-    column += yyleng;
-    return MAIN;
-}
-
 "-"?{DIGIT}+ {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Int number:"BMAG" %s\n"reset, yytext);
+    // printf("| line: %d\t| column: %d\t| ", line, column);
+    // printf("Int number:"BMAG" %s\n"reset, yytext);
+
+    
     column += yyleng;
     return INT;
 }
@@ -145,8 +144,9 @@ OUT     write|writeln
 }
 
 {ID} {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Identifier:"BMAG" %s\n"reset, yytext);
+    // printf("| line: %d\t| column: %d\t| ", line, column);
+    // printf("Identifier:"BMAG" %s\n"reset, yytext);
+
     column += yyleng;
     return ID;
 }
