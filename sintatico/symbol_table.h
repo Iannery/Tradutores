@@ -1,11 +1,9 @@
 typedef struct symbol {
-    int s_line;
-    int s_column;
-    char *s_title;
+    int  s_line;
+    int  s_column;
+    char s_context[51];
+    char s_title[101];
 } symbol;
 
-extern void fillTable(symbol *s){
-    for(int i = 0; i < 1000; i ++){
-        s[i].s_line = -1;
-    }
-}
+extern void fillTable(symbol *s);
+extern int findEmpty(symbol *s);

@@ -5,4 +5,5 @@
 extern int line;
 extern int column;
 extern int errors;
+extern int context;
 extern FILE *yyin;

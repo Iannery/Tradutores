@@ -5,230 +5,264 @@
     #include "global_vars.h"
     #include "global_methods.h"
     #include "symbol_table.h"
-    symbol symbolTable[1000];
-    
+    // symbol symbolTable[1000];
 %}
+%union{
+    struct Token {
+        int t_line;
+        int t_column;
+        char* t_title;
+    } token;
+}
 
-%token INT
-%token FLOAT
-%token EMPTY
-%token IF_KW
-%token ELSE_KW
-%token FOR_KW
-%token FORALL_KW
-%token RETURN_KW
-%token IN_KW
-%token ISSET_KW
-%token ADD_KW
-%token REMOVE_KW
-%token EXISTS_KW
-%token OUT
-%token IN
-%token TYPE
-%token ID
-%left  SUM_OP
-%left  MUL_OP
-%left  BIN_LOG_OP
-%right UN_LOG_OP
-%token REL_OP
-%token ASS_OP
-%token COMMENT
-%token STRING
-%token CHAR
-%token '{'
-%token '}'
-%token '('
-%token ')'
-%token ';'
-%token ','
+%token <token> INT FLOAT EMPTY
+%token <token> IF_KW ELSE_KW FOR_KW FORALL_KW RETURN_KW
+%token <token> IN_KW ISSET_KW ADD_KW REMOVE_KW EXISTS_KW
+%token <token> OUT IN
+%token <token> TYPE ID
+%left  <token> SUM_OP MUL_OP
+%left  <token> BIN_LOG_OP
+%right <token> UN_LOG_OP
+%token <token> REL_OP ASS_OP
+%token <token> COMMENT STRING CHAR
+%token <token> '{' '}' '(' ')' ';' ','
 
 %%
 program: 
-    declarationList {printf("%d", $1);}
+    declarationList {}
+    | errors {}
 ;
 
 declarationList:
-    declarationList declaration {printf("%d %d", $1, $2);}
-    | declaration {printf("%d", $1);}
+    declarationList declaration {}
+    | declaration {}
+    | errors {}
 ;
 
 declaration:
-    varDeclaration {printf("%d", $1);}
-    | funcDeclaration {printf("%d", $1);}
-    | comment {printf("%d", $1);}
+    varDeclaration {}
+    | funcDeclaration {}
+    | comment {}
+    | errors {}
 ;
 
 comment:
-    COMMENT {printf("%d", $1);}
+    COMMENT {}
+    | errors {}
 ;
 
 varDeclaration:
-    simpleDeclaration ';' {printf("%d %d", $1, $2);}
+    simpleDeclaration ';' {}
+    | errors {}
 ;
 
 funcDeclaration:
-    simpleDeclaration '(' params ')' compoundStmt {printf("%d %d %d %d %d", $1, $2, $3, $4, $5);}
+    simpleDeclaration '(' params ')' compoundStmt {}
+    | simpleDeclaration '(' ')' compoundStmt {}
+    | errors {}
 ;
 
 params:
-    params ',' param {printf("%d %d %d", $1, $2, $3);}
-    | param {printf("%d", $1);}
-    | {}
+    params ',' param {}
+    | param {}
+    | errors {}
 ;
 
 param:
-    simpleDeclaration {printf("%d", $1);}
+    simpleDeclaration {}
+    | errors {}
 ;
 
 simpleDeclaration:
-    TYPE ID {printf("%d %d", $1, $2);}
+    TYPE ID {}
+    | errors {}
 ;
 
 compoundStmt:
-    '{' localDeclarations stmtList '}' {printf("%d %d %d %d", $1, $2, $3, $4);}
-    | '{' stmtList '}' {printf("%d %d %d", $1, $2, $3);}
+    '{' localDeclarations stmtList '}' {}
+    | '{' stmtList '}' {}
+    | errors {}
 ;
 
 localDeclarations:
-    localDeclarations varDeclaration {printf("%d %d", $1, $2);}
-    | varDeclaration {printf("%d", $1);}
+    localDeclarations varDeclaration {}
+    | varDeclaration {}
+    | errors {}
 ;
 
 stmtList:
-    stmtList primitiveStmt {printf("%d %d", $1, $2);}
+    stmtList primitiveStmt {}
     | {}
+    | errors {}
 ;
 
 primitiveStmt:
-    exprStmt {printf("%d", $1);}
-    | compoundStmt {printf("%d", $1);}
-    | condStmt {printf("%d", $1);}
-    | iterStmt {printf("%d", $1);}
-    | returnStmt {printf("%d", $1);}
-    | setStmt {printf("%d", $1);}
+    exprStmt {}
+    | compoundStmt {}
+    | condStmt {}
+    | iterStmt {}
+    | returnStmt {}
+    | setStmt {}
+    | errors {}
 ;
 
 exprStmt:
-    expression ';' {printf("%d %d", $1, $2);}
+    expression ';' {}
+    | errors {}
 ;
 
 condStmt:
-    IF_KW '(' simpleExp ')' compoundStmt {printf("%d %d %d", $1, $3, $5);}
-    | IF_KW '(' simpleExp ')' compoundStmt ELSE_KW compoundStmt {printf("%d %d %d %d %d", $1, $3, $5, $6, $7);}
+    IF_KW '(' simpleExp ')' compoundStmt {}
+    | IF_KW '(' simpleExp ')' compoundStmt ELSE_KW compoundStmt {}
+    | errors {}
 ;
 
 iterStmt:
-    FOR_KW '(' assignExp ';' simpleExp ';' assignExp ')' compoundStmt {printf("%d %d %d %d %d", $1, $3, $5, $7, $9);}
+    FOR_KW '(' assignExp ';' simpleExp ';' assignExp ')' compoundStmt {}
+    | errors {}
 ;
 
 returnStmt:
-    RETURN_KW expression ';' {printf("%d %d %d", $1, $2, $3);}
+    RETURN_KW expression ';' {}
+    | errors {}
 ;
 
 setStmt:
-    pertOP {printf("%d", $1);}
-    | typeOP ';' {printf("%d %d", $1, $2);}
-    | addOP ';' {printf("%d %d", $1, $2);}
-    | remOP ';' {printf("%d %d", $1, $2);}
-    | selectOP ';' {printf("%d %d", $1, $2);}
-    | forallOP {printf("%d", $1);}
+    pertOP {}
+    | typeOP ';' {}
+    | addOP ';' {}
+    | remOP ';' {}
+    | selectOP ';' {}
+    | forallOP {}
+    | errors {}
 ;
 
 pertOP:
-    expression IN_KW ID {printf("%d %d %d", $1, $2, $3);}
+    simpleExp IN_KW ID {}
+    | errors {}
 ;
 
 typeOP:
-    ISSET_KW '(' ID ')' {printf("%d %d %d %d", $1, $2, $3, $4);}
+    ISSET_KW '(' ID ')' {}
+    | errors {}
 ;
 
 addOP:
-    ADD_KW '(' pertOP ')' {printf("%d %d %d %d", $1, $2, $3, $4);}
+    ADD_KW '(' pertOP ')' {}
+    | errors {}
 ;
 
 remOP:
-    REMOVE_KW '(' pertOP ')' {printf("%d %d %d %d", $1, $2, $3, $4);}
+    REMOVE_KW '(' pertOP ')' {}
+    | errors {}
 ;
 
 selectOP:
-    EXISTS_KW '(' pertOP ')' {printf("%d %d %d %d", $1, $2, $3, $4);}
-    | EXISTS_KW '(' ID ',' ID ')' {printf("%d %d %d %d %d %d", $1, $2, $3, $4, $5, $6);}
+    EXISTS_KW '(' pertOP ')' {}
+    | EXISTS_KW '(' ID ',' ID ')' {}
+    | errors {}
 ;
 
 forallOP:
-    FORALL_KW '(' pertOP ')' compoundStmt {printf("%d %d %d %d %d", $1, $2, $3, $4, $5);}
+    FORALL_KW '(' pertOP ')' compoundStmt {}
+    | errors {}
 ;
 
 expression:
-    assignExp {printf("%d", $1);}
-    | simpleExp {printf("%d", $1);}
-    | inOP {printf("%d", $1);}
-    | outOP {printf("%d", $1);}
+    assignExp {}
+    | simpleExp {}
+    | inOP {}
+    | outOP {}
+    | errors {}
 ;
 
 assignExp:
-    ID ASS_OP expression {printf("%d %d %d", $1, $2, $3);}
+    ID ASS_OP expression {}
+    | errors {}
 ;
 
 simpleExp:
-    binLogicalExp {printf("%d", $1);}
+    binLogicalExp {}
+    | errors {}
 ;
 
 constOP:
-    INT {printf("%d", $1);}
-    | FLOAT {printf("%d", $1);}
-    | EMPTY {printf("%d", $1);}
+    INT {}
+    | FLOAT {}
+    | EMPTY {}
+    | errors {}
 ;
 
 inOP:
-    IN '(' ID ')' {printf("%d %d %d %d", $1, $2, $3, $4);}
+    IN '(' ID ')' {}
+    | errors {}
 ;
 
 outOP:
-    OUT '(' outConst ')' {printf("%d %d %d %d", $1, $2, $3, $4);}
+    OUT '(' outConst ')' {}
+    | errors {}
 ;
 
 outConst:
-    STRING {printf("%d", $1);}
-    | CHAR {printf("%d", $1);}
+    STRING {}
+    | CHAR {}
+    | simpleExp {}
+    | errors {}
 ;
 
 binLogicalExp:
-    binLogicalExp BIN_LOG_OP unLogicalExp {printf("%d %d %d", $1, $2, $3);}
-    | unLogicalExp {printf("%d", $1);}
+    binLogicalExp BIN_LOG_OP unLogicalExp {}
+    | unLogicalExp {}
+    | errors {}
 ;
 
 unLogicalExp:
-    UN_LOG_OP unLogicalExp {printf("%d %d", $1, $2);}
-    | relationalExp {printf("%d", $1);}
+    UN_LOG_OP unLogicalExp {}
+    | relationalExp {}
+    | errors {}
 ;
 
 relationalExp:
-    relationalExp REL_OP sumExp {printf("%d %d %d", $1, $2, $3);}
-    | sumExp {printf("%d", $1);}
+    relationalExp REL_OP sumExp {}
+    | sumExp {}
+    | errors {}
 ;
 
 sumExp:
-    sumExp SUM_OP mulExp {printf("%d %d %d", $1, $2, $3);}
-    | mulExp {printf("%d", $1);}
+    sumExp SUM_OP mulExp {}
+    | mulExp {}
+    | errors {}
 ;
 
 mulExp:
-    mulExp MUL_OP factor {printf("%d %d %d", $1, $2, $3);}
-    | factor {printf("%d", $1);}
+    mulExp MUL_OP factor {}
+    | factor {}
+    | errors {}
 ;
 
 factor:
-    ID {printf("%d", $1);}
-    | functionCall {printf("%d", $1);}
-    | '(' simpleExp ')' {printf("%d %d %d", $1, $2, $3);}
-    | constOP {printf("%d", $1);}
+    ID {}
+    | functionCall {}
+    | '(' simpleExp ')' {}
+    | constOP {}
+    | errors {}
 ;
 
 functionCall:
-    ID '(' params ')' {printf("%d %d %d", $1, $2, $3);}
+    ID '(' callParams ')' {}
+    | errors {}
 ;
 
+callParams: 
+    callParams ',' ID {}
+    | ID {}
+    | callParams ',' functionCall {}
+    | functionCall {}
+    | errors {}
+
+errors:
+   error {yyerror(yymsg);}
+;
 
 %%
 
@@ -236,8 +270,7 @@ functionCall:
 
 int main(int argc, char **argv){
     FILE *fp = fopen(argv[1], "r");
-    symbolTable[0].s_line = 1;
-    fillTable(symbolTable);
+    //fillTable(symbolTable);
     if(argc > 1){
         if(fp){
             yyin = fp;

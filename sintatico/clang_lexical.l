@@ -9,16 +9,17 @@
     #define     BRED "\e[1;31m"
     #define     BMAG "\e[1;35m"
     #define     reset "\e[0m"
-    int     line = 1;
-    int     column = 1;
-    int     errors = 0;
+    int     line    = 1;
+    int     column  = 1;
+    int     errors  = 0;
+    int     context = 0;
 %}
 
 
 
 DIGIT   [0-9]
 
-ID      [a-zA-Z_][a-z0-9A-Z]*
+ID      [a-zA-Z_][_a-z0-9A-Z]*
 
 EMPTY   EMPTY
 
@@ -28,9 +29,9 @@ SUM_OP  [+-]{1}
 
 MUL_OP  [*/]{1}
 
-BIN_LOGICAL_OP      [&]{2}|[|]{2}
+BIN_LOGICAL_OP  [&]{2}|[|]{2}
 
-UN_LOGICAL_OP       [!]{1}
+UN_LOGICAL_OP   [!]{1}
 
 RELATIONAL_OP   [=]{2}|(!=)|(>=)|(<=)|[>]|[<]
 
@@ -63,10 +64,11 @@ OUT     write|writeln
 }
 
 "-"?{DIGIT}+ {
-    // printf("| line: %d\t| column: %d\t| ", line, column);
-    // printf("Int number:"BMAG" %s\n"reset, yytext);
-
-    
+    printf("| line: %d\t| column: %d\t| ", line, column);
+    printf("Int number:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return INT;
 }
@@ -74,6 +76,9 @@ OUT     write|writeln
 "-"?{DIGIT}+"."{DIGIT}+ {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Float number:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return FLOAT;
 }
@@ -81,6 +86,9 @@ OUT     write|writeln
 {EMPTY} {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Empty const:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return EMPTY;
 }
@@ -88,6 +96,9 @@ OUT     write|writeln
 {KEYWORD} {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Keyword:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     if(!strcmp(yytext, "if")){
         return IF_KW;
@@ -125,6 +136,9 @@ OUT     write|writeln
 {OUT} {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Write:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return OUT;
 }
@@ -132,6 +146,9 @@ OUT     write|writeln
 {IN} {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Read:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return IN;
 }
@@ -139,14 +156,28 @@ OUT     write|writeln
 {TYPE} {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Type:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return TYPE;
 }
 
 {ID} {
-    // printf("| line: %d\t| column: %d\t| ", line, column);
-    // printf("Identifier:"BMAG" %s\n"reset, yytext);
-
+    printf("| line: %d\t| column: %d\t| ", line, column);
+    printf("Identifier:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
+    //int aux = findEmpty(symbolTable);
+    //symbolTable[aux].s_line = line;
+    //symbolTable[aux].s_column = column;
+    // FAZER CONTEXT DPS
+    //strcpy(symbolTable[aux].s_context, context);
+    //strcpy(symbolTable[aux].s_title, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return ID;
 }
@@ -154,6 +185,9 @@ OUT     write|writeln
 {SUM_OP} {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Sum Operator:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return SUM_OP;
 }
@@ -161,6 +195,9 @@ OUT     write|writeln
 {MUL_OP} {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Multiply Operator:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return MUL_OP;
 }
@@ -168,6 +205,9 @@ OUT     write|writeln
 {BIN_LOGICAL_OP} {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Binary Logical Operator:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return BIN_LOG_OP;
 }
@@ -175,6 +215,9 @@ OUT     write|writeln
 {UN_LOGICAL_OP} {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Unary Logical Operator:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return UN_LOG_OP;
 }
@@ -182,6 +225,9 @@ OUT     write|writeln
 {RELATIONAL_OP} {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Relational Operator:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return REL_OP;
 }
@@ -189,6 +235,9 @@ OUT     write|writeln
 {ASSIGN_OP} {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Assignment Operator:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return ASS_OP;
 }
@@ -196,12 +245,18 @@ OUT     write|writeln
 {INLINE_COMMENT} {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Inline comment block:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     return COMMENT;
 }
 
 {STRING} {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("String expression:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return STRING;
 }
@@ -209,6 +264,9 @@ OUT     write|writeln
 {CHAR} {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Char expression:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return CHAR;
 }
@@ -217,6 +275,9 @@ OUT     write|writeln
 "{" {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Opened curly braces:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return '{';
 }
@@ -224,6 +285,9 @@ OUT     write|writeln
 "}" {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Closed curly braces:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return '}';
 }
@@ -232,6 +296,9 @@ OUT     write|writeln
 "(" {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Opened parenthesis:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return '(';
 }
@@ -239,6 +306,9 @@ OUT     write|writeln
 ")" {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Closed parenthesis:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return ')';
 }
@@ -246,6 +316,9 @@ OUT     write|writeln
 ";" {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Semi-colon:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return ';';
 }
@@ -253,6 +326,9 @@ OUT     write|writeln
 "," {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Comma:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return ',';
 }
@@ -260,7 +336,7 @@ OUT     write|writeln
 . {
     errors++;
     printf(BRED"| line: %d\t| column: %d\t| ", line, column);
-    printf("ERROR\t--> "reset);
+    printf("ERROR\t-. "reset);
     printf("Character not expected:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }

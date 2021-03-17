@@ -1,3 +1,9 @@
 sintatico/clang_syntax.output
 sintatico/test
 .gitignore
+sintatico/teste.h
+sintatico/tests/t_c01.c
+sintatico/symbol_table.o
+sintatico/stack.c
+.gitignore
+sintatico/stack.h

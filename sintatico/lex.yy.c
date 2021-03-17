@@ -363,7 +363,7 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static const flex_int16_t yy_accept[95] =
+static const flex_int16_t yy_accept[94] =
     {   0,
         0,    0,   28,   26,    1,    2,   14,   26,   26,   26,
        22,   23,   12,   11,   25,   11,   12,    3,   24,   15,
@@ -371,10 +371,10 @@ static const flex_int16_t yy_accept[95] =
        10,   20,   26,   21,    1,   15,    0,   18,    0,   13,
         0,   19,    0,    3,   17,    0,   10,   10,   10,   10,
        10,   10,   10,    6,    6,   10,   10,   10,   10,   19,
-       17,    4,   10,   10,   10,   10,   10,    6,    9,    0,
-       10,   10,   10,   10,   10,   10,   10,   10,    0,    8,
-       10,   10,   10,    5,   10,   10,    0,   10,   10,    7,
-        6,   10,    7,    0
+       17,    4,   10,   10,   10,   10,   10,    6,    9,   10,
+       10,   10,   10,   10,   10,   10,   10,   10,   10,    8,
+       10,   10,   10,    5,   10,   10,   10,   10,   10,    7,
+       10,    7,    0
 
     } ;
 
@@ -414,12 +414,12 @@ static const YY_CHAR yy_meta[48] =
     {   0,
         1,    1,    2,    1,    3,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    4,    1,    1,    1,    1,
-        4,    4,    4,    4,    4,    4,    1,    1,    4,    4,
+        4,    4,    4,    4,    4,    4,    1,    4,    4,    4,
         4,    4,    4,    4,    4,    4,    4,    4,    4,    4,
         4,    4,    4,    4,    1,    1,    1
     } ;
 
-static const flex_int16_t yy_base[99] =
+static const flex_int16_t yy_base[98] =
     {   0,
         0,    0,  138,  139,  135,  139,  117,   43,  129,   42,
       139,  139,  139,  139,  139,  118,  118,   36,  139,  113,
@@ -430,22 +430,22 @@ static const flex_int16_t yy_base[99] =
         0,   93,   83,   72,   75,   66,   75,   74,    0,   63,
        71,   63,   58,   58,   71,   56,   55,   60,   62,    0,
        50,   53,   57,    0,   46,   43,   35,   43,   35,   34,
-      139,   30,    0,  139,   78,   82,   53,   86
+       30,    0,  139,   78,   82,   53,   86
 
     } ;
 
-static const flex_int16_t yy_def[99] =
+static const flex_int16_t yy_def[98] =
     {   0,
-       94,    1,   94,   94,   94,   94,   94,   95,   94,   96,
-       94,   94,   94,   94,   94,   94,   94,   94,   94,   94,
-       94,   94,   97,   97,   97,   97,   97,   97,   97,   97,
-       97,   94,   94,   94,   94,   94,   95,   94,   95,   94,
-       94,   94,   96,   94,   98,   94,   97,   97,   97,   97,
-       97,   97,   97,   97,   97,   97,   97,   97,   97,   94,
-       98,   94,   97,   97,   97,   97,   97,   97,   97,   94,
-       97,   97,   97,   97,   97,   97,   97,   97,   94,   97,
-       97,   97,   97,   97,   97,   97,   94,   97,   97,   97,
-       94,   97,   97,    0,   94,   94,   94,   94
+       93,    1,   93,   93,   93,   93,   93,   94,   93,   95,
+       93,   93,   93,   93,   93,   93,   93,   93,   93,   93,
+       93,   93,   96,   96,   96,   96,   96,   96,   96,   96,
+       96,   93,   93,   93,   93,   93,   94,   93,   94,   93,
+       93,   93,   95,   93,   97,   93,   96,   96,   96,   96,
+       96,   96,   96,   96,   96,   96,   96,   96,   96,   93,
+       97,   93,   96,   96,   96,   96,   96,   96,   96,   96,
+       96,   96,   96,   96,   96,   96,   96,   96,   96,   96,
+       96,   96,   96,   96,   96,   96,   96,   96,   96,   96,
+       96,   96,    0,   93,   93,   93,   93
 
     } ;
 
@@ -456,21 +456,21 @@ static const flex_int16_t yy_nxt[187] =
        23,   24,   23,   23,   23,   23,    4,   23,   25,   23,
        26,   27,   28,   23,   23,   23,   23,   29,   30,   23,
        23,   23,   31,   23,   32,   33,   34,   38,   42,   46,
-       50,   44,   52,   38,   54,   53,   47,   94,   55,   41,
-       51,   56,   46,   64,   44,   93,   71,   92,   43,   39,
-       54,   65,   72,   54,   91,   39,   54,   73,   37,   37,
+       50,   44,   52,   38,   54,   53,   47,   93,   55,   41,
+       51,   56,   46,   64,   44,   92,   71,   91,   43,   39,
+       54,   65,   72,   54,   54,   39,   54,   73,   37,   37,
        37,   37,   41,   41,   54,   41,   61,   90,   61,   61,
        89,   88,   87,   86,   69,   85,   84,   83,   82,   81,
 
        80,   79,   78,   77,   76,   54,   69,   75,   62,   74,
        69,   70,   69,   68,   67,   66,   54,   63,   62,   60,
-       60,   94,   35,   40,   59,   58,   57,   49,   48,   36,
-       36,   36,   45,   44,   40,   36,   35,   94,    3,   94,
-       94,   94,   94,   94,   94,   94,   94,   94,   94,   94,
-       94,   94,   94,   94,   94,   94,   94,   94,   94,   94,
-       94,   94,   94,   94,   94,   94,   94,   94,   94,   94,
-       94,   94,   94,   94,   94,   94,   94,   94,   94,   94,
-       94,   94,   94,   94,   94,   94
+       60,   93,   35,   40,   59,   58,   57,   49,   48,   36,
+       36,   36,   45,   44,   40,   36,   35,   93,    3,   93,
+       93,   93,   93,   93,   93,   93,   93,   93,   93,   93,
+       93,   93,   93,   93,   93,   93,   93,   93,   93,   93,
+       93,   93,   93,   93,   93,   93,   93,   93,   93,   93,
+       93,   93,   93,   93,   93,   93,   93,   93,   93,   93,
+       93,   93,   93,   93,   93,   93
     } ;
 
 static const flex_int16_t yy_chk[187] =
@@ -480,21 +480,21 @@ static const flex_int16_t yy_chk[187] =
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    8,   10,   18,
-       26,   18,   27,   37,   28,   27,   97,   43,   28,   43,
-       26,   28,   44,   50,   44,   92,   57,   90,   10,    8,
-       89,   50,   57,   88,   87,   37,   86,   57,   95,   95,
-       95,   95,   96,   96,   85,   96,   98,   83,   98,   98,
+       26,   18,   27,   37,   28,   27,   96,   43,   28,   43,
+       26,   28,   44,   50,   44,   91,   57,   90,   10,    8,
+       89,   50,   57,   88,   87,   37,   86,   57,   94,   94,
+       94,   94,   95,   95,   85,   95,   97,   83,   97,   97,
        82,   81,   79,   78,   77,   76,   75,   74,   73,   72,
 
        71,   70,   68,   67,   66,   65,   64,   63,   62,   59,
        58,   56,   55,   53,   52,   51,   49,   48,   46,   42,
        41,   39,   35,   33,   31,   30,   29,   25,   24,   22,
-       21,   20,   17,   16,    9,    7,    5,    3,   94,   94,
-       94,   94,   94,   94,   94,   94,   94,   94,   94,   94,
-       94,   94,   94,   94,   94,   94,   94,   94,   94,   94,
-       94,   94,   94,   94,   94,   94,   94,   94,   94,   94,
-       94,   94,   94,   94,   94,   94,   94,   94,   94,   94,
-       94,   94,   94,   94,   94,   94
+       21,   20,   17,   16,    9,    7,    5,    3,   93,   93,
+       93,   93,   93,   93,   93,   93,   93,   93,   93,   93,
+       93,   93,   93,   93,   93,   93,   93,   93,   93,   93,
+       93,   93,   93,   93,   93,   93,   93,   93,   93,   93,
+       93,   93,   93,   93,   93,   93,   93,   93,   93,   93,
+       93,   93,   93,   93,   93,   93
     } ;
 
 static yy_state_type yy_last_accepting_state;
@@ -522,11 +522,12 @@ char *yytext;
     #define     BRED "\e[1;31m"
     #define     BMAG "\e[1;35m"
     #define     reset "\e[0m"
-    int     line = 1;
-    int     column = 1;
-    int     errors = 0;
-#line 529 "lex.yy.c"
+    int     line    = 1;
+    int     column  = 1;
+    int     errors  = 0;
+    int     context = 0;
 #line 530 "lex.yy.c"
+#line 531 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -741,11 +742,11 @@ YY_DECL
 		}
 
 	{
-#line 52 "clang_lexical.l"
+#line 53 "clang_lexical.l"
 
 
 
-#line 749 "lex.yy.c"
+#line 750 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -772,7 +773,7 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 95 )
+				if ( yy_current_state >= 94 )
 					yy_c = yy_meta[yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
@@ -804,7 +805,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 55 "clang_lexical.l"
+#line 56 "clang_lexical.l"
 {
     column += yyleng;
 }
@@ -812,7 +813,7 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 60 "clang_lexical.l"
+#line 61 "clang_lexical.l"
 {
     line++;
     column = 1;
@@ -820,42 +821,52 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 65 "clang_lexical.l"
+#line 66 "clang_lexical.l"
 {
-    // printf("| line: %d\t| column: %d\t| ", line, column);
-    // printf("Int number:"BMAG" %s\n"reset, yytext);
-
-    
+    printf("| line: %d\t| column: %d\t| ", line, column);
+    printf("Int number:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return INT;
 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 74 "clang_lexical.l"
+#line 76 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Float number:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return FLOAT;
 }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 81 "clang_lexical.l"
+#line 86 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Empty const:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return EMPTY;
 }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 88 "clang_lexical.l"
+#line 96 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Keyword:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     if(!strcmp(yytext, "if")){
         return IF_KW;
@@ -891,121 +902,165 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 125 "clang_lexical.l"
+#line 136 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Write:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return OUT;
 }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 132 "clang_lexical.l"
+#line 146 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Read:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return IN;
 }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 139 "clang_lexical.l"
+#line 156 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Type:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return TYPE;
 }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 146 "clang_lexical.l"
+#line 166 "clang_lexical.l"
 {
-    // printf("| line: %d\t| column: %d\t| ", line, column);
-    // printf("Identifier:"BMAG" %s\n"reset, yytext);
-
+    printf("| line: %d\t| column: %d\t| ", line, column);
+    printf("Identifier:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
+    //int aux = findEmpty(symbolTable);
+    //symbolTable[aux].s_line = line;
+    //symbolTable[aux].s_column = column;
+    // FAZER CONTEXT DPS
+    //strcpy(symbolTable[aux].s_context, context);
+    //strcpy(symbolTable[aux].s_title, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return ID;
 }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 154 "clang_lexical.l"
+#line 185 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Sum Operator:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return SUM_OP;
 }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 161 "clang_lexical.l"
+#line 195 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Multiply Operator:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return MUL_OP;
 }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 168 "clang_lexical.l"
+#line 205 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Binary Logical Operator:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return BIN_LOG_OP;
 }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 175 "clang_lexical.l"
+#line 215 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Unary Logical Operator:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return UN_LOG_OP;
 }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 182 "clang_lexical.l"
+#line 225 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Relational Operator:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return REL_OP;
 }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 189 "clang_lexical.l"
+#line 235 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Assignment Operator:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return ASS_OP;
 }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 196 "clang_lexical.l"
+#line 245 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Inline comment block:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     return COMMENT;
 }
 	YY_BREAK
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-#line 202 "clang_lexical.l"
+#line 254 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("String expression:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return STRING;
 }
@@ -1013,91 +1068,112 @@ YY_RULE_SETUP
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-#line 209 "clang_lexical.l"
+#line 264 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Char expression:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return CHAR;
 }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 217 "clang_lexical.l"
+#line 275 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Opened curly braces:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return '{';
 }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 224 "clang_lexical.l"
+#line 285 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Closed curly braces:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return '}';
 }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 232 "clang_lexical.l"
+#line 296 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Opened parenthesis:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return '(';
 }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 239 "clang_lexical.l"
+#line 306 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Closed parenthesis:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return ')';
 }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 246 "clang_lexical.l"
+#line 316 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Semi-colon:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return ';';
 }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 253 "clang_lexical.l"
+#line 326 "clang_lexical.l"
 {
     printf("| line: %d\t| column: %d\t| ", line, column);
     printf("Comma:"BMAG" %s\n"reset, yytext);
+    yylval.token.t_line = line;
+    yylval.token.t_column = column;
+    yylval.token.t_title = strdup(yytext);
     column += yyleng;
     return ',';
 }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 260 "clang_lexical.l"
+#line 336 "clang_lexical.l"
 {
     errors++;
     printf(BRED"| line: %d\t| column: %d\t| ", line, column);
-    printf("ERROR\t--> "reset);
+    printf("ERROR\t-. "reset);
     printf("Character not expected:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 268 "clang_lexical.l"
+#line 344 "clang_lexical.l"
 ECHO;
 	YY_BREAK
-#line 1101 "lex.yy.c"
+#line 1177 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1394,7 +1470,7 @@ static int yy_get_next_buffer (void)
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 95 )
+			if ( yy_current_state >= 94 )
 				yy_c = yy_meta[yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
@@ -1422,11 +1498,11 @@ static int yy_get_next_buffer (void)
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 95 )
+		if ( yy_current_state >= 94 )
 			yy_c = yy_meta[yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
-	yy_is_jam = (yy_current_state == 94);
+	yy_is_jam = (yy_current_state == 93);
 
 		return yy_is_jam ? 0 : yy_current_state;
 }
@@ -2065,5 +2141,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 268 "clang_lexical.l"
+#line 344 "clang_lexical.l"
 
