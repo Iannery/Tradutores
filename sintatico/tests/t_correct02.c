@@ -1,5 +1,6 @@
-set main{ 
-    elem a b c d e f g h 123 123.1123;
-    set = a
+int f(int a, int b, int c) {
+    set l;
+    f(a, b, c);
 
-    return set
+    return 0;
+}

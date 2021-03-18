@@ -1,12 +1,7 @@
-int main(){ 
-    int a, int %$$b%, float $c;
-    a = 5;
+int f(a) {
+    set l;
+    int a;
+    set varComPontoVirgula;
 
-    if(a == 5){
-        writeln("alo");
-    }
-    else{
-        c += 123.456.789;
-    }
     return 0;
 }

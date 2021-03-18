@@ -209,10 +209,7 @@ OUT     write|writeln
 }
 
 {INLINE_COMMENT} {
-    yylval.token.t_line = line;
-    yylval.token.t_column = column;
-    strcpy(yylval.token.t_title, yytext);
-    return COMMENT;
+//FAZ NADA
 }
 
 {STRING} {
@@ -285,8 +282,8 @@ OUT     write|writeln
 
 . {
     errors++;
-    printf(BRED"| line: %d\t| column: %d\t| ", line, column);
-    printf("ERROR\t-. "reset);
+    printf(BRED"[%d:%d] ", line, column);
+    printf("LEXICAL ERROR\t-. "reset);
     printf("Character not expected:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }

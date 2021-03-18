@@ -1,13 +1,7 @@
-int main{ 
-    int a int b float c
-    a = 5
+int f() {
+    set l;
+    int a;
+    set varComPontoVirgula;
 
-
-
-    for(a == 'alo'
-        read(a);
-    }
-    else()
-        b += 5;
     return 0;
 }

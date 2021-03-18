@@ -1,6 +1,10 @@
 #ifndef S_TABLE_H
 #define S_TABLE_H
 
+#define     BRED "\e[1;31m"
+#define     BMAG "\e[1;35m"
+#define     reset "\e[0m"
+
 typedef struct Symbol {
     char    s_type[11];
     char    s_funcvar[11];

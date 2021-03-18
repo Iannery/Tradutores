@@ -1,15 +1,7 @@
-int main(){ 
+int f() {
+    set l;
     int a;
-    int b; 
-    float c;
-    a = 5;
+    set varSemPontoVirgula
 
-    if(a == 5){
-        writeln("alo");
-    }
-    else{
-        b = 5;
-        
-    }
     return 0;
 }

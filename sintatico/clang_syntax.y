@@ -35,7 +35,7 @@
 %left  <token> BIN_LOG_OP
 %right <token> UN_LOG_OP
 %token <token> REL_OP ASS_OP
-%token <token> COMMENT STRING CHAR
+%token <token> STRING CHAR
 %token <token> '{' '}' '(' ')' ';' ','
 
 %type <node> program
@@ -91,7 +91,11 @@ program:
 ;
 
 declarationList:
-    declarationList declaration {}
+    declarationList declaration {
+        $$ = createNode("declarationList");
+        $$->node1 = $1;
+        $$->node2 = $2;
+    }
     | declaration {
         $$ = createNode("declarationList");
         $$->node1 = $1;
@@ -99,7 +103,10 @@ declarationList:
 ;
 
 declaration:
-    varDeclaration {}
+    varDeclaration {
+        $$ = createNode("declaration");
+        $$->node1 = $1;
+    }
     | funcDeclaration {
         $$ = createNode("declaration");
         $$->node1 = $1;
@@ -153,10 +160,9 @@ simpleVDeclaration:
         insertSymbol(symbolTable, 
                     $2.t_title, 
                     $1.t_title, 
-                    "Function", 
+                    "Variable", 
                     $2.t_line, 
                     $2.t_column);
-        
     }
 ;
 
@@ -167,7 +173,7 @@ simpleFDeclaration:
         insertSymbol(symbolTable, 
                     $2.t_title, 
                     $1.t_title, 
-                    "Variable", 
+                    "Function", 
                     $2.t_line, 
                     $2.t_column);
     }
@@ -295,8 +301,8 @@ setStmt:
 pertOP:
     simpleExp IN_KW ID {
         $$ = createNode("inOP");
-        $$->node1 = $1;
         $$->s_token = createSymbol($3.t_title, $3.t_line, $3.t_column);
+        $$->node1 = $1;
     }
     | simpleExp IN_KW setReturner {
         $$ = createNode("inOP");
@@ -509,7 +515,10 @@ mulExp:
 ;
 
 factor:
-    ID {}
+    ID {
+        $$ = createNode("factor");
+        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+    }
     | functionCall {
         $$ = createNode("factor");
         $$->node1 = $1;
@@ -546,7 +555,10 @@ callParams:
 
 %%
 extern void yyerror(const char* a) {
-    fprintf(stderr, "| line: %d\t| column: %d\t| %s\n", line, column, a);
+    printf(BRED"[%d:%d] ", line, column);
+    printf("SYNTAX ERROR - ");
+    printf("%s\n"reset, a);
+    errors++;
 }
 
 
@@ -560,7 +572,8 @@ int main(int argc, char **argv){
             yyin = fp;
             // yylex();
             yyparse();
-            // printf("\nLexical analysis completed with %d error(s)\n", errors);
+            printf("\nAnalysis completed with %d error(s)\n", errors);
+
         }
         else{
             printf("Input File Path does not exist.\n");
@@ -570,8 +583,15 @@ int main(int argc, char **argv){
         printf("No Input Files.\n");
     }
     fclose(yyin);
-    printTable(symbolTable);
-    printTree(tree, 0);
+    if(!errors){
+        printf("Correct program.\n");
+        printTable(symbolTable);
+        printTree(tree, 0);
+    }
+    else{
+        printf(BRED"The Abstract Syntax Tree nor the Symbol Table will not be shown if there are errors.\n");
+        printf(reset);
+    }
     freeTree(tree);
     yylex_destroy();
     return 0;

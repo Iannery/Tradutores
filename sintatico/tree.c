@@ -20,51 +20,54 @@ extern Node* createNode(char* n_type){
 
 
 extern void freeTree(Node* node) {
-    if(node == NULL){
+    if(!node){
         return;
     }
+
+    free(node->s_token);
 
     freeTree(node->node1);
     freeTree(node->node2);
     freeTree(node->node3);
     freeTree(node->node4);
 
-    
-    free(node->s_token);
     free(node);
 }
 
 extern void printTree(Node* node, int depth){
-    printf("\n");
     
     if(!node){
         return;
     }
     if(depth == 0){
-        printf(" %s", node->n_type);
+        printf("> %s\n", node->n_type);
     }
     else{
         for(int i = 0; i < depth; i++){
-            printf("-");
+            printf("--");
         }
-        printf(" %s ", node->n_type);
-
+        printf("> %s", node->n_type);
+        printf("\n");
     }
     if(node->node1){
         printTree(node->node1, depth + 1);
     }
     if(node->node2){
-        printTree(node->node2, depth);
+        printTree(node->node2, depth + 1);
     }
     if(node->node3){
-        printTree(node->node3, depth);
+        printTree(node->node3, depth + 1);
     }
     if(node->node4){
-        printTree(node->node4, depth);
+        printTree(node->node4, depth + 1);
     }
     if(node->s_token){
-        printf(" %s\n", node->s_token->s_title);
-
+        for(int i = 0; i < depth + 2; i++){
+            printf("--");
+        }
+        printf("> "BMAG "[%d:%d] %s\n"reset, node->s_token->s_line,
+        node->s_token->s_column,
+        node->s_token->s_title);
     }
 
 }
