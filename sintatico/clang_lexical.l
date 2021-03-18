@@ -1,8 +1,9 @@
 %option noinput nounput
 %option noyywrap
 %{
-    #include    "global_vars.h"
     #include    "clang_syntax.tab.h"
+    #include    "stack.h"
+    #include    "symbol_table.h"
     #include    <stdio.h>
     #include    <stdlib.h>
     #include    <string.h>
@@ -13,6 +14,8 @@
     int     column  = 1;
     int     errors  = 0;
     int     context = 0;
+    extern Scope scope;
+    extern Symbol symbolTable[10000];
 %}
 
 
@@ -63,42 +66,34 @@ OUT     write|writeln
     column = 1;
 }
 
-"-"?{DIGIT}+ {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Int number:"BMAG" %s\n"reset, yytext);
+{DIGIT}+ {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return INT;
 }
 
-"-"?{DIGIT}+"."{DIGIT}+ {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Float number:"BMAG" %s\n"reset, yytext);
+{DIGIT}+"."{DIGIT}+ {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return FLOAT;
 }
 
 {EMPTY} {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Empty const:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return EMPTY;
 }
 
 {KEYWORD} {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Keyword:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     if(!strcmp(yytext, "if")){
         return IF_KW;
@@ -134,201 +129,156 @@ OUT     write|writeln
 
 
 {OUT} {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Write:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return OUT;
 }
 
 {IN} {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Read:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return IN;
 }
 
 {TYPE} {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Type:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return TYPE;
 }
 
 {ID} {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Identifier:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
-    //int aux = findEmpty(symbolTable);
-    //symbolTable[aux].s_line = line;
-    //symbolTable[aux].s_column = column;
-    // FAZER CONTEXT DPS
-    //strcpy(symbolTable[aux].s_context, context);
-    //strcpy(symbolTable[aux].s_title, yytext);
-    yylval.token.t_line = line;
-    yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return ID;
 }
 
 {SUM_OP} {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Sum Operator:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return SUM_OP;
 }
 
 {MUL_OP} {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Multiply Operator:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return MUL_OP;
 }
 
 {BIN_LOGICAL_OP} {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Binary Logical Operator:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return BIN_LOG_OP;
 }
 
 {UN_LOGICAL_OP} {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Unary Logical Operator:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return UN_LOG_OP;
 }
 
 {RELATIONAL_OP} {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Relational Operator:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return REL_OP;
 }
 
 {ASSIGN_OP} {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Assignment Operator:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return ASS_OP;
 }
 
 {INLINE_COMMENT} {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Inline comment block:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     return COMMENT;
 }
 
 {STRING} {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("String expression:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return STRING;
 }
 
 {CHAR} {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Char expression:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return CHAR;
 }
 
 
 "{" {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Opened curly braces:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
+    // pushStack(&scope);
     column += yyleng;
     return '{';
 }
 
 "}" {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Closed curly braces:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
+    popStack(&scope);
     column += yyleng;
     return '}';
 }
 
 
 "(" {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Opened parenthesis:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return '(';
 }
 
 ")" {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Closed parenthesis:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return ')';
 }
 
 ";" {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Semi-colon:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return ';';
 }
 
 "," {
-    printf("| line: %d\t| column: %d\t| ", line, column);
-    printf("Comma:"BMAG" %s\n"reset, yytext);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
-    yylval.token.t_title = strdup(yytext);
+    strcpy(yylval.token.t_title, yytext);
     column += yyleng;
     return ',';
 }

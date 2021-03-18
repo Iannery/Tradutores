@@ -2,17 +2,28 @@
 %define parse.error verbose
 %define lr.type canonical-lr
 %{
-    #include "global_vars.h"
-    #include "global_methods.h"
     #include "symbol_table.h"
-    // symbol symbolTable[1000];
+    #include "stack.h"
+    #include "tree.h"
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+    extern int yylex();
+    extern int yylex_destroy();
+    extern void yyerror(const char* a);
+    extern int line;
+    extern int column;
+    extern int errors;
+    extern int context;
+    extern FILE *yyin;
 %}
 %union{
     struct Token {
-        int t_line;
-        int t_column;
-        char* t_title;
+        int     t_line;
+        int     t_column;
+        char    t_title[101];
     } token;
+    struct Node* node;
 }
 
 %token <token> INT FLOAT EMPTY
@@ -27,256 +38,529 @@
 %token <token> COMMENT STRING CHAR
 %token <token> '{' '}' '(' ')' ';' ','
 
+%type <node> program
+%type <node> declarationList
+%type <node> declaration
+%type <node> varDeclaration
+%type <node> funcDeclaration
+%type <node> params
+%type <node> param
+%type <node> simpleVDeclaration
+%type <node> simpleFDeclaration
+%type <node> compoundStmt
+%type <node> localDeclarations
+%type <node> stmtList
+%type <node> primitiveStmt
+%type <node> exprStmt
+%type <node> condStmt
+%type <node> iterStmt
+%type <node> returnStmt
+%type <node> setStmt
+%type <node> pertOP
+%type <node> setReturner
+%type <node> typeOP
+%type <node> addOP
+%type <node> remOP
+%type <node> selectOP
+%type <node> forallOP
+%type <node> expression
+%type <node> assignExp
+%type <node> simpleExp
+%type <node> constOP
+%type <node> inOP
+%type <node> outOP
+%type <node> outConst
+%type <node> binLogicalExp
+%type <node> unLogicalExp
+%type <node> relationalExp
+%type <node> sumExp
+%type <node> mulExp
+%type <node> factor
+%type <node> functionCall
+%type <node> callParams
+
+
+
 %%
 program: 
-    declarationList {}
-    | errors {}
+    declarationList {
+        $$ = createNode("program");
+        $$->node1 = $1;
+        tree = $$;
+    }
 ;
 
 declarationList:
     declarationList declaration {}
-    | declaration {}
-    | errors {}
+    | declaration {
+        $$ = createNode("declarationList");
+        $$->node1 = $1;
+    }
 ;
 
 declaration:
     varDeclaration {}
-    | funcDeclaration {}
-    | comment {}
-    | errors {}
-;
-
-comment:
-    COMMENT {}
-    | errors {}
+    | funcDeclaration {
+        $$ = createNode("declaration");
+        $$->node1 = $1;
+    }
 ;
 
 varDeclaration:
-    simpleDeclaration ';' {}
-    | errors {}
+    simpleVDeclaration ';' {
+        $$ = createNode("varDeclaration");
+        $$->node1 = $1;
+    }
 ;
 
 funcDeclaration:
-    simpleDeclaration '(' params ')' compoundStmt {}
-    | simpleDeclaration '(' ')' compoundStmt {}
-    | errors {}
+    simpleFDeclaration '(' params ')' compoundStmt {
+        $$ = createNode("funcDeclaration");
+        $$->node1 = $1;
+        $$->node2 = $3;
+        $$->node3 = $5;
+    }
+    | simpleFDeclaration '(' ')' compoundStmt {
+        $$ = createNode("funcDeclaration");
+        $$->node1 = $1;
+        $$->node2 = $4;
+    }
 ;
 
 params:
-    params ',' param {}
-    | param {}
-    | errors {}
+    params ',' param {
+        $$ = createNode("params");
+        $$->node1 = $1;
+        $$->node2 = $3;
+    }
+    | param {
+        $$ = createNode("params");
+        $$->node1 = $1;
+    }
 ;
 
 param:
-    simpleDeclaration {}
-    | errors {}
+    simpleVDeclaration {
+        $$ = createNode("param");
+        $$->node1 = $1;
+    }
 ;
 
-simpleDeclaration:
-    TYPE ID {}
-    | errors {}
+simpleVDeclaration:
+    TYPE ID {
+        $$ = createNode("simpleVDeclaration");
+        $$->s_token = createSymbol($2.t_title, $2.t_line, $2.t_column);
+        insertSymbol(symbolTable, 
+                    $2.t_title, 
+                    $1.t_title, 
+                    "Function", 
+                    $2.t_line, 
+                    $2.t_column);
+        
+    }
 ;
 
+simpleFDeclaration:
+    TYPE ID {
+        $$ = createNode("simpleFDeclaration");
+        $$->s_token = createSymbol($2.t_title, $2.t_line, $2.t_column);
+        insertSymbol(symbolTable, 
+                    $2.t_title, 
+                    $1.t_title, 
+                    "Variable", 
+                    $2.t_line, 
+                    $2.t_column);
+    }
+;
 compoundStmt:
-    '{' localDeclarations stmtList '}' {}
-    | '{' stmtList '}' {}
-    | errors {}
+    '{' localDeclarations stmtList '}' {
+        $$ = createNode("CompoundStmt");
+        $$->node1 = $2;
+        $$->node2 = $3;
+    }
+    | '{' stmtList '}' {
+        $$ = createNode("CompoundStmt");
+        $$->node1 = $2;
+    }
 ;
 
 localDeclarations:
-    localDeclarations varDeclaration {}
-    | varDeclaration {}
-    | errors {}
+    localDeclarations varDeclaration {
+        $$ = createNode("localDeclarations");
+        $$->node1 = $1;
+        $$->node2 = $2;
+    }
+    | localDeclarations error {
+        $$ = createNode("localDeclarations");
+        $$->node1 = $1;
+    }
+    | varDeclaration {
+        $$ = createNode("localDeclarations");
+        $$->node1 = $1;
+    }
 ;
 
 stmtList:
-    stmtList primitiveStmt {}
-    | {}
-    | errors {}
+    stmtList primitiveStmt {
+        $$ = createNode("stmtList");
+        $$->node1 = $1;
+        $$->node2 = $2;
+    }
+    | primitiveStmt {
+        $$ = createNode("stmtList");
+        $$->node1 = $1;
+    }
 ;
 
 primitiveStmt:
-    exprStmt {}
-    | compoundStmt {}
-    | condStmt {}
-    | iterStmt {}
-    | returnStmt {}
-    | setStmt {}
-    | errors {}
+    exprStmt {
+        $$ = createNode("PrimitiveStmt");
+        $$->node1 = $1;
+    }
+    | compoundStmt {
+        $$ = createNode("PrimitiveStmt");
+        $$->node1 = $1;
+    }
+    | condStmt {
+        $$ = createNode("PrimitiveStmt");
+        $$->node1 = $1;
+    }
+    | iterStmt {
+        $$ = createNode("PrimitiveStmt");
+        $$->node1 = $1;
+    }
+    | returnStmt {
+        $$ = createNode("PrimitiveStmt");
+        $$->node1 = $1;
+    }
+    | setStmt {
+        $$ = createNode("PrimitiveStmt");
+        $$->node1 = $1;
+    }
 ;
 
 exprStmt:
-    expression ';' {}
-    | errors {}
+    expression ';' {
+        $$ = createNode("exprStmt");
+        $$->node1 = $1;
+    }
 ;
 
 condStmt:
-    IF_KW '(' simpleExp ')' compoundStmt {}
-    | IF_KW '(' simpleExp ')' compoundStmt ELSE_KW compoundStmt {}
-    | errors {}
+    IF_KW '(' simpleExp ')' compoundStmt {
+        $$ = createNode("ifStmt");
+        $$->node1 = $3;
+        $$->node2 = $5;
+    }
+    | IF_KW '(' simpleExp ')' compoundStmt ELSE_KW compoundStmt {
+        $$ = createNode("ifElseStmt");
+        $$->node1 = $3;
+        $$->node2 = $5;
+        $$->node3 = $7;
+    }
 ;
 
 iterStmt:
-    FOR_KW '(' assignExp ';' simpleExp ';' assignExp ')' compoundStmt {}
-    | errors {}
+    FOR_KW '(' assignExp ';' simpleExp ';' assignExp ')' compoundStmt {
+        $$ = createNode("forStmt");
+        $$->node1 = $3;
+        $$->node2 = $5;
+        $$->node3 = $7;
+        $$->node4 = $9;
+    }
 ;
 
 returnStmt:
-    RETURN_KW expression ';' {}
-    | errors {}
+    RETURN_KW expression ';' {
+        $$ = createNode("returnStmt");
+        $$->node1 = $2;
+    }
 ;
 
 setStmt:
-    pertOP {}
-    | typeOP ';' {}
-    | addOP ';' {}
-    | remOP ';' {}
-    | selectOP ';' {}
-    | forallOP {}
-    | errors {}
+    typeOP ';' {
+        $$ = createNode("setStmt");
+        $$->node1 = $1;
+    }
+    | setReturner ';' {
+        $$ = createNode("setStmt");
+        $$->node1 = $1;
+    }
+    | forallOP {
+        $$ = createNode("setStmt");
+        $$->node1 = $1;
+    }
 ;
 
 pertOP:
-    simpleExp IN_KW ID {}
-    | errors {}
+    simpleExp IN_KW ID {
+        $$ = createNode("inOP");
+        $$->node1 = $1;
+        $$->s_token = createSymbol($3.t_title, $3.t_line, $3.t_column);
+    }
+    | simpleExp IN_KW setReturner {
+        $$ = createNode("inOP");
+        $$->node1 = $1;
+        $$->node2 = $3;
+    }
+;
+
+setReturner:
+    addOP {
+        $$ = createNode("setReturner");
+        $$->node1 = $1;
+    }
+    | remOP {
+        $$ = createNode("setReturner");
+        $$->node1 = $1;
+    }
 ;
 
 typeOP:
-    ISSET_KW '(' ID ')' {}
-    | errors {}
+    ISSET_KW '(' ID ')' {
+        $$ = createNode("issetOP");
+        $$->s_token = createSymbol($3.t_title, $3.t_line, $3.t_column);
+    }
 ;
 
 addOP:
-    ADD_KW '(' pertOP ')' {}
-    | errors {}
+    ADD_KW '(' pertOP ')' {
+        $$ = createNode("addOP");
+        $$->node1 = $3;
+    }
 ;
 
 remOP:
-    REMOVE_KW '(' pertOP ')' {}
-    | errors {}
+    REMOVE_KW '(' pertOP ')' {
+        $$ = createNode("removeOP");
+        $$->node1 = $3;
+    }
 ;
 
 selectOP:
-    EXISTS_KW '(' pertOP ')' {}
-    | EXISTS_KW '(' ID ',' ID ')' {}
-    | errors {}
+    EXISTS_KW '(' pertOP ')' {
+        $$ = createNode("selectOP");
+        $$->node1 = $3;
+    }
 ;
 
 forallOP:
-    FORALL_KW '(' pertOP ')' compoundStmt {}
-    | errors {}
+    FORALL_KW '(' pertOP ')' compoundStmt {
+        $$ = createNode("forallOP");
+        $$->node1 = $3;
+        $$->node2 = $5;
+    }
 ;
 
 expression:
-    assignExp {}
-    | simpleExp {}
-    | inOP {}
-    | outOP {}
-    | errors {}
+    assignExp {
+        $$ = createNode("expression");
+        $$->node1 = $1;
+    }
+    | simpleExp {
+        $$ = createNode("expression");
+        $$->node1 = $1;
+    }
+    | inOP {
+        $$ = createNode("expression");
+        $$->node1 = $1;
+    }
+    | outOP {
+        $$ = createNode("expression");
+        $$->node1 = $1;
+    }
 ;
 
 assignExp:
-    ID ASS_OP expression {}
-    | errors {}
+    ID ASS_OP expression {
+        $$ = createNode("assignExp");
+        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$->node1 = $3;
+    }
 ;
 
 simpleExp:
-    binLogicalExp {}
-    | errors {}
+    binLogicalExp {
+        $$ = createNode("simpleExp");
+        $$->node1 = $1;
+    }
+    | pertOP {
+        $$ = createNode("simpleExp");
+        $$->node1 = $1;
+    }
+    | selectOP {
+        $$ = createNode("simpleExp");
+        $$->node1 = $1;
+    }
 ;
 
 constOP:
-    INT {}
-    | FLOAT {}
-    | EMPTY {}
-    | errors {}
+    INT {
+        $$ = createNode("INT");
+        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+    }
+    | FLOAT {
+        $$ = createNode("FLOAT");
+        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+    }
+    | EMPTY {
+        $$ = createNode("EMPTY");
+        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+    }
 ;
 
 inOP:
-    IN '(' ID ')' {}
-    | errors {}
+    IN '(' ID ')' {
+        $$ = createNode("read");
+        $$->s_token = createSymbol($3.t_title, $3.t_line, $3.t_column);
+    }
 ;
 
 outOP:
-    OUT '(' outConst ')' {}
-    | errors {}
+    OUT '(' outConst ')' {
+        $$ = createNode("OUT");
+        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$->node1 = $3;
+    }
 ;
 
 outConst:
-    STRING {}
-    | CHAR {}
-    | simpleExp {}
-    | errors {}
+    STRING {
+        $$ = createNode("STRING");
+        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+    }
+    | CHAR {
+        $$ = createNode("CHAR");
+        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+    }
+    | simpleExp {
+        $$ = createNode("OutConst");
+        $$->node1 = $1;
+    }
 ;
 
 binLogicalExp:
-    binLogicalExp BIN_LOG_OP unLogicalExp {}
-    | unLogicalExp {}
-    | errors {}
+    binLogicalExp BIN_LOG_OP unLogicalExp {
+        $$ = createNode("binLogicalExp");
+        $$->s_token = createSymbol($2.t_title, $2.t_line, $2.t_column);
+        $$->node1 = $1;
+        $$->node2 = $3;
+    }
+    | unLogicalExp {
+        $$ = createNode("binLogicalExp");
+        $$->node1 = $1;
+    }
 ;
 
 unLogicalExp:
-    UN_LOG_OP unLogicalExp {}
-    | relationalExp {}
-    | errors {}
+    UN_LOG_OP unLogicalExp {
+        $$ = createNode("unLogicalExp");
+        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$->node1 = $2;
+    }
+    | relationalExp {
+        $$ = createNode("unLogicalExp");
+        $$->node1 = $1;
+    }
 ;
 
 relationalExp:
-    relationalExp REL_OP sumExp {}
-    | sumExp {}
-    | errors {}
+    relationalExp REL_OP sumExp {
+        $$ = createNode("relationalExp");
+        $$->s_token = createSymbol($2.t_title, $2.t_line, $2.t_column);
+        $$->node1 = $1;
+        $$->node2 = $3;
+    }
+    | sumExp {
+        $$ = createNode("relationalExp");
+        $$->node1 = $1;
+    }
 ;
 
 sumExp:
-    sumExp SUM_OP mulExp {}
-    | mulExp {}
-    | errors {}
+    sumExp SUM_OP mulExp {
+        $$ = createNode("sumExp");
+        $$->s_token = createSymbol($2.t_title, $2.t_line, $2.t_column);
+        $$->node1 = $1;
+        $$->node2 = $3;
+    }
+    | mulExp {
+        $$ = createNode("sumExp");
+        $$->node1 = $1;
+    }
 ;
 
 mulExp:
-    mulExp MUL_OP factor {}
-    | factor {}
-    | errors {}
+    mulExp MUL_OP factor {
+        $$ = createNode("mulExp");
+        $$->s_token = createSymbol($2.t_title, $2.t_line, $2.t_column);
+        $$->node1 = $1;
+        $$->node2 = $3;
+    }
+    | factor {
+        $$ = createNode("mulExp");
+        $$->node1 = $1;
+    }
+    | SUM_OP factor {
+        $$ = createNode("mulExp");
+        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$->node1 = $2;
+    }
 ;
 
 factor:
     ID {}
-    | functionCall {}
-    | '(' simpleExp ')' {}
-    | constOP {}
-    | errors {}
+    | functionCall {
+        $$ = createNode("factor");
+        $$->node1 = $1;
+    }
+    | '(' simpleExp ')' {
+        $$ = createNode("factor");
+        $$->node1 = $2;
+    }
+    | constOP {
+        $$ = createNode("factor");
+        $$->node1 = $1;
+    }
 ;
 
 functionCall:
-    ID '(' callParams ')' {}
-    | errors {}
+    ID '(' callParams ')' {
+        $$ = createNode("functionCall");
+        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$->node1 = $3;
+    }
 ;
 
 callParams: 
-    callParams ',' ID {}
-    | ID {}
-    | callParams ',' functionCall {}
-    | functionCall {}
-    | errors {}
-
-errors:
-   error {yyerror(yymsg);}
+    callParams ',' simpleExp{
+        $$ = createNode("callParams");
+        $$->node1 = $1;
+        $$->node2 = $3;
+    }
+    | simpleExp {
+        $$ = createNode("callParams");
+        $$->node1 = $1;
+    }
 ;
 
 %%
-
+extern void yyerror(const char* a) {
+    fprintf(stderr, "| line: %d\t| column: %d\t| %s\n", line, column, a);
+}
 
 
 int main(int argc, char **argv){
     FILE *fp = fopen(argv[1], "r");
-    //fillTable(symbolTable);
+    initTable(symbolTable);
+    //initStack(&scope);
+    //printf("%d\n", emptyStack(&scope));
     if(argc > 1){
         if(fp){
             yyin = fp;
             // yylex();
             yyparse();
-            printf("\nLexical analysis completed with %d error(s)\n", errors);
+            // printf("\nLexical analysis completed with %d error(s)\n", errors);
         }
         else{
             printf("Input File Path does not exist.\n");
@@ -286,6 +570,9 @@ int main(int argc, char **argv){
         printf("No Input Files.\n");
     }
     fclose(yyin);
+    printTable(symbolTable);
+    printTree(tree, 0);
+    freeTree(tree);
     yylex_destroy();
     return 0;
 }

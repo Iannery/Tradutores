@@ -88,15 +88,16 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 10 "clang_syntax.y"
+#line 20 "clang_syntax.y"
 
     struct Token {
-        int t_line;
-        int t_column;
-        char* t_title;
+        int     t_line;
+        int     t_column;
+        char    t_title[101];
     } token;
+    struct Node* node;
 
-#line 100 "clang_syntax.tab.h"
+#line 101 "clang_syntax.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
