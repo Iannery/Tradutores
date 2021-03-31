@@ -24,7 +24,8 @@ extern void insertSymbol(Symbol* s,
                         char* type, 
                         int funcvar, 
                         int line, 
-                        int column);
+                        int column,
+                        int context);
 extern void freeSymbol(Symbol* s);
 extern void printTable(Symbol* s);
 

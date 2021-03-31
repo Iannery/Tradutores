@@ -88,16 +88,17 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 20 "bison/clang_syntax.y"
+#line 19 "bison/clang_syntax.y"
 
     struct Token {
         int     t_line;
         int     t_column;
         char    t_title[101];
+        int     t_context;
     } token;
     struct Node* node;
 
-#line 101 "bison/clang_syntax.tab.h"
+#line 102 "bison/clang_syntax.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

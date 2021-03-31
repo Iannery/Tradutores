@@ -35,7 +35,6 @@ extern void freeTree(Node* node) {
 }
 
 extern void printTree(Node* node, int depth){
-    
     if(!node){
         return;
     }
@@ -62,10 +61,10 @@ extern void printTree(Node* node, int depth){
         printTree(node->node4, depth + 1);
     }
     if(node->s_token){
-        for(int i = 0; i < depth + 2; i++){
-            printf("--");
+        for(int i = 0; i < depth + 1; i++){
+            printf(BMAG"--");
         }
-        printf("> "BMAG "[%d:%d] %s\n"reset, node->s_token->s_line,
+        printf("> [%d:%d] %s\n"reset, node->s_token->s_line,
         node->s_token->s_column,
         node->s_token->s_title);
     }

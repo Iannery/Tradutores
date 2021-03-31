@@ -934,6 +934,7 @@ case 10:
 YY_RULE_SETUP
 #line 156 "flex/clang_lexical.l"
 {
+    yylval.token.t_context = seeTop(&scope);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
     strcpy(yylval.token.t_title, yytext);
@@ -943,7 +944,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 164 "flex/clang_lexical.l"
+#line 165 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -954,7 +955,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 172 "flex/clang_lexical.l"
+#line 173 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -965,7 +966,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 180 "flex/clang_lexical.l"
+#line 181 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -976,7 +977,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 188 "flex/clang_lexical.l"
+#line 189 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -987,7 +988,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 196 "flex/clang_lexical.l"
+#line 197 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -998,7 +999,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 204 "flex/clang_lexical.l"
+#line 205 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1009,7 +1010,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 212 "flex/clang_lexical.l"
+#line 213 "flex/clang_lexical.l"
 {
 //FAZ NADA
 }
@@ -1017,7 +1018,7 @@ YY_RULE_SETUP
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-#line 216 "flex/clang_lexical.l"
+#line 217 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1029,7 +1030,7 @@ YY_RULE_SETUP
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-#line 224 "flex/clang_lexical.l"
+#line 225 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1040,19 +1041,20 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 233 "flex/clang_lexical.l"
+#line 234 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
     strcpy(yylval.token.t_title, yytext);
-    // pushStack(&scope);
+    context++;
+    pushStack(&scope, context);
     column += yyleng;
     return '{';
 }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 242 "flex/clang_lexical.l"
+#line 244 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1064,7 +1066,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 252 "flex/clang_lexical.l"
+#line 254 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1075,7 +1077,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 260 "flex/clang_lexical.l"
+#line 262 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1086,7 +1088,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 268 "flex/clang_lexical.l"
+#line 270 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1097,7 +1099,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 276 "flex/clang_lexical.l"
+#line 278 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1108,7 +1110,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 283 "flex/clang_lexical.l"
+#line 285 "flex/clang_lexical.l"
 {
     errors++;
     printf(BRED"[%d:%d] ", line, column);
@@ -1119,10 +1121,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 291 "flex/clang_lexical.l"
+#line 293 "flex/clang_lexical.l"
 ECHO;
 	YY_BREAK
-#line 1126 "flex/lex.yy.c"
+#line 1128 "flex/lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2090,5 +2092,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 291 "flex/clang_lexical.l"
+#line 293 "flex/clang_lexical.l"
 

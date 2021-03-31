@@ -31,7 +31,8 @@ extern void insertSymbol(Symbol* s,
                         char* type, 
                         int funcvar, 
                         int line, 
-                        int column){
+                        int column,
+                        int context){
     int pos = findEmpty(s);
     strcpy(s[pos].s_title, title);
     strcpy(s[pos].s_type, type);
@@ -43,7 +44,7 @@ extern void insertSymbol(Symbol* s,
     }
     s[pos].s_line = line;
     s[pos].s_column = column;
-    s[pos].s_scope = seeTop(&scope);
+    s[pos].s_scope = context;
 }
 extern void freeSymbol(Symbol* s){
     // int pos = findEmpty(s);
@@ -53,19 +54,31 @@ extern void freeSymbol(Symbol* s){
 }
 extern void printTable(Symbol* s){
     int pos = findEmpty(s);
-    for(int i = 0; i < 66; i++){
+    for(int i = 0; i < 75; i++){
         printf("-");
     }
     printf("\n");
-    printf("| %-8s | %-20s | %-10s | %-6s | %-6s |\n", "TYPE", "TITLE", "VAR/FUNC", "LINE", "COLUMN");
-    for(int i = 0; i < 66; i++){
+    printf("| %-8s | %-20s | %-10s | %-6s | %-6s | %-6s |\n", 
+        "TYPE", 
+        "TITLE", 
+        "VAR/FUNC",
+        "SCOPE",
+        "LINE", 
+        "COLUMN");
+    for(int i = 0; i < 75; i++){
         printf("-");
     }
     printf("\n");
     for(int i = 0; i < pos; i++){
-        printf("| %-8s | %-20s | %-10s | %-6d | %-6d |\n", s[i].s_type, s[i].s_title, s[i].s_funcvar, s[i].s_line, s[i].s_column);
+        printf("| %-8s | %-20s | %-10s | %-6d | %-6d | %-6d |\n", 
+            s[i].s_type, 
+            s[i].s_title, 
+            s[i].s_funcvar,
+            s[i].s_scope,
+            s[i].s_line, 
+            s[i].s_column);
     }
-    for(int i = 0; i < 66; i++){
+    for(int i = 0; i < 75; i++){
         printf("-");
     }
     printf("\n");

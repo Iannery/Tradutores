@@ -154,6 +154,7 @@ OUT     write|writeln
 }
 
 {ID} {
+    yylval.token.t_context = seeTop(&scope);
     yylval.token.t_line = line;
     yylval.token.t_column = column;
     strcpy(yylval.token.t_title, yytext);
@@ -234,7 +235,8 @@ OUT     write|writeln
     yylval.token.t_line = line;
     yylval.token.t_column = column;
     strcpy(yylval.token.t_title, yytext);
-    // pushStack(&scope);
+    context++;
+    pushStack(&scope, context);
     column += yyleng;
     return '{';
 }

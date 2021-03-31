@@ -3,14 +3,13 @@
 
 typedef struct{
     int stack[1000000];
-    int n_context;
 } Scope;
 Scope scope;
 
 extern void initStack(Scope* s);
 extern int emptyStack(Scope* s);
 extern int searchStack(Scope* s);
-extern void pushStack(Scope* s);
+extern void pushStack(Scope* s, int context);
 extern int popStack(Scope* s);
 extern int seeTop(Scope* s);
 
