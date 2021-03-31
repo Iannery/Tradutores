@@ -35,8 +35,8 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_CLANG_SYNTAX_TAB_H_INCLUDED
-# define YY_YY_CLANG_SYNTAX_TAB_H_INCLUDED
+#ifndef YY_YY_BISON_CLANG_SYNTAX_TAB_H_INCLUDED
+# define YY_YY_BISON_CLANG_SYNTAX_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 1
@@ -75,10 +75,11 @@ extern int yydebug;
     MUL_OP = 276,                  /* MUL_OP  */
     BIN_LOG_OP = 277,              /* BIN_LOG_OP  */
     UN_LOG_OP = 278,               /* UN_LOG_OP  */
-    REL_OP = 279,                  /* REL_OP  */
-    ASS_OP = 280,                  /* ASS_OP  */
-    STRING = 281,                  /* STRING  */
-    CHAR = 282                     /* CHAR  */
+    THEN = 279,                    /* THEN  */
+    REL_OP = 280,                  /* REL_OP  */
+    ASS_OP = 281,                  /* ASS_OP  */
+    STRING = 282,                  /* STRING  */
+    CHAR = 283                     /* CHAR  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -87,7 +88,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 20 "clang_syntax.y"
+#line 20 "bison/clang_syntax.y"
 
     struct Token {
         int     t_line;
@@ -96,7 +97,7 @@ union YYSTYPE
     } token;
     struct Node* node;
 
-#line 100 "clang_syntax.tab.h"
+#line 101 "bison/clang_syntax.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -109,4 +110,4 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_CLANG_SYNTAX_TAB_H_INCLUDED  */
+#endif /* !YY_YY_BISON_CLANG_SYNTAX_TAB_H_INCLUDED  */

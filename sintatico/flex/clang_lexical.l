@@ -57,6 +57,7 @@ OUT     write|writeln
 
 
 [ \t]+ {
+    // 
     column += yyleng;
 }
 
@@ -279,11 +280,10 @@ OUT     write|writeln
     column += yyleng;
     return ',';
 }
-
 . {
     errors++;
     printf(BRED"[%d:%d] ", line, column);
-    printf("LEXICAL ERROR\t-. "reset);
+    printf("LEXICAL ERROR --> "reset);
     printf("Character not expected:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }

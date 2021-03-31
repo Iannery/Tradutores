@@ -1,10 +1,10 @@
 compile:
-	bison -d clang_syntax.y
-	flex clang_lexical.l
-	gcc -c stack.c 
-	gcc -c symbol_table.c 
-	gcc -c tree.c 
-	gcc clang_syntax.tab.c lex.yy.c stack.o symbol_table.o tree.o -Wall
+	bison -o bison/clang_syntax.tab.c -d bison/clang_syntax.y -Wcounterexamples
+	flex -o flex/lex.yy.c flex/clang_lexical.l
+	gcc -c utils/stack.c -o ./obj/stack.o
+	gcc -c utils/symbol_table.c -o obj/symbol_table.o
+	gcc -c utils/tree.c -o obj/tree.o
+	gcc bison/clang_syntax.tab.c flex/lex.yy.c obj/stack.o obj/symbol_table.o obj/tree.o -I utils -I bison -I flex -Wall
 
 run:
 	./a.out tests/t_correct01.c
@@ -13,4 +13,4 @@ debug:
 	valgrind -v --tool=memcheck --leak-check=full --show-leak-kinds=all --track-origins=yes ./a.out tests/t_correct01.c
 
 clean:
-	rm -f symbol_table.o stack.o logfile.out tree.o clang_syntax.output
+	rm -f logfile.out ./bison/clang_syntax.output

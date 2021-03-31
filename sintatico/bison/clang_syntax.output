@@ -1,0 +1,5327 @@
+Grammar
+
+    0 $accept: program $end
+
+    1 program: declarationList
+
+    2 declarationList: declarationList declaration
+    3                | declaration
+
+    4 declaration: varDeclaration
+    5            | funcDeclaration
+
+    6 varDeclaration: simpleVDeclaration ';'
+
+    7 funcDeclaration: simpleFDeclaration '(' params ')' compoundStmt
+    8                | simpleFDeclaration '(' ')' compoundStmt
+
+    9 params: params ',' param
+   10       | param
+
+   11 param: simpleVDeclaration
+
+   12 simpleVDeclaration: TYPE ID
+
+   13 simpleFDeclaration: TYPE ID
+
+   14 compoundStmt: '{' localDeclarations stmtList '}'
+   15             | '{' stmtList '}'
+
+   16 localDeclarations: localDeclarations varDeclaration
+   17                  | localDeclarations error
+   18                  | varDeclaration
+
+   19 stmtList: stmtList primitiveStmt
+   20         | primitiveStmt
+
+   21 primitiveStmt: exprStmt
+   22              | compoundStmt
+   23              | condStmt
+   24              | iterStmt
+   25              | returnStmt
+   26              | setStmt
+
+   27 exprStmt: expression ';'
+
+   28 condStmt: IF_KW '(' simpleExp ')' compoundStmt
+   29         | IF_KW '(' simpleExp ')' compoundStmt ELSE_KW compoundStmt
+
+   30 iterStmt: FOR_KW '(' assignExp ';' simpleExp ';' assignExp ')' compoundStmt
+
+   31 returnStmt: RETURN_KW expression ';'
+
+   32 setStmt: forallOP
+
+   33 pertOP: simpleExp IN_KW ID
+   34       | simpleExp IN_KW setReturner
+
+   35 setReturner: addOP
+   36            | remOP
+
+   37 typeOP: ISSET_KW '(' ID ')'
+
+   38 addOP: ADD_KW '(' pertOP ')'
+
+   39 remOP: REMOVE_KW '(' pertOP ')'
+
+   40 selectOP: EXISTS_KW '(' pertOP ')'
+
+   41 forallOP: FORALL_KW '(' pertOP ')' compoundStmt
+
+   42 expression: assignExp
+   43           | simpleExp
+   44           | setReturner
+   45           | inOP
+   46           | outOP
+
+   47 assignExp: ID ASS_OP expression
+
+   48 simpleExp: binLogicalExp
+   49          | pertOP
+   50          | selectOP
+   51          | typeOP
+
+   52 constOP: INT
+   53        | FLOAT
+   54        | EMPTY
+
+   55 inOP: IN '(' ID ')'
+
+   56 outOP: OUT '(' outConst ')'
+
+   57 outConst: STRING
+   58         | CHAR
+   59         | simpleExp
+
+   60 binLogicalExp: binLogicalExp BIN_LOG_OP unLogicalExp
+   61              | unLogicalExp
+
+   62 unLogicalExp: UN_LOG_OP unLogicalExp
+   63             | relationalExp
+
+   64 relationalExp: relationalExp REL_OP sumExp
+   65              | sumExp
+
+   66 sumExp: sumExp SUM_OP mulExp
+   67       | mulExp
+
+   68 mulExp: mulExp MUL_OP factor
+   69       | factor
+   70       | SUM_OP factor
+
+   71 factor: ID
+   72       | functionCall
+   73       | '(' simpleExp ')'
+   74       | constOP
+
+   75 functionCall: ID '(' callParams ')'
+
+   76 callParams: callParams ',' simpleExp
+   77           | simpleExp
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    '(' <token> (40) 7 8 28 29 30 37 38 39 40 41 55 56 73 75
+    ')' <token> (41) 7 8 28 29 30 37 38 39 40 41 55 56 73 75
+    ',' <token> (44) 9 76
+    ';' <token> (59) 6 27 30 31
+    '{' <token> (123) 14 15
+    '}' <token> (125) 14 15
+    error (256) 17
+    INT <token> (258) 52
+    FLOAT <token> (259) 53
+    EMPTY <token> (260) 54
+    IF_KW <token> (261) 28 29
+    ELSE_KW <token> (262) 29
+    FOR_KW <token> (263) 30
+    FORALL_KW <token> (264) 41
+    RETURN_KW <token> (265) 31
+    IN_KW <token> (266) 33 34
+    ISSET_KW <token> (267) 37
+    ADD_KW <token> (268) 38
+    REMOVE_KW <token> (269) 39
+    EXISTS_KW <token> (270) 40
+    OUT <token> (271) 56
+    IN <token> (272) 55
+    TYPE <token> (273) 12 13
+    ID <token> (274) 12 13 33 37 47 55 71 75
+    SUM_OP <token> (275) 66 70
+    MUL_OP <token> (276) 68
+    BIN_LOG_OP <token> (277) 60
+    UN_LOG_OP <token> (278) 62
+    REL_OP <token> (279) 64
+    ASS_OP <token> (280) 47
+    STRING <token> (281) 57
+    CHAR <token> (282) 58
+
+
+Nonterminals, with rules where they appear
+
+    $accept (34)
+        on left: 0
+    program <node> (35)
+        on left: 1
+        on right: 0
+    declarationList <node> (36)
+        on left: 2 3
+        on right: 1 2
+    declaration <node> (37)
+        on left: 4 5
+        on right: 2 3
+    varDeclaration <node> (38)
+        on left: 6
+        on right: 4 16 18
+    funcDeclaration <node> (39)
+        on left: 7 8
+        on right: 5
+    params <node> (40)
+        on left: 9 10
+        on right: 7 9
+    param <node> (41)
+        on left: 11
+        on right: 9 10
+    simpleVDeclaration <node> (42)
+        on left: 12
+        on right: 6 11
+    simpleFDeclaration <node> (43)
+        on left: 13
+        on right: 7 8
+    compoundStmt <node> (44)
+        on left: 14 15
+        on right: 7 8 22 28 29 30 41
+    localDeclarations <node> (45)
+        on left: 16 17 18
+        on right: 14 16 17
+    stmtList <node> (46)
+        on left: 19 20
+        on right: 14 15 19
+    primitiveStmt <node> (47)
+        on left: 21 22 23 24 25 26
+        on right: 19 20
+    exprStmt <node> (48)
+        on left: 27
+        on right: 21
+    condStmt <node> (49)
+        on left: 28 29
+        on right: 23
+    iterStmt <node> (50)
+        on left: 30
+        on right: 24
+    returnStmt <node> (51)
+        on left: 31
+        on right: 25
+    setStmt <node> (52)
+        on left: 32
+        on right: 26
+    pertOP <node> (53)
+        on left: 33 34
+        on right: 38 39 40 41 49
+    setReturner <node> (54)
+        on left: 35 36
+        on right: 34 44
+    typeOP <node> (55)
+        on left: 37
+        on right: 51
+    addOP <node> (56)
+        on left: 38
+        on right: 35
+    remOP <node> (57)
+        on left: 39
+        on right: 36
+    selectOP <node> (58)
+        on left: 40
+        on right: 50
+    forallOP <node> (59)
+        on left: 41
+        on right: 32
+    expression <node> (60)
+        on left: 42 43 44 45 46
+        on right: 27 31 47
+    assignExp <node> (61)
+        on left: 47
+        on right: 30 42
+    simpleExp <node> (62)
+        on left: 48 49 50 51
+        on right: 28 29 30 33 34 43 59 73 76 77
+    constOP <node> (63)
+        on left: 52 53 54
+        on right: 74
+    inOP <node> (64)
+        on left: 55
+        on right: 45
+    outOP <node> (65)
+        on left: 56
+        on right: 46
+    outConst <node> (66)
+        on left: 57 58 59
+        on right: 56
+    binLogicalExp <node> (67)
+        on left: 60 61
+        on right: 48 60
+    unLogicalExp <node> (68)
+        on left: 62 63
+        on right: 60 61 62
+    relationalExp <node> (69)
+        on left: 64 65
+        on right: 63 64
+    sumExp <node> (70)
+        on left: 66 67
+        on right: 64 65 66
+    mulExp <node> (71)
+        on left: 68 69 70
+        on right: 66 67 68
+    factor <node> (72)
+        on left: 71 72 73 74
+        on right: 68 69 70
+    functionCall <node> (73)
+        on left: 75
+        on right: 72
+    callParams <node> (74)
+        on left: 76 77
+        on right: 75 76
+
+
+State 0
+
+    0 $accept: • program $end
+
+    TYPE  shift, and go to state 1
+
+    program             go to state 2
+    declarationList     go to state 3
+    declaration         go to state 4
+    varDeclaration      go to state 5
+    funcDeclaration     go to state 6
+    simpleVDeclaration  go to state 7
+    simpleFDeclaration  go to state 8
+
+
+State 1
+
+   12 simpleVDeclaration: TYPE • ID
+   13 simpleFDeclaration: TYPE • ID
+
+    ID  shift, and go to state 9
+
+
+State 2
+
+    0 $accept: program • $end
+
+    $end  shift, and go to state 10
+
+
+State 3
+
+    1 program: declarationList •
+    2 declarationList: declarationList • declaration
+
+    TYPE  shift, and go to state 1
+
+    $end  reduce using rule 1 (program)
+
+    declaration         go to state 11
+    varDeclaration      go to state 5
+    funcDeclaration     go to state 6
+    simpleVDeclaration  go to state 7
+    simpleFDeclaration  go to state 8
+
+
+State 4
+
+    3 declarationList: declaration •
+
+    $end  reduce using rule 3 (declarationList)
+    TYPE  reduce using rule 3 (declarationList)
+
+
+State 5
+
+    4 declaration: varDeclaration •
+
+    $end  reduce using rule 4 (declaration)
+    TYPE  reduce using rule 4 (declaration)
+
+
+State 6
+
+    5 declaration: funcDeclaration •
+
+    $end  reduce using rule 5 (declaration)
+    TYPE  reduce using rule 5 (declaration)
+
+
+State 7
+
+    6 varDeclaration: simpleVDeclaration • ';'
+
+    ';'  shift, and go to state 12
+
+
+State 8
+
+    7 funcDeclaration: simpleFDeclaration • '(' params ')' compoundStmt
+    8                | simpleFDeclaration • '(' ')' compoundStmt
+
+    '('  shift, and go to state 13
+
+
+State 9
+
+   12 simpleVDeclaration: TYPE ID •
+   13 simpleFDeclaration: TYPE ID •
+
+    '('  reduce using rule 13 (simpleFDeclaration)
+    ';'  reduce using rule 12 (simpleVDeclaration)
+
+
+State 10
+
+    0 $accept: program $end •
+
+    $default  accept
+
+
+State 11
+
+    2 declarationList: declarationList declaration •
+
+    $end  reduce using rule 2 (declarationList)
+    TYPE  reduce using rule 2 (declarationList)
+
+
+State 12
+
+    6 varDeclaration: simpleVDeclaration ';' •
+
+    $end  reduce using rule 6 (varDeclaration)
+    TYPE  reduce using rule 6 (varDeclaration)
+
+
+State 13
+
+    7 funcDeclaration: simpleFDeclaration '(' • params ')' compoundStmt
+    8                | simpleFDeclaration '(' • ')' compoundStmt
+
+    TYPE  shift, and go to state 14
+    ')'   shift, and go to state 15
+
+    params              go to state 16
+    param               go to state 17
+    simpleVDeclaration  go to state 18
+
+
+State 14
+
+   12 simpleVDeclaration: TYPE • ID
+
+    ID  shift, and go to state 19
+
+
+State 15
+
+    8 funcDeclaration: simpleFDeclaration '(' ')' • compoundStmt
+
+    '{'  shift, and go to state 20
+
+    compoundStmt  go to state 21
+
+
+State 16
+
+    7 funcDeclaration: simpleFDeclaration '(' params • ')' compoundStmt
+    9 params: params • ',' param
+
+    ')'  shift, and go to state 22
+    ','  shift, and go to state 23
+
+
+State 17
+
+   10 params: param •
+
+    ')'  reduce using rule 10 (params)
+    ','  reduce using rule 10 (params)
+
+
+State 18
+
+   11 param: simpleVDeclaration •
+
+    ')'  reduce using rule 11 (param)
+    ','  reduce using rule 11 (param)
+
+
+State 19
+
+   12 simpleVDeclaration: TYPE ID •
+
+    ')'  reduce using rule 12 (simpleVDeclaration)
+    ','  reduce using rule 12 (simpleVDeclaration)
+
+
+State 20
+
+   14 compoundStmt: '{' • localDeclarations stmtList '}'
+   15             | '{' • stmtList '}'
+
+    INT        shift, and go to state 24
+    FLOAT      shift, and go to state 25
+    EMPTY      shift, and go to state 26
+    IF_KW      shift, and go to state 27
+    FOR_KW     shift, and go to state 28
+    FORALL_KW  shift, and go to state 29
+    RETURN_KW  shift, and go to state 30
+    ISSET_KW   shift, and go to state 31
+    ADD_KW     shift, and go to state 32
+    REMOVE_KW  shift, and go to state 33
+    EXISTS_KW  shift, and go to state 34
+    OUT        shift, and go to state 35
+    IN         shift, and go to state 36
+    TYPE       shift, and go to state 147
+    ID         shift, and go to state 37
+    SUM_OP     shift, and go to state 38
+    UN_LOG_OP  shift, and go to state 39
+    '{'        shift, and go to state 148
+    '('        shift, and go to state 40
+
+    varDeclaration      go to state 41
+    simpleVDeclaration  go to state 149
+    compoundStmt        go to state 42
+    localDeclarations   go to state 43
+    stmtList            go to state 44
+    primitiveStmt       go to state 45
+    exprStmt            go to state 46
+    condStmt            go to state 47
+    iterStmt            go to state 48
+    returnStmt          go to state 49
+    setStmt             go to state 50
+    pertOP              go to state 51
+    setReturner         go to state 52
+    typeOP              go to state 53
+    addOP               go to state 54
+    remOP               go to state 55
+    selectOP            go to state 56
+    forallOP            go to state 57
+    expression          go to state 58
+    assignExp           go to state 59
+    simpleExp           go to state 60
+    constOP             go to state 61
+    inOP                go to state 62
+    outOP               go to state 63
+    binLogicalExp       go to state 64
+    unLogicalExp        go to state 65
+    relationalExp       go to state 66
+    sumExp              go to state 67
+    mulExp              go to state 68
+    factor              go to state 69
+    functionCall        go to state 70
+
+
+State 21
+
+    8 funcDeclaration: simpleFDeclaration '(' ')' compoundStmt •
+
+    $end  reduce using rule 8 (funcDeclaration)
+    TYPE  reduce using rule 8 (funcDeclaration)
+
+
+State 22
+
+    7 funcDeclaration: simpleFDeclaration '(' params ')' • compoundStmt
+
+    '{'  shift, and go to state 20
+
+    compoundStmt  go to state 71
+
+
+State 23
+
+    9 params: params ',' • param
+
+    TYPE  shift, and go to state 14
+
+    param               go to state 72
+    simpleVDeclaration  go to state 18
+
+
+State 24
+
+   52 constOP: INT •
+
+    IN_KW       reduce using rule 52 (constOP)
+    SUM_OP      reduce using rule 52 (constOP)
+    MUL_OP      reduce using rule 52 (constOP)
+    BIN_LOG_OP  reduce using rule 52 (constOP)
+    REL_OP      reduce using rule 52 (constOP)
+    ';'         reduce using rule 52 (constOP)
+
+
+State 25
+
+   53 constOP: FLOAT •
+
+    IN_KW       reduce using rule 53 (constOP)
+    SUM_OP      reduce using rule 53 (constOP)
+    MUL_OP      reduce using rule 53 (constOP)
+    BIN_LOG_OP  reduce using rule 53 (constOP)
+    REL_OP      reduce using rule 53 (constOP)
+    ';'         reduce using rule 53 (constOP)
+
+
+State 26
+
+   54 constOP: EMPTY •
+
+    IN_KW       reduce using rule 54 (constOP)
+    SUM_OP      reduce using rule 54 (constOP)
+    MUL_OP      reduce using rule 54 (constOP)
+    BIN_LOG_OP  reduce using rule 54 (constOP)
+    REL_OP      reduce using rule 54 (constOP)
+    ';'         reduce using rule 54 (constOP)
+
+
+State 27
+
+   28 condStmt: IF_KW • '(' simpleExp ')' compoundStmt
+   29         | IF_KW • '(' simpleExp ')' compoundStmt ELSE_KW compoundStmt
+
+    '('  shift, and go to state 73
+
+
+State 28
+
+   30 iterStmt: FOR_KW • '(' assignExp ';' simpleExp ';' assignExp ')' compoundStmt
+
+    '('  shift, and go to state 74
+
+
+State 29
+
+   41 forallOP: FORALL_KW • '(' pertOP ')' compoundStmt
+
+    '('  shift, and go to state 75
+
+
+State 30
+
+   31 returnStmt: RETURN_KW • expression ';'
+
+    INT        shift, and go to state 24
+    FLOAT      shift, and go to state 25
+    EMPTY      shift, and go to state 26
+    ISSET_KW   shift, and go to state 31
+    ADD_KW     shift, and go to state 32
+    REMOVE_KW  shift, and go to state 33
+    EXISTS_KW  shift, and go to state 34
+    OUT        shift, and go to state 35
+    IN         shift, and go to state 36
+    ID         shift, and go to state 37
+    SUM_OP     shift, and go to state 38
+    UN_LOG_OP  shift, and go to state 39
+    '('        shift, and go to state 40
+
+    pertOP         go to state 51
+    setReturner    go to state 52
+    typeOP         go to state 53
+    addOP          go to state 54
+    remOP          go to state 55
+    selectOP       go to state 56
+    expression     go to state 76
+    assignExp      go to state 59
+    simpleExp      go to state 60
+    constOP        go to state 61
+    inOP           go to state 62
+    outOP          go to state 63
+    binLogicalExp  go to state 64
+    unLogicalExp   go to state 65
+    relationalExp  go to state 66
+    sumExp         go to state 67
+    mulExp         go to state 68
+    factor         go to state 69
+    functionCall   go to state 70
+
+
+State 31
+
+   37 typeOP: ISSET_KW • '(' ID ')'
+
+    '('  shift, and go to state 77
+
+
+State 32
+
+   38 addOP: ADD_KW • '(' pertOP ')'
+
+    '('  shift, and go to state 78
+
+
+State 33
+
+   39 remOP: REMOVE_KW • '(' pertOP ')'
+
+    '('  shift, and go to state 79
+
+
+State 34
+
+   40 selectOP: EXISTS_KW • '(' pertOP ')'
+
+    '('  shift, and go to state 80
+
+
+State 35
+
+   56 outOP: OUT • '(' outConst ')'
+
+    '('  shift, and go to state 81
+
+
+State 36
+
+   55 inOP: IN • '(' ID ')'
+
+    '('  shift, and go to state 82
+
+
+State 37
+
+   47 assignExp: ID • ASS_OP expression
+   71 factor: ID •
+   75 functionCall: ID • '(' callParams ')'
+
+    ASS_OP  shift, and go to state 83
+    '('     shift, and go to state 84
+
+    IN_KW       reduce using rule 71 (factor)
+    SUM_OP      reduce using rule 71 (factor)
+    MUL_OP      reduce using rule 71 (factor)
+    BIN_LOG_OP  reduce using rule 71 (factor)
+    REL_OP      reduce using rule 71 (factor)
+    ';'         reduce using rule 71 (factor)
+
+
+State 38
+
+   70 mulExp: SUM_OP • factor
+
+    INT    shift, and go to state 24
+    FLOAT  shift, and go to state 25
+    EMPTY  shift, and go to state 26
+    ID     shift, and go to state 85
+    '('    shift, and go to state 40
+
+    constOP       go to state 61
+    factor        go to state 86
+    functionCall  go to state 70
+
+
+State 39
+
+   62 unLogicalExp: UN_LOG_OP • unLogicalExp
+
+    INT        shift, and go to state 24
+    FLOAT      shift, and go to state 25
+    EMPTY      shift, and go to state 26
+    ID         shift, and go to state 85
+    SUM_OP     shift, and go to state 38
+    UN_LOG_OP  shift, and go to state 39
+    '('        shift, and go to state 40
+
+    constOP        go to state 61
+    unLogicalExp   go to state 87
+    relationalExp  go to state 66
+    sumExp         go to state 67
+    mulExp         go to state 68
+    factor         go to state 69
+    functionCall   go to state 70
+
+
+State 40
+
+   73 factor: '(' • simpleExp ')'
+
+    INT        shift, and go to state 150
+    FLOAT      shift, and go to state 151
+    EMPTY      shift, and go to state 152
+    ISSET_KW   shift, and go to state 153
+    EXISTS_KW  shift, and go to state 154
+    ID         shift, and go to state 155
+    SUM_OP     shift, and go to state 156
+    UN_LOG_OP  shift, and go to state 157
+    '('        shift, and go to state 158
+
+    pertOP         go to state 159
+    typeOP         go to state 160
+    selectOP       go to state 161
+    simpleExp      go to state 88
+    constOP        go to state 162
+    binLogicalExp  go to state 163
+    unLogicalExp   go to state 164
+    relationalExp  go to state 165
+    sumExp         go to state 166
+    mulExp         go to state 167
+    factor         go to state 168
+    functionCall   go to state 169
+
+
+State 41
+
+   18 localDeclarations: varDeclaration •
+
+    error      reduce using rule 18 (localDeclarations)
+    INT        reduce using rule 18 (localDeclarations)
+    FLOAT      reduce using rule 18 (localDeclarations)
+    EMPTY      reduce using rule 18 (localDeclarations)
+    IF_KW      reduce using rule 18 (localDeclarations)
+    FOR_KW     reduce using rule 18 (localDeclarations)
+    FORALL_KW  reduce using rule 18 (localDeclarations)
+    RETURN_KW  reduce using rule 18 (localDeclarations)
+    ISSET_KW   reduce using rule 18 (localDeclarations)
+    ADD_KW     reduce using rule 18 (localDeclarations)
+    REMOVE_KW  reduce using rule 18 (localDeclarations)
+    EXISTS_KW  reduce using rule 18 (localDeclarations)
+    OUT        reduce using rule 18 (localDeclarations)
+    IN         reduce using rule 18 (localDeclarations)
+    TYPE       reduce using rule 18 (localDeclarations)
+    ID         reduce using rule 18 (localDeclarations)
+    SUM_OP     reduce using rule 18 (localDeclarations)
+    UN_LOG_OP  reduce using rule 18 (localDeclarations)
+    '{'        reduce using rule 18 (localDeclarations)
+    '('        reduce using rule 18 (localDeclarations)
+
+
+State 42
+
+   22 primitiveStmt: compoundStmt •
+
+    INT        reduce using rule 22 (primitiveStmt)
+    FLOAT      reduce using rule 22 (primitiveStmt)
+    EMPTY      reduce using rule 22 (primitiveStmt)
+    IF_KW      reduce using rule 22 (primitiveStmt)
+    FOR_KW     reduce using rule 22 (primitiveStmt)
+    FORALL_KW  reduce using rule 22 (primitiveStmt)
+    RETURN_KW  reduce using rule 22 (primitiveStmt)
+    ISSET_KW   reduce using rule 22 (primitiveStmt)
+    ADD_KW     reduce using rule 22 (primitiveStmt)
+    REMOVE_KW  reduce using rule 22 (primitiveStmt)
+    EXISTS_KW  reduce using rule 22 (primitiveStmt)
+    OUT        reduce using rule 22 (primitiveStmt)
+    IN         reduce using rule 22 (primitiveStmt)
+    ID         reduce using rule 22 (primitiveStmt)
+    SUM_OP     reduce using rule 22 (primitiveStmt)
+    UN_LOG_OP  reduce using rule 22 (primitiveStmt)
+    '{'        reduce using rule 22 (primitiveStmt)
+    '}'        reduce using rule 22 (primitiveStmt)
+    '('        reduce using rule 22 (primitiveStmt)
+
+
+State 43
+
+   14 compoundStmt: '{' localDeclarations • stmtList '}'
+   16 localDeclarations: localDeclarations • varDeclaration
+   17                  | localDeclarations • error
+
+    error      shift, and go to state 89
+    INT        shift, and go to state 24
+    FLOAT      shift, and go to state 25
+    EMPTY      shift, and go to state 26
+    IF_KW      shift, and go to state 27
+    FOR_KW     shift, and go to state 28
+    FORALL_KW  shift, and go to state 29
+    RETURN_KW  shift, and go to state 30
+    ISSET_KW   shift, and go to state 31
+    ADD_KW     shift, and go to state 32
+    REMOVE_KW  shift, and go to state 33
+    EXISTS_KW  shift, and go to state 34
+    OUT        shift, and go to state 35
+    IN         shift, and go to state 36
+    TYPE       shift, and go to state 147
+    ID         shift, and go to state 37
+    SUM_OP     shift, and go to state 38
+    UN_LOG_OP  shift, and go to state 39
+    '{'        shift, and go to state 148
+    '('        shift, and go to state 40
+
+    varDeclaration      go to state 90
+    simpleVDeclaration  go to state 149
+    compoundStmt        go to state 42
+    stmtList            go to state 91
+    primitiveStmt       go to state 45
+    exprStmt            go to state 46
+    condStmt            go to state 47
+    iterStmt            go to state 48
+    returnStmt          go to state 49
+    setStmt             go to state 50
+    pertOP              go to state 51
+    setReturner         go to state 52
+    typeOP              go to state 53
+    addOP               go to state 54
+    remOP               go to state 55
+    selectOP            go to state 56
+    forallOP            go to state 57
+    expression          go to state 58
+    assignExp           go to state 59
+    simpleExp           go to state 60
+    constOP             go to state 61
+    inOP                go to state 62
+    outOP               go to state 63
+    binLogicalExp       go to state 64
+    unLogicalExp        go to state 65
+    relationalExp       go to state 66
+    sumExp              go to state 67
+    mulExp              go to state 68
+    factor              go to state 69
+    functionCall        go to state 70
+
+
+State 44
+
+   15 compoundStmt: '{' stmtList • '}'
+   19 stmtList: stmtList • primitiveStmt
+
+    INT        shift, and go to state 24
+    FLOAT      shift, and go to state 25
+    EMPTY      shift, and go to state 26
+    IF_KW      shift, and go to state 27
+    FOR_KW     shift, and go to state 28
+    FORALL_KW  shift, and go to state 29
+    RETURN_KW  shift, and go to state 30
+    ISSET_KW   shift, and go to state 31
+    ADD_KW     shift, and go to state 32
+    REMOVE_KW  shift, and go to state 33
+    EXISTS_KW  shift, and go to state 34
+    OUT        shift, and go to state 35
+    IN         shift, and go to state 36
+    ID         shift, and go to state 37
+    SUM_OP     shift, and go to state 38
+    UN_LOG_OP  shift, and go to state 39
+    '{'        shift, and go to state 148
+    '}'        shift, and go to state 92
+    '('        shift, and go to state 40
+
+    compoundStmt   go to state 42
+    primitiveStmt  go to state 93
+    exprStmt       go to state 46
+    condStmt       go to state 47
+    iterStmt       go to state 48
+    returnStmt     go to state 49
+    setStmt        go to state 50
+    pertOP         go to state 51
+    setReturner    go to state 52
+    typeOP         go to state 53
+    addOP          go to state 54
+    remOP          go to state 55
+    selectOP       go to state 56
+    forallOP       go to state 57
+    expression     go to state 58
+    assignExp      go to state 59
+    simpleExp      go to state 60
+    constOP        go to state 61
+    inOP           go to state 62
+    outOP          go to state 63
+    binLogicalExp  go to state 64
+    unLogicalExp   go to state 65
+    relationalExp  go to state 66
+    sumExp         go to state 67
+    mulExp         go to state 68
+    factor         go to state 69
+    functionCall   go to state 70
+
+
+State 45
+
+   20 stmtList: primitiveStmt •
+
+    INT        reduce using rule 20 (stmtList)
+    FLOAT      reduce using rule 20 (stmtList)
+    EMPTY      reduce using rule 20 (stmtList)
+    IF_KW      reduce using rule 20 (stmtList)
+    FOR_KW     reduce using rule 20 (stmtList)
+    FORALL_KW  reduce using rule 20 (stmtList)
+    RETURN_KW  reduce using rule 20 (stmtList)
+    ISSET_KW   reduce using rule 20 (stmtList)
+    ADD_KW     reduce using rule 20 (stmtList)
+    REMOVE_KW  reduce using rule 20 (stmtList)
+    EXISTS_KW  reduce using rule 20 (stmtList)
+    OUT        reduce using rule 20 (stmtList)
+    IN         reduce using rule 20 (stmtList)
+    ID         reduce using rule 20 (stmtList)
+    SUM_OP     reduce using rule 20 (stmtList)
+    UN_LOG_OP  reduce using rule 20 (stmtList)
+    '{'        reduce using rule 20 (stmtList)
+    '}'        reduce using rule 20 (stmtList)
+    '('        reduce using rule 20 (stmtList)
+
+
+State 46
+
+   21 primitiveStmt: exprStmt •
+
+    INT        reduce using rule 21 (primitiveStmt)
+    FLOAT      reduce using rule 21 (primitiveStmt)
+    EMPTY      reduce using rule 21 (primitiveStmt)
+    IF_KW      reduce using rule 21 (primitiveStmt)
+    FOR_KW     reduce using rule 21 (primitiveStmt)
+    FORALL_KW  reduce using rule 21 (primitiveStmt)
+    RETURN_KW  reduce using rule 21 (primitiveStmt)
+    ISSET_KW   reduce using rule 21 (primitiveStmt)
+    ADD_KW     reduce using rule 21 (primitiveStmt)
+    REMOVE_KW  reduce using rule 21 (primitiveStmt)
+    EXISTS_KW  reduce using rule 21 (primitiveStmt)
+    OUT        reduce using rule 21 (primitiveStmt)
+    IN         reduce using rule 21 (primitiveStmt)
+    ID         reduce using rule 21 (primitiveStmt)
+    SUM_OP     reduce using rule 21 (primitiveStmt)
+    UN_LOG_OP  reduce using rule 21 (primitiveStmt)
+    '{'        reduce using rule 21 (primitiveStmt)
+    '}'        reduce using rule 21 (primitiveStmt)
+    '('        reduce using rule 21 (primitiveStmt)
+
+
+State 47
+
+   23 primitiveStmt: condStmt •
+
+    INT        reduce using rule 23 (primitiveStmt)
+    FLOAT      reduce using rule 23 (primitiveStmt)
+    EMPTY      reduce using rule 23 (primitiveStmt)
+    IF_KW      reduce using rule 23 (primitiveStmt)
+    FOR_KW     reduce using rule 23 (primitiveStmt)
+    FORALL_KW  reduce using rule 23 (primitiveStmt)
+    RETURN_KW  reduce using rule 23 (primitiveStmt)
+    ISSET_KW   reduce using rule 23 (primitiveStmt)
+    ADD_KW     reduce using rule 23 (primitiveStmt)
+    REMOVE_KW  reduce using rule 23 (primitiveStmt)
+    EXISTS_KW  reduce using rule 23 (primitiveStmt)
+    OUT        reduce using rule 23 (primitiveStmt)
+    IN         reduce using rule 23 (primitiveStmt)
+    ID         reduce using rule 23 (primitiveStmt)
+    SUM_OP     reduce using rule 23 (primitiveStmt)
+    UN_LOG_OP  reduce using rule 23 (primitiveStmt)
+    '{'        reduce using rule 23 (primitiveStmt)
+    '}'        reduce using rule 23 (primitiveStmt)
+    '('        reduce using rule 23 (primitiveStmt)
+
+
+State 48
+
+   24 primitiveStmt: iterStmt •
+
+    INT        reduce using rule 24 (primitiveStmt)
+    FLOAT      reduce using rule 24 (primitiveStmt)
+    EMPTY      reduce using rule 24 (primitiveStmt)
+    IF_KW      reduce using rule 24 (primitiveStmt)
+    FOR_KW     reduce using rule 24 (primitiveStmt)
+    FORALL_KW  reduce using rule 24 (primitiveStmt)
+    RETURN_KW  reduce using rule 24 (primitiveStmt)
+    ISSET_KW   reduce using rule 24 (primitiveStmt)
+    ADD_KW     reduce using rule 24 (primitiveStmt)
+    REMOVE_KW  reduce using rule 24 (primitiveStmt)
+    EXISTS_KW  reduce using rule 24 (primitiveStmt)
+    OUT        reduce using rule 24 (primitiveStmt)
+    IN         reduce using rule 24 (primitiveStmt)
+    ID         reduce using rule 24 (primitiveStmt)
+    SUM_OP     reduce using rule 24 (primitiveStmt)
+    UN_LOG_OP  reduce using rule 24 (primitiveStmt)
+    '{'        reduce using rule 24 (primitiveStmt)
+    '}'        reduce using rule 24 (primitiveStmt)
+    '('        reduce using rule 24 (primitiveStmt)
+
+
+State 49
+
+   25 primitiveStmt: returnStmt •
+
+    INT        reduce using rule 25 (primitiveStmt)
+    FLOAT      reduce using rule 25 (primitiveStmt)
+    EMPTY      reduce using rule 25 (primitiveStmt)
+    IF_KW      reduce using rule 25 (primitiveStmt)
+    FOR_KW     reduce using rule 25 (primitiveStmt)
+    FORALL_KW  reduce using rule 25 (primitiveStmt)
+    RETURN_KW  reduce using rule 25 (primitiveStmt)
+    ISSET_KW   reduce using rule 25 (primitiveStmt)
+    ADD_KW     reduce using rule 25 (primitiveStmt)
+    REMOVE_KW  reduce using rule 25 (primitiveStmt)
+    EXISTS_KW  reduce using rule 25 (primitiveStmt)
+    OUT        reduce using rule 25 (primitiveStmt)
+    IN         reduce using rule 25 (primitiveStmt)
+    ID         reduce using rule 25 (primitiveStmt)
+    SUM_OP     reduce using rule 25 (primitiveStmt)
+    UN_LOG_OP  reduce using rule 25 (primitiveStmt)
+    '{'        reduce using rule 25 (primitiveStmt)
+    '}'        reduce using rule 25 (primitiveStmt)
+    '('        reduce using rule 25 (primitiveStmt)
+
+
+State 50
+
+   26 primitiveStmt: setStmt •
+
+    INT        reduce using rule 26 (primitiveStmt)
+    FLOAT      reduce using rule 26 (primitiveStmt)
+    EMPTY      reduce using rule 26 (primitiveStmt)
+    IF_KW      reduce using rule 26 (primitiveStmt)
+    FOR_KW     reduce using rule 26 (primitiveStmt)
+    FORALL_KW  reduce using rule 26 (primitiveStmt)
+    RETURN_KW  reduce using rule 26 (primitiveStmt)
+    ISSET_KW   reduce using rule 26 (primitiveStmt)
+    ADD_KW     reduce using rule 26 (primitiveStmt)
+    REMOVE_KW  reduce using rule 26 (primitiveStmt)
+    EXISTS_KW  reduce using rule 26 (primitiveStmt)
+    OUT        reduce using rule 26 (primitiveStmt)
+    IN         reduce using rule 26 (primitiveStmt)
+    ID         reduce using rule 26 (primitiveStmt)
+    SUM_OP     reduce using rule 26 (primitiveStmt)
+    UN_LOG_OP  reduce using rule 26 (primitiveStmt)
+    '{'        reduce using rule 26 (primitiveStmt)
+    '}'        reduce using rule 26 (primitiveStmt)
+    '('        reduce using rule 26 (primitiveStmt)
+
+
+State 51
+
+   49 simpleExp: pertOP •
+
+    IN_KW  reduce using rule 49 (simpleExp)
+    ';'    reduce using rule 49 (simpleExp)
+
+
+State 52
+
+   44 expression: setReturner •
+
+    ';'  reduce using rule 44 (expression)
+
+
+State 53
+
+   51 simpleExp: typeOP •
+
+    IN_KW  reduce using rule 51 (simpleExp)
+    ';'    reduce using rule 51 (simpleExp)
+
+
+State 54
+
+   35 setReturner: addOP •
+
+    ';'  reduce using rule 35 (setReturner)
+
+
+State 55
+
+   36 setReturner: remOP •
+
+    ';'  reduce using rule 36 (setReturner)
+
+
+State 56
+
+   50 simpleExp: selectOP •
+
+    IN_KW  reduce using rule 50 (simpleExp)
+    ';'    reduce using rule 50 (simpleExp)
+
+
+State 57
+
+   32 setStmt: forallOP •
+
+    INT        reduce using rule 32 (setStmt)
+    FLOAT      reduce using rule 32 (setStmt)
+    EMPTY      reduce using rule 32 (setStmt)
+    IF_KW      reduce using rule 32 (setStmt)
+    FOR_KW     reduce using rule 32 (setStmt)
+    FORALL_KW  reduce using rule 32 (setStmt)
+    RETURN_KW  reduce using rule 32 (setStmt)
+    ISSET_KW   reduce using rule 32 (setStmt)
+    ADD_KW     reduce using rule 32 (setStmt)
+    REMOVE_KW  reduce using rule 32 (setStmt)
+    EXISTS_KW  reduce using rule 32 (setStmt)
+    OUT        reduce using rule 32 (setStmt)
+    IN         reduce using rule 32 (setStmt)
+    ID         reduce using rule 32 (setStmt)
+    SUM_OP     reduce using rule 32 (setStmt)
+    UN_LOG_OP  reduce using rule 32 (setStmt)
+    '{'        reduce using rule 32 (setStmt)
+    '}'        reduce using rule 32 (setStmt)
+    '('        reduce using rule 32 (setStmt)
+
+
+State 58
+
+   27 exprStmt: expression • ';'
+
+    ';'  shift, and go to state 94
+
+
+State 59
+
+   42 expression: assignExp •
+
+    ';'  reduce using rule 42 (expression)
+
+
+State 60
+
+   33 pertOP: simpleExp • IN_KW ID
+   34       | simpleExp • IN_KW setReturner
+   43 expression: simpleExp •
+
+    IN_KW  shift, and go to state 95
+
+    ';'  reduce using rule 43 (expression)
+
+
+State 61
+
+   74 factor: constOP •
+
+    IN_KW       reduce using rule 74 (factor)
+    SUM_OP      reduce using rule 74 (factor)
+    MUL_OP      reduce using rule 74 (factor)
+    BIN_LOG_OP  reduce using rule 74 (factor)
+    REL_OP      reduce using rule 74 (factor)
+    ';'         reduce using rule 74 (factor)
+
+
+State 62
+
+   45 expression: inOP •
+
+    ';'  reduce using rule 45 (expression)
+
+
+State 63
+
+   46 expression: outOP •
+
+    ';'  reduce using rule 46 (expression)
+
+
+State 64
+
+   48 simpleExp: binLogicalExp •
+   60 binLogicalExp: binLogicalExp • BIN_LOG_OP unLogicalExp
+
+    BIN_LOG_OP  shift, and go to state 96
+
+    IN_KW  reduce using rule 48 (simpleExp)
+    ';'    reduce using rule 48 (simpleExp)
+
+
+State 65
+
+   61 binLogicalExp: unLogicalExp •
+
+    IN_KW       reduce using rule 61 (binLogicalExp)
+    BIN_LOG_OP  reduce using rule 61 (binLogicalExp)
+    ';'         reduce using rule 61 (binLogicalExp)
+
+
+State 66
+
+   63 unLogicalExp: relationalExp •
+   64 relationalExp: relationalExp • REL_OP sumExp
+
+    REL_OP  shift, and go to state 97
+
+    IN_KW       reduce using rule 63 (unLogicalExp)
+    BIN_LOG_OP  reduce using rule 63 (unLogicalExp)
+    ';'         reduce using rule 63 (unLogicalExp)
+
+
+State 67
+
+   65 relationalExp: sumExp •
+   66 sumExp: sumExp • SUM_OP mulExp
+
+    SUM_OP  shift, and go to state 98
+
+    IN_KW       reduce using rule 65 (relationalExp)
+    BIN_LOG_OP  reduce using rule 65 (relationalExp)
+    REL_OP      reduce using rule 65 (relationalExp)
+    ';'         reduce using rule 65 (relationalExp)
+
+
+State 68
+
+   67 sumExp: mulExp •
+   68 mulExp: mulExp • MUL_OP factor
+
+    MUL_OP  shift, and go to state 99
+
+    IN_KW       reduce using rule 67 (sumExp)
+    SUM_OP      reduce using rule 67 (sumExp)
+    BIN_LOG_OP  reduce using rule 67 (sumExp)
+    REL_OP      reduce using rule 67 (sumExp)
+    ';'         reduce using rule 67 (sumExp)
+
+
+State 69
+
+   69 mulExp: factor •
+
+    IN_KW       reduce using rule 69 (mulExp)
+    SUM_OP      reduce using rule 69 (mulExp)
+    MUL_OP      reduce using rule 69 (mulExp)
+    BIN_LOG_OP  reduce using rule 69 (mulExp)
+    REL_OP      reduce using rule 69 (mulExp)
+    ';'         reduce using rule 69 (mulExp)
+
+
+State 70
+
+   72 factor: functionCall •
+
+    IN_KW       reduce using rule 72 (factor)
+    SUM_OP      reduce using rule 72 (factor)
+    MUL_OP      reduce using rule 72 (factor)
+    BIN_LOG_OP  reduce using rule 72 (factor)
+    REL_OP      reduce using rule 72 (factor)
+    ';'         reduce using rule 72 (factor)
+
+
+State 71
+
+    7 funcDeclaration: simpleFDeclaration '(' params ')' compoundStmt •
+
+    $end  reduce using rule 7 (funcDeclaration)
+    TYPE  reduce using rule 7 (funcDeclaration)
+
+
+State 72
+
+    9 params: params ',' param •
+
+    ')'  reduce using rule 9 (params)
+    ','  reduce using rule 9 (params)
+
+
+State 73
+
+   28 condStmt: IF_KW '(' • simpleExp ')' compoundStmt
+   29         | IF_KW '(' • simpleExp ')' compoundStmt ELSE_KW compoundStmt
+
+    INT        shift, and go to state 150
+    FLOAT      shift, and go to state 151
+    EMPTY      shift, and go to state 152
+    ISSET_KW   shift, and go to state 153
+    EXISTS_KW  shift, and go to state 154
+    ID         shift, and go to state 155
+    SUM_OP     shift, and go to state 156
+    UN_LOG_OP  shift, and go to state 157
+    '('        shift, and go to state 158
+
+    pertOP         go to state 159
+    typeOP         go to state 160
+    selectOP       go to state 161
+    simpleExp      go to state 100
+    constOP        go to state 162
+    binLogicalExp  go to state 163
+    unLogicalExp   go to state 164
+    relationalExp  go to state 165
+    sumExp         go to state 166
+    mulExp         go to state 167
+    factor         go to state 168
+    functionCall   go to state 169
+
+
+State 74
+
+   30 iterStmt: FOR_KW '(' • assignExp ';' simpleExp ';' assignExp ')' compoundStmt
+
+    ID  shift, and go to state 101
+
+    assignExp  go to state 102
+
+
+State 75
+
+   41 forallOP: FORALL_KW '(' • pertOP ')' compoundStmt
+
+    INT        shift, and go to state 170
+    FLOAT      shift, and go to state 171
+    EMPTY      shift, and go to state 172
+    ISSET_KW   shift, and go to state 173
+    EXISTS_KW  shift, and go to state 174
+    ID         shift, and go to state 175
+    SUM_OP     shift, and go to state 176
+    UN_LOG_OP  shift, and go to state 177
+    '('        shift, and go to state 178
+
+    pertOP         go to state 103
+    typeOP         go to state 179
+    selectOP       go to state 180
+    simpleExp      go to state 104
+    constOP        go to state 181
+    binLogicalExp  go to state 182
+    unLogicalExp   go to state 183
+    relationalExp  go to state 184
+    sumExp         go to state 185
+    mulExp         go to state 186
+    factor         go to state 187
+    functionCall   go to state 188
+
+
+State 76
+
+   31 returnStmt: RETURN_KW expression • ';'
+
+    ';'  shift, and go to state 105
+
+
+State 77
+
+   37 typeOP: ISSET_KW '(' • ID ')'
+
+    ID  shift, and go to state 106
+
+
+State 78
+
+   38 addOP: ADD_KW '(' • pertOP ')'
+
+    INT        shift, and go to state 170
+    FLOAT      shift, and go to state 171
+    EMPTY      shift, and go to state 172
+    ISSET_KW   shift, and go to state 173
+    EXISTS_KW  shift, and go to state 174
+    ID         shift, and go to state 175
+    SUM_OP     shift, and go to state 176
+    UN_LOG_OP  shift, and go to state 177
+    '('        shift, and go to state 178
+
+    pertOP         go to state 107
+    typeOP         go to state 179
+    selectOP       go to state 180
+    simpleExp      go to state 104
+    constOP        go to state 181
+    binLogicalExp  go to state 182
+    unLogicalExp   go to state 183
+    relationalExp  go to state 184
+    sumExp         go to state 185
+    mulExp         go to state 186
+    factor         go to state 187
+    functionCall   go to state 188
+
+
+State 79
+
+   39 remOP: REMOVE_KW '(' • pertOP ')'
+
+    INT        shift, and go to state 170
+    FLOAT      shift, and go to state 171
+    EMPTY      shift, and go to state 172
+    ISSET_KW   shift, and go to state 173
+    EXISTS_KW  shift, and go to state 174
+    ID         shift, and go to state 175
+    SUM_OP     shift, and go to state 176
+    UN_LOG_OP  shift, and go to state 177
+    '('        shift, and go to state 178
+
+    pertOP         go to state 108
+    typeOP         go to state 179
+    selectOP       go to state 180
+    simpleExp      go to state 104
+    constOP        go to state 181
+    binLogicalExp  go to state 182
+    unLogicalExp   go to state 183
+    relationalExp  go to state 184
+    sumExp         go to state 185
+    mulExp         go to state 186
+    factor         go to state 187
+    functionCall   go to state 188
+
+
+State 80
+
+   40 selectOP: EXISTS_KW '(' • pertOP ')'
+
+    INT        shift, and go to state 170
+    FLOAT      shift, and go to state 171
+    EMPTY      shift, and go to state 172
+    ISSET_KW   shift, and go to state 173
+    EXISTS_KW  shift, and go to state 174
+    ID         shift, and go to state 175
+    SUM_OP     shift, and go to state 176
+    UN_LOG_OP  shift, and go to state 177
+    '('        shift, and go to state 178
+
+    pertOP         go to state 109
+    typeOP         go to state 179
+    selectOP       go to state 180
+    simpleExp      go to state 104
+    constOP        go to state 181
+    binLogicalExp  go to state 182
+    unLogicalExp   go to state 183
+    relationalExp  go to state 184
+    sumExp         go to state 185
+    mulExp         go to state 186
+    factor         go to state 187
+    functionCall   go to state 188
+
+
+State 81
+
+   56 outOP: OUT '(' • outConst ')'
+
+    INT        shift, and go to state 150
+    FLOAT      shift, and go to state 151
+    EMPTY      shift, and go to state 152
+    ISSET_KW   shift, and go to state 153
+    EXISTS_KW  shift, and go to state 154
+    ID         shift, and go to state 155
+    SUM_OP     shift, and go to state 156
+    UN_LOG_OP  shift, and go to state 157
+    STRING     shift, and go to state 110
+    CHAR       shift, and go to state 111
+    '('        shift, and go to state 158
+
+    pertOP         go to state 159
+    typeOP         go to state 160
+    selectOP       go to state 161
+    simpleExp      go to state 112
+    constOP        go to state 162
+    outConst       go to state 113
+    binLogicalExp  go to state 163
+    unLogicalExp   go to state 164
+    relationalExp  go to state 165
+    sumExp         go to state 166
+    mulExp         go to state 167
+    factor         go to state 168
+    functionCall   go to state 169
+
+
+State 82
+
+   55 inOP: IN '(' • ID ')'
+
+    ID  shift, and go to state 114
+
+
+State 83
+
+   47 assignExp: ID ASS_OP • expression
+
+    INT        shift, and go to state 24
+    FLOAT      shift, and go to state 25
+    EMPTY      shift, and go to state 26
+    ISSET_KW   shift, and go to state 31
+    ADD_KW     shift, and go to state 32
+    REMOVE_KW  shift, and go to state 33
+    EXISTS_KW  shift, and go to state 34
+    OUT        shift, and go to state 35
+    IN         shift, and go to state 36
+    ID         shift, and go to state 37
+    SUM_OP     shift, and go to state 38
+    UN_LOG_OP  shift, and go to state 39
+    '('        shift, and go to state 40
+
+    pertOP         go to state 51
+    setReturner    go to state 52
+    typeOP         go to state 53
+    addOP          go to state 54
+    remOP          go to state 55
+    selectOP       go to state 56
+    expression     go to state 115
+    assignExp      go to state 59
+    simpleExp      go to state 60
+    constOP        go to state 61
+    inOP           go to state 62
+    outOP          go to state 63
+    binLogicalExp  go to state 64
+    unLogicalExp   go to state 65
+    relationalExp  go to state 66
+    sumExp         go to state 67
+    mulExp         go to state 68
+    factor         go to state 69
+    functionCall   go to state 70
+
+
+State 84
+
+   75 functionCall: ID '(' • callParams ')'
+
+    INT        shift, and go to state 189
+    FLOAT      shift, and go to state 190
+    EMPTY      shift, and go to state 191
+    ISSET_KW   shift, and go to state 192
+    EXISTS_KW  shift, and go to state 193
+    ID         shift, and go to state 194
+    SUM_OP     shift, and go to state 195
+    UN_LOG_OP  shift, and go to state 196
+    '('        shift, and go to state 197
+
+    pertOP         go to state 198
+    typeOP         go to state 199
+    selectOP       go to state 200
+    simpleExp      go to state 116
+    constOP        go to state 201
+    binLogicalExp  go to state 202
+    unLogicalExp   go to state 203
+    relationalExp  go to state 204
+    sumExp         go to state 205
+    mulExp         go to state 206
+    factor         go to state 207
+    functionCall   go to state 208
+    callParams     go to state 117
+
+
+State 85
+
+   71 factor: ID •
+   75 functionCall: ID • '(' callParams ')'
+
+    '('  shift, and go to state 84
+
+    IN_KW       reduce using rule 71 (factor)
+    SUM_OP      reduce using rule 71 (factor)
+    MUL_OP      reduce using rule 71 (factor)
+    BIN_LOG_OP  reduce using rule 71 (factor)
+    REL_OP      reduce using rule 71 (factor)
+    ';'         reduce using rule 71 (factor)
+
+
+State 86
+
+   70 mulExp: SUM_OP factor •
+
+    IN_KW       reduce using rule 70 (mulExp)
+    SUM_OP      reduce using rule 70 (mulExp)
+    MUL_OP      reduce using rule 70 (mulExp)
+    BIN_LOG_OP  reduce using rule 70 (mulExp)
+    REL_OP      reduce using rule 70 (mulExp)
+    ';'         reduce using rule 70 (mulExp)
+
+
+State 87
+
+   62 unLogicalExp: UN_LOG_OP unLogicalExp •
+
+    IN_KW       reduce using rule 62 (unLogicalExp)
+    BIN_LOG_OP  reduce using rule 62 (unLogicalExp)
+    ';'         reduce using rule 62 (unLogicalExp)
+
+
+State 88
+
+   33 pertOP: simpleExp • IN_KW ID
+   34       | simpleExp • IN_KW setReturner
+   73 factor: '(' simpleExp • ')'
+
+    IN_KW  shift, and go to state 209
+    ')'    shift, and go to state 118
+
+
+State 89
+
+   17 localDeclarations: localDeclarations error •
+
+    error      reduce using rule 17 (localDeclarations)
+    INT        reduce using rule 17 (localDeclarations)
+    FLOAT      reduce using rule 17 (localDeclarations)
+    EMPTY      reduce using rule 17 (localDeclarations)
+    IF_KW      reduce using rule 17 (localDeclarations)
+    FOR_KW     reduce using rule 17 (localDeclarations)
+    FORALL_KW  reduce using rule 17 (localDeclarations)
+    RETURN_KW  reduce using rule 17 (localDeclarations)
+    ISSET_KW   reduce using rule 17 (localDeclarations)
+    ADD_KW     reduce using rule 17 (localDeclarations)
+    REMOVE_KW  reduce using rule 17 (localDeclarations)
+    EXISTS_KW  reduce using rule 17 (localDeclarations)
+    OUT        reduce using rule 17 (localDeclarations)
+    IN         reduce using rule 17 (localDeclarations)
+    TYPE       reduce using rule 17 (localDeclarations)
+    ID         reduce using rule 17 (localDeclarations)
+    SUM_OP     reduce using rule 17 (localDeclarations)
+    UN_LOG_OP  reduce using rule 17 (localDeclarations)
+    '{'        reduce using rule 17 (localDeclarations)
+    '('        reduce using rule 17 (localDeclarations)
+
+
+State 90
+
+   16 localDeclarations: localDeclarations varDeclaration •
+
+    error      reduce using rule 16 (localDeclarations)
+    INT        reduce using rule 16 (localDeclarations)
+    FLOAT      reduce using rule 16 (localDeclarations)
+    EMPTY      reduce using rule 16 (localDeclarations)
+    IF_KW      reduce using rule 16 (localDeclarations)
+    FOR_KW     reduce using rule 16 (localDeclarations)
+    FORALL_KW  reduce using rule 16 (localDeclarations)
+    RETURN_KW  reduce using rule 16 (localDeclarations)
+    ISSET_KW   reduce using rule 16 (localDeclarations)
+    ADD_KW     reduce using rule 16 (localDeclarations)
+    REMOVE_KW  reduce using rule 16 (localDeclarations)
+    EXISTS_KW  reduce using rule 16 (localDeclarations)
+    OUT        reduce using rule 16 (localDeclarations)
+    IN         reduce using rule 16 (localDeclarations)
+    TYPE       reduce using rule 16 (localDeclarations)
+    ID         reduce using rule 16 (localDeclarations)
+    SUM_OP     reduce using rule 16 (localDeclarations)
+    UN_LOG_OP  reduce using rule 16 (localDeclarations)
+    '{'        reduce using rule 16 (localDeclarations)
+    '('        reduce using rule 16 (localDeclarations)
+
+
+State 91
+
+   14 compoundStmt: '{' localDeclarations stmtList • '}'
+   19 stmtList: stmtList • primitiveStmt
+
+    INT        shift, and go to state 24
+    FLOAT      shift, and go to state 25
+    EMPTY      shift, and go to state 26
+    IF_KW      shift, and go to state 27
+    FOR_KW     shift, and go to state 28
+    FORALL_KW  shift, and go to state 29
+    RETURN_KW  shift, and go to state 30
+    ISSET_KW   shift, and go to state 31
+    ADD_KW     shift, and go to state 32
+    REMOVE_KW  shift, and go to state 33
+    EXISTS_KW  shift, and go to state 34
+    OUT        shift, and go to state 35
+    IN         shift, and go to state 36
+    ID         shift, and go to state 37
+    SUM_OP     shift, and go to state 38
+    UN_LOG_OP  shift, and go to state 39
+    '{'        shift, and go to state 148
+    '}'        shift, and go to state 119
+    '('        shift, and go to state 40
+
+    compoundStmt   go to state 42
+    primitiveStmt  go to state 93
+    exprStmt       go to state 46
+    condStmt       go to state 47
+    iterStmt       go to state 48
+    returnStmt     go to state 49
+    setStmt        go to state 50
+    pertOP         go to state 51
+    setReturner    go to state 52
+    typeOP         go to state 53
+    addOP          go to state 54
+    remOP          go to state 55
+    selectOP       go to state 56
+    forallOP       go to state 57
+    expression     go to state 58
+    assignExp      go to state 59
+    simpleExp      go to state 60
+    constOP        go to state 61
+    inOP           go to state 62
+    outOP          go to state 63
+    binLogicalExp  go to state 64
+    unLogicalExp   go to state 65
+    relationalExp  go to state 66
+    sumExp         go to state 67
+    mulExp         go to state 68
+    factor         go to state 69
+    functionCall   go to state 70
+
+
+State 92
+
+   15 compoundStmt: '{' stmtList '}' •
+
+    $end  reduce using rule 15 (compoundStmt)
+    TYPE  reduce using rule 15 (compoundStmt)
+
+
+State 93
+
+   19 stmtList: stmtList primitiveStmt •
+
+    INT        reduce using rule 19 (stmtList)
+    FLOAT      reduce using rule 19 (stmtList)
+    EMPTY      reduce using rule 19 (stmtList)
+    IF_KW      reduce using rule 19 (stmtList)
+    FOR_KW     reduce using rule 19 (stmtList)
+    FORALL_KW  reduce using rule 19 (stmtList)
+    RETURN_KW  reduce using rule 19 (stmtList)
+    ISSET_KW   reduce using rule 19 (stmtList)
+    ADD_KW     reduce using rule 19 (stmtList)
+    REMOVE_KW  reduce using rule 19 (stmtList)
+    EXISTS_KW  reduce using rule 19 (stmtList)
+    OUT        reduce using rule 19 (stmtList)
+    IN         reduce using rule 19 (stmtList)
+    ID         reduce using rule 19 (stmtList)
+    SUM_OP     reduce using rule 19 (stmtList)
+    UN_LOG_OP  reduce using rule 19 (stmtList)
+    '{'        reduce using rule 19 (stmtList)
+    '}'        reduce using rule 19 (stmtList)
+    '('        reduce using rule 19 (stmtList)
+
+
+State 94
+
+   27 exprStmt: expression ';' •
+
+    INT        reduce using rule 27 (exprStmt)
+    FLOAT      reduce using rule 27 (exprStmt)
+    EMPTY      reduce using rule 27 (exprStmt)
+    IF_KW      reduce using rule 27 (exprStmt)
+    FOR_KW     reduce using rule 27 (exprStmt)
+    FORALL_KW  reduce using rule 27 (exprStmt)
+    RETURN_KW  reduce using rule 27 (exprStmt)
+    ISSET_KW   reduce using rule 27 (exprStmt)
+    ADD_KW     reduce using rule 27 (exprStmt)
+    REMOVE_KW  reduce using rule 27 (exprStmt)
+    EXISTS_KW  reduce using rule 27 (exprStmt)
+    OUT        reduce using rule 27 (exprStmt)
+    IN         reduce using rule 27 (exprStmt)
+    ID         reduce using rule 27 (exprStmt)
+    SUM_OP     reduce using rule 27 (exprStmt)
+    UN_LOG_OP  reduce using rule 27 (exprStmt)
+    '{'        reduce using rule 27 (exprStmt)
+    '}'        reduce using rule 27 (exprStmt)
+    '('        reduce using rule 27 (exprStmt)
+
+
+State 95
+
+   33 pertOP: simpleExp IN_KW • ID
+   34       | simpleExp IN_KW • setReturner
+
+    ADD_KW     shift, and go to state 210
+    REMOVE_KW  shift, and go to state 211
+    ID         shift, and go to state 120
+
+    setReturner  go to state 121
+    addOP        go to state 212
+    remOP        go to state 213
+
+
+State 96
+
+   60 binLogicalExp: binLogicalExp BIN_LOG_OP • unLogicalExp
+
+    INT        shift, and go to state 24
+    FLOAT      shift, and go to state 25
+    EMPTY      shift, and go to state 26
+    ID         shift, and go to state 85
+    SUM_OP     shift, and go to state 38
+    UN_LOG_OP  shift, and go to state 39
+    '('        shift, and go to state 40
+
+    constOP        go to state 61
+    unLogicalExp   go to state 122
+    relationalExp  go to state 66
+    sumExp         go to state 67
+    mulExp         go to state 68
+    factor         go to state 69
+    functionCall   go to state 70
+
+
+State 97
+
+   64 relationalExp: relationalExp REL_OP • sumExp
+
+    INT     shift, and go to state 24
+    FLOAT   shift, and go to state 25
+    EMPTY   shift, and go to state 26
+    ID      shift, and go to state 85
+    SUM_OP  shift, and go to state 38
+    '('     shift, and go to state 40
+
+    constOP       go to state 61
+    sumExp        go to state 123
+    mulExp        go to state 68
+    factor        go to state 69
+    functionCall  go to state 70
+
+
+State 98
+
+   66 sumExp: sumExp SUM_OP • mulExp
+
+    INT     shift, and go to state 24
+    FLOAT   shift, and go to state 25
+    EMPTY   shift, and go to state 26
+    ID      shift, and go to state 85
+    SUM_OP  shift, and go to state 38
+    '('     shift, and go to state 40
+
+    constOP       go to state 61
+    mulExp        go to state 124
+    factor        go to state 69
+    functionCall  go to state 70
+
+
+State 99
+
+   68 mulExp: mulExp MUL_OP • factor
+
+    INT    shift, and go to state 24
+    FLOAT  shift, and go to state 25
+    EMPTY  shift, and go to state 26
+    ID     shift, and go to state 85
+    '('    shift, and go to state 40
+
+    constOP       go to state 61
+    factor        go to state 125
+    functionCall  go to state 70
+
+
+State 100
+
+   28 condStmt: IF_KW '(' simpleExp • ')' compoundStmt
+   29         | IF_KW '(' simpleExp • ')' compoundStmt ELSE_KW compoundStmt
+   33 pertOP: simpleExp • IN_KW ID
+   34       | simpleExp • IN_KW setReturner
+
+    IN_KW  shift, and go to state 209
+    ')'    shift, and go to state 126
+
+
+State 101
+
+   47 assignExp: ID • ASS_OP expression
+
+    ASS_OP  shift, and go to state 83
+
+
+State 102
+
+   30 iterStmt: FOR_KW '(' assignExp • ';' simpleExp ';' assignExp ')' compoundStmt
+
+    ';'  shift, and go to state 127
+
+
+State 103
+
+   41 forallOP: FORALL_KW '(' pertOP • ')' compoundStmt
+   49 simpleExp: pertOP •
+
+    ')'  shift, and go to state 128
+
+    IN_KW  reduce using rule 49 (simpleExp)
+
+
+State 104
+
+   33 pertOP: simpleExp • IN_KW ID
+   34       | simpleExp • IN_KW setReturner
+
+    IN_KW  shift, and go to state 209
+
+
+State 105
+
+   31 returnStmt: RETURN_KW expression ';' •
+
+    INT        reduce using rule 31 (returnStmt)
+    FLOAT      reduce using rule 31 (returnStmt)
+    EMPTY      reduce using rule 31 (returnStmt)
+    IF_KW      reduce using rule 31 (returnStmt)
+    FOR_KW     reduce using rule 31 (returnStmt)
+    FORALL_KW  reduce using rule 31 (returnStmt)
+    RETURN_KW  reduce using rule 31 (returnStmt)
+    ISSET_KW   reduce using rule 31 (returnStmt)
+    ADD_KW     reduce using rule 31 (returnStmt)
+    REMOVE_KW  reduce using rule 31 (returnStmt)
+    EXISTS_KW  reduce using rule 31 (returnStmt)
+    OUT        reduce using rule 31 (returnStmt)
+    IN         reduce using rule 31 (returnStmt)
+    ID         reduce using rule 31 (returnStmt)
+    SUM_OP     reduce using rule 31 (returnStmt)
+    UN_LOG_OP  reduce using rule 31 (returnStmt)
+    '{'        reduce using rule 31 (returnStmt)
+    '}'        reduce using rule 31 (returnStmt)
+    '('        reduce using rule 31 (returnStmt)
+
+
+State 106
+
+   37 typeOP: ISSET_KW '(' ID • ')'
+
+    ')'  shift, and go to state 129
+
+
+State 107
+
+   38 addOP: ADD_KW '(' pertOP • ')'
+   49 simpleExp: pertOP •
+
+    ')'  shift, and go to state 130
+
+    IN_KW  reduce using rule 49 (simpleExp)
+
+
+State 108
+
+   39 remOP: REMOVE_KW '(' pertOP • ')'
+   49 simpleExp: pertOP •
+
+    ')'  shift, and go to state 131
+
+    IN_KW  reduce using rule 49 (simpleExp)
+
+
+State 109
+
+   40 selectOP: EXISTS_KW '(' pertOP • ')'
+   49 simpleExp: pertOP •
+
+    ')'  shift, and go to state 132
+
+    IN_KW  reduce using rule 49 (simpleExp)
+
+
+State 110
+
+   57 outConst: STRING •
+
+    ')'  reduce using rule 57 (outConst)
+
+
+State 111
+
+   58 outConst: CHAR •
+
+    ')'  reduce using rule 58 (outConst)
+
+
+State 112
+
+   33 pertOP: simpleExp • IN_KW ID
+   34       | simpleExp • IN_KW setReturner
+   59 outConst: simpleExp •
+
+    IN_KW  shift, and go to state 209
+
+    ')'  reduce using rule 59 (outConst)
+
+
+State 113
+
+   56 outOP: OUT '(' outConst • ')'
+
+    ')'  shift, and go to state 133
+
+
+State 114
+
+   55 inOP: IN '(' ID • ')'
+
+    ')'  shift, and go to state 134
+
+
+State 115
+
+   47 assignExp: ID ASS_OP expression •
+
+    ';'  reduce using rule 47 (assignExp)
+
+
+State 116
+
+   33 pertOP: simpleExp • IN_KW ID
+   34       | simpleExp • IN_KW setReturner
+   77 callParams: simpleExp •
+
+    IN_KW  shift, and go to state 214
+
+    ')'  reduce using rule 77 (callParams)
+    ','  reduce using rule 77 (callParams)
+
+
+State 117
+
+   75 functionCall: ID '(' callParams • ')'
+   76 callParams: callParams • ',' simpleExp
+
+    ')'  shift, and go to state 135
+    ','  shift, and go to state 136
+
+
+State 118
+
+   73 factor: '(' simpleExp ')' •
+
+    IN_KW       reduce using rule 73 (factor)
+    SUM_OP      reduce using rule 73 (factor)
+    MUL_OP      reduce using rule 73 (factor)
+    BIN_LOG_OP  reduce using rule 73 (factor)
+    REL_OP      reduce using rule 73 (factor)
+    ';'         reduce using rule 73 (factor)
+
+
+State 119
+
+   14 compoundStmt: '{' localDeclarations stmtList '}' •
+
+    $end  reduce using rule 14 (compoundStmt)
+    TYPE  reduce using rule 14 (compoundStmt)
+
+
+State 120
+
+   33 pertOP: simpleExp IN_KW ID •
+
+    IN_KW  reduce using rule 33 (pertOP)
+    ';'    reduce using rule 33 (pertOP)
+
+
+State 121
+
+   34 pertOP: simpleExp IN_KW setReturner •
+
+    IN_KW  reduce using rule 34 (pertOP)
+    ';'    reduce using rule 34 (pertOP)
+
+
+State 122
+
+   60 binLogicalExp: binLogicalExp BIN_LOG_OP unLogicalExp •
+
+    IN_KW       reduce using rule 60 (binLogicalExp)
+    BIN_LOG_OP  reduce using rule 60 (binLogicalExp)
+    ';'         reduce using rule 60 (binLogicalExp)
+
+
+State 123
+
+   64 relationalExp: relationalExp REL_OP sumExp •
+   66 sumExp: sumExp • SUM_OP mulExp
+
+    SUM_OP  shift, and go to state 98
+
+    IN_KW       reduce using rule 64 (relationalExp)
+    BIN_LOG_OP  reduce using rule 64 (relationalExp)
+    REL_OP      reduce using rule 64 (relationalExp)
+    ';'         reduce using rule 64 (relationalExp)
+
+
+State 124
+
+   66 sumExp: sumExp SUM_OP mulExp •
+   68 mulExp: mulExp • MUL_OP factor
+
+    MUL_OP  shift, and go to state 99
+
+    IN_KW       reduce using rule 66 (sumExp)
+    SUM_OP      reduce using rule 66 (sumExp)
+    BIN_LOG_OP  reduce using rule 66 (sumExp)
+    REL_OP      reduce using rule 66 (sumExp)
+    ';'         reduce using rule 66 (sumExp)
+
+
+State 125
+
+   68 mulExp: mulExp MUL_OP factor •
+
+    IN_KW       reduce using rule 68 (mulExp)
+    SUM_OP      reduce using rule 68 (mulExp)
+    MUL_OP      reduce using rule 68 (mulExp)
+    BIN_LOG_OP  reduce using rule 68 (mulExp)
+    REL_OP      reduce using rule 68 (mulExp)
+    ';'         reduce using rule 68 (mulExp)
+
+
+State 126
+
+   28 condStmt: IF_KW '(' simpleExp ')' • compoundStmt
+   29         | IF_KW '(' simpleExp ')' • compoundStmt ELSE_KW compoundStmt
+
+    '{'  shift, and go to state 215
+
+    compoundStmt  go to state 137
+
+
+State 127
+
+   30 iterStmt: FOR_KW '(' assignExp ';' • simpleExp ';' assignExp ')' compoundStmt
+
+    INT        shift, and go to state 24
+    FLOAT      shift, and go to state 25
+    EMPTY      shift, and go to state 26
+    ISSET_KW   shift, and go to state 31
+    EXISTS_KW  shift, and go to state 34
+    ID         shift, and go to state 85
+    SUM_OP     shift, and go to state 38
+    UN_LOG_OP  shift, and go to state 39
+    '('        shift, and go to state 40
+
+    pertOP         go to state 51
+    typeOP         go to state 53
+    selectOP       go to state 56
+    simpleExp      go to state 138
+    constOP        go to state 61
+    binLogicalExp  go to state 64
+    unLogicalExp   go to state 65
+    relationalExp  go to state 66
+    sumExp         go to state 67
+    mulExp         go to state 68
+    factor         go to state 69
+    functionCall   go to state 70
+
+
+State 128
+
+   41 forallOP: FORALL_KW '(' pertOP ')' • compoundStmt
+
+    '{'  shift, and go to state 148
+
+    compoundStmt  go to state 139
+
+
+State 129
+
+   37 typeOP: ISSET_KW '(' ID ')' •
+
+    IN_KW  reduce using rule 37 (typeOP)
+    ';'    reduce using rule 37 (typeOP)
+
+
+State 130
+
+   38 addOP: ADD_KW '(' pertOP ')' •
+
+    ';'  reduce using rule 38 (addOP)
+
+
+State 131
+
+   39 remOP: REMOVE_KW '(' pertOP ')' •
+
+    ';'  reduce using rule 39 (remOP)
+
+
+State 132
+
+   40 selectOP: EXISTS_KW '(' pertOP ')' •
+
+    IN_KW  reduce using rule 40 (selectOP)
+    ';'    reduce using rule 40 (selectOP)
+
+
+State 133
+
+   56 outOP: OUT '(' outConst ')' •
+
+    ';'  reduce using rule 56 (outOP)
+
+
+State 134
+
+   55 inOP: IN '(' ID ')' •
+
+    ';'  reduce using rule 55 (inOP)
+
+
+State 135
+
+   75 functionCall: ID '(' callParams ')' •
+
+    IN_KW       reduce using rule 75 (functionCall)
+    SUM_OP      reduce using rule 75 (functionCall)
+    MUL_OP      reduce using rule 75 (functionCall)
+    BIN_LOG_OP  reduce using rule 75 (functionCall)
+    REL_OP      reduce using rule 75 (functionCall)
+    ';'         reduce using rule 75 (functionCall)
+
+
+State 136
+
+   76 callParams: callParams ',' • simpleExp
+
+    INT        shift, and go to state 189
+    FLOAT      shift, and go to state 190
+    EMPTY      shift, and go to state 191
+    ISSET_KW   shift, and go to state 192
+    EXISTS_KW  shift, and go to state 193
+    ID         shift, and go to state 194
+    SUM_OP     shift, and go to state 195
+    UN_LOG_OP  shift, and go to state 196
+    '('        shift, and go to state 197
+
+    pertOP         go to state 198
+    typeOP         go to state 199
+    selectOP       go to state 200
+    simpleExp      go to state 140
+    constOP        go to state 201
+    binLogicalExp  go to state 202
+    unLogicalExp   go to state 203
+    relationalExp  go to state 204
+    sumExp         go to state 205
+    mulExp         go to state 206
+    factor         go to state 207
+    functionCall   go to state 208
+
+
+State 137
+
+   28 condStmt: IF_KW '(' simpleExp ')' compoundStmt •
+   29         | IF_KW '(' simpleExp ')' compoundStmt • ELSE_KW compoundStmt
+
+    ELSE_KW  shift, and go to state 141
+
+    INT        reduce using rule 28 (condStmt)
+    FLOAT      reduce using rule 28 (condStmt)
+    EMPTY      reduce using rule 28 (condStmt)
+    IF_KW      reduce using rule 28 (condStmt)
+    FOR_KW     reduce using rule 28 (condStmt)
+    FORALL_KW  reduce using rule 28 (condStmt)
+    RETURN_KW  reduce using rule 28 (condStmt)
+    ISSET_KW   reduce using rule 28 (condStmt)
+    ADD_KW     reduce using rule 28 (condStmt)
+    REMOVE_KW  reduce using rule 28 (condStmt)
+    EXISTS_KW  reduce using rule 28 (condStmt)
+    OUT        reduce using rule 28 (condStmt)
+    IN         reduce using rule 28 (condStmt)
+    ID         reduce using rule 28 (condStmt)
+    SUM_OP     reduce using rule 28 (condStmt)
+    UN_LOG_OP  reduce using rule 28 (condStmt)
+    '{'        reduce using rule 28 (condStmt)
+    '}'        reduce using rule 28 (condStmt)
+    '('        reduce using rule 28 (condStmt)
+
+
+State 138
+
+   30 iterStmt: FOR_KW '(' assignExp ';' simpleExp • ';' assignExp ')' compoundStmt
+   33 pertOP: simpleExp • IN_KW ID
+   34       | simpleExp • IN_KW setReturner
+
+    IN_KW  shift, and go to state 95
+    ';'    shift, and go to state 142
+
+
+State 139
+
+   41 forallOP: FORALL_KW '(' pertOP ')' compoundStmt •
+
+    INT        reduce using rule 41 (forallOP)
+    FLOAT      reduce using rule 41 (forallOP)
+    EMPTY      reduce using rule 41 (forallOP)
+    IF_KW      reduce using rule 41 (forallOP)
+    FOR_KW     reduce using rule 41 (forallOP)
+    FORALL_KW  reduce using rule 41 (forallOP)
+    RETURN_KW  reduce using rule 41 (forallOP)
+    ISSET_KW   reduce using rule 41 (forallOP)
+    ADD_KW     reduce using rule 41 (forallOP)
+    REMOVE_KW  reduce using rule 41 (forallOP)
+    EXISTS_KW  reduce using rule 41 (forallOP)
+    OUT        reduce using rule 41 (forallOP)
+    IN         reduce using rule 41 (forallOP)
+    ID         reduce using rule 41 (forallOP)
+    SUM_OP     reduce using rule 41 (forallOP)
+    UN_LOG_OP  reduce using rule 41 (forallOP)
+    '{'        reduce using rule 41 (forallOP)
+    '}'        reduce using rule 41 (forallOP)
+    '('        reduce using rule 41 (forallOP)
+
+
+State 140
+
+   33 pertOP: simpleExp • IN_KW ID
+   34       | simpleExp • IN_KW setReturner
+   76 callParams: callParams ',' simpleExp •
+
+    IN_KW  shift, and go to state 214
+
+    ')'  reduce using rule 76 (callParams)
+    ','  reduce using rule 76 (callParams)
+
+
+State 141
+
+   29 condStmt: IF_KW '(' simpleExp ')' compoundStmt ELSE_KW • compoundStmt
+
+    '{'  shift, and go to state 148
+
+    compoundStmt  go to state 143
+
+
+State 142
+
+   30 iterStmt: FOR_KW '(' assignExp ';' simpleExp ';' • assignExp ')' compoundStmt
+
+    ID  shift, and go to state 216
+
+    assignExp  go to state 144
+
+
+State 143
+
+   29 condStmt: IF_KW '(' simpleExp ')' compoundStmt ELSE_KW compoundStmt •
+
+    INT        reduce using rule 29 (condStmt)
+    FLOAT      reduce using rule 29 (condStmt)
+    EMPTY      reduce using rule 29 (condStmt)
+    IF_KW      reduce using rule 29 (condStmt)
+    FOR_KW     reduce using rule 29 (condStmt)
+    FORALL_KW  reduce using rule 29 (condStmt)
+    RETURN_KW  reduce using rule 29 (condStmt)
+    ISSET_KW   reduce using rule 29 (condStmt)
+    ADD_KW     reduce using rule 29 (condStmt)
+    REMOVE_KW  reduce using rule 29 (condStmt)
+    EXISTS_KW  reduce using rule 29 (condStmt)
+    OUT        reduce using rule 29 (condStmt)
+    IN         reduce using rule 29 (condStmt)
+    ID         reduce using rule 29 (condStmt)
+    SUM_OP     reduce using rule 29 (condStmt)
+    UN_LOG_OP  reduce using rule 29 (condStmt)
+    '{'        reduce using rule 29 (condStmt)
+    '}'        reduce using rule 29 (condStmt)
+    '('        reduce using rule 29 (condStmt)
+
+
+State 144
+
+   30 iterStmt: FOR_KW '(' assignExp ';' simpleExp ';' assignExp • ')' compoundStmt
+
+    ')'  shift, and go to state 145
+
+
+State 145
+
+   30 iterStmt: FOR_KW '(' assignExp ';' simpleExp ';' assignExp ')' • compoundStmt
+
+    '{'  shift, and go to state 148
+
+    compoundStmt  go to state 146
+
+
+State 146
+
+   30 iterStmt: FOR_KW '(' assignExp ';' simpleExp ';' assignExp ')' compoundStmt •
+
+    INT        reduce using rule 30 (iterStmt)
+    FLOAT      reduce using rule 30 (iterStmt)
+    EMPTY      reduce using rule 30 (iterStmt)
+    IF_KW      reduce using rule 30 (iterStmt)
+    FOR_KW     reduce using rule 30 (iterStmt)
+    FORALL_KW  reduce using rule 30 (iterStmt)
+    RETURN_KW  reduce using rule 30 (iterStmt)
+    ISSET_KW   reduce using rule 30 (iterStmt)
+    ADD_KW     reduce using rule 30 (iterStmt)
+    REMOVE_KW  reduce using rule 30 (iterStmt)
+    EXISTS_KW  reduce using rule 30 (iterStmt)
+    OUT        reduce using rule 30 (iterStmt)
+    IN         reduce using rule 30 (iterStmt)
+    ID         reduce using rule 30 (iterStmt)
+    SUM_OP     reduce using rule 30 (iterStmt)
+    UN_LOG_OP  reduce using rule 30 (iterStmt)
+    '{'        reduce using rule 30 (iterStmt)
+    '}'        reduce using rule 30 (iterStmt)
+    '('        reduce using rule 30 (iterStmt)
+
+
+State 147
+
+   12 simpleVDeclaration: TYPE • ID
+
+    ID  shift, and go to state 217
+
+
+State 148
+
+   14 compoundStmt: '{' • localDeclarations stmtList '}'
+   15             | '{' • stmtList '}'
+
+    INT        shift, and go to state 24
+    FLOAT      shift, and go to state 25
+    EMPTY      shift, and go to state 26
+    IF_KW      shift, and go to state 27
+    FOR_KW     shift, and go to state 28
+    FORALL_KW  shift, and go to state 29
+    RETURN_KW  shift, and go to state 30
+    ISSET_KW   shift, and go to state 31
+    ADD_KW     shift, and go to state 32
+    REMOVE_KW  shift, and go to state 33
+    EXISTS_KW  shift, and go to state 34
+    OUT        shift, and go to state 35
+    IN         shift, and go to state 36
+    TYPE       shift, and go to state 147
+    ID         shift, and go to state 37
+    SUM_OP     shift, and go to state 38
+    UN_LOG_OP  shift, and go to state 39
+    '{'        shift, and go to state 148
+    '('        shift, and go to state 40
+
+    varDeclaration      go to state 41
+    simpleVDeclaration  go to state 149
+    compoundStmt        go to state 42
+    localDeclarations   go to state 218
+    stmtList            go to state 219
+    primitiveStmt       go to state 45
+    exprStmt            go to state 46
+    condStmt            go to state 47
+    iterStmt            go to state 48
+    returnStmt          go to state 49
+    setStmt             go to state 50
+    pertOP              go to state 51
+    setReturner         go to state 52
+    typeOP              go to state 53
+    addOP               go to state 54
+    remOP               go to state 55
+    selectOP            go to state 56
+    forallOP            go to state 57
+    expression          go to state 58
+    assignExp           go to state 59
+    simpleExp           go to state 60
+    constOP             go to state 61
+    inOP                go to state 62
+    outOP               go to state 63
+    binLogicalExp       go to state 64
+    unLogicalExp        go to state 65
+    relationalExp       go to state 66
+    sumExp              go to state 67
+    mulExp              go to state 68
+    factor              go to state 69
+    functionCall        go to state 70
+
+
+State 149
+
+    6 varDeclaration: simpleVDeclaration • ';'
+
+    ';'  shift, and go to state 220
+
+
+State 150
+
+   52 constOP: INT •
+
+    IN_KW       reduce using rule 52 (constOP)
+    SUM_OP      reduce using rule 52 (constOP)
+    MUL_OP      reduce using rule 52 (constOP)
+    BIN_LOG_OP  reduce using rule 52 (constOP)
+    REL_OP      reduce using rule 52 (constOP)
+    ')'         reduce using rule 52 (constOP)
+
+
+State 151
+
+   53 constOP: FLOAT •
+
+    IN_KW       reduce using rule 53 (constOP)
+    SUM_OP      reduce using rule 53 (constOP)
+    MUL_OP      reduce using rule 53 (constOP)
+    BIN_LOG_OP  reduce using rule 53 (constOP)
+    REL_OP      reduce using rule 53 (constOP)
+    ')'         reduce using rule 53 (constOP)
+
+
+State 152
+
+   54 constOP: EMPTY •
+
+    IN_KW       reduce using rule 54 (constOP)
+    SUM_OP      reduce using rule 54 (constOP)
+    MUL_OP      reduce using rule 54 (constOP)
+    BIN_LOG_OP  reduce using rule 54 (constOP)
+    REL_OP      reduce using rule 54 (constOP)
+    ')'         reduce using rule 54 (constOP)
+
+
+State 153
+
+   37 typeOP: ISSET_KW • '(' ID ')'
+
+    '('  shift, and go to state 221
+
+
+State 154
+
+   40 selectOP: EXISTS_KW • '(' pertOP ')'
+
+    '('  shift, and go to state 222
+
+
+State 155
+
+   71 factor: ID •
+   75 functionCall: ID • '(' callParams ')'
+
+    '('  shift, and go to state 223
+
+    IN_KW       reduce using rule 71 (factor)
+    SUM_OP      reduce using rule 71 (factor)
+    MUL_OP      reduce using rule 71 (factor)
+    BIN_LOG_OP  reduce using rule 71 (factor)
+    REL_OP      reduce using rule 71 (factor)
+    ')'         reduce using rule 71 (factor)
+
+
+State 156
+
+   70 mulExp: SUM_OP • factor
+
+    INT    shift, and go to state 150
+    FLOAT  shift, and go to state 151
+    EMPTY  shift, and go to state 152
+    ID     shift, and go to state 155
+    '('    shift, and go to state 158
+
+    constOP       go to state 162
+    factor        go to state 224
+    functionCall  go to state 169
+
+
+State 157
+
+   62 unLogicalExp: UN_LOG_OP • unLogicalExp
+
+    INT        shift, and go to state 150
+    FLOAT      shift, and go to state 151
+    EMPTY      shift, and go to state 152
+    ID         shift, and go to state 155
+    SUM_OP     shift, and go to state 156
+    UN_LOG_OP  shift, and go to state 157
+    '('        shift, and go to state 158
+
+    constOP        go to state 162
+    unLogicalExp   go to state 225
+    relationalExp  go to state 165
+    sumExp         go to state 166
+    mulExp         go to state 167
+    factor         go to state 168
+    functionCall   go to state 169
+
+
+State 158
+
+   73 factor: '(' • simpleExp ')'
+
+    INT        shift, and go to state 150
+    FLOAT      shift, and go to state 151
+    EMPTY      shift, and go to state 152
+    ISSET_KW   shift, and go to state 153
+    EXISTS_KW  shift, and go to state 154
+    ID         shift, and go to state 155
+    SUM_OP     shift, and go to state 156
+    UN_LOG_OP  shift, and go to state 157
+    '('        shift, and go to state 158
+
+    pertOP         go to state 159
+    typeOP         go to state 160
+    selectOP       go to state 161
+    simpleExp      go to state 226
+    constOP        go to state 162
+    binLogicalExp  go to state 163
+    unLogicalExp   go to state 164
+    relationalExp  go to state 165
+    sumExp         go to state 166
+    mulExp         go to state 167
+    factor         go to state 168
+    functionCall   go to state 169
+
+
+State 159
+
+   49 simpleExp: pertOP •
+
+    IN_KW  reduce using rule 49 (simpleExp)
+    ')'    reduce using rule 49 (simpleExp)
+
+
+State 160
+
+   51 simpleExp: typeOP •
+
+    IN_KW  reduce using rule 51 (simpleExp)
+    ')'    reduce using rule 51 (simpleExp)
+
+
+State 161
+
+   50 simpleExp: selectOP •
+
+    IN_KW  reduce using rule 50 (simpleExp)
+    ')'    reduce using rule 50 (simpleExp)
+
+
+State 162
+
+   74 factor: constOP •
+
+    IN_KW       reduce using rule 74 (factor)
+    SUM_OP      reduce using rule 74 (factor)
+    MUL_OP      reduce using rule 74 (factor)
+    BIN_LOG_OP  reduce using rule 74 (factor)
+    REL_OP      reduce using rule 74 (factor)
+    ')'         reduce using rule 74 (factor)
+
+
+State 163
+
+   48 simpleExp: binLogicalExp •
+   60 binLogicalExp: binLogicalExp • BIN_LOG_OP unLogicalExp
+
+    BIN_LOG_OP  shift, and go to state 227
+
+    IN_KW  reduce using rule 48 (simpleExp)
+    ')'    reduce using rule 48 (simpleExp)
+
+
+State 164
+
+   61 binLogicalExp: unLogicalExp •
+
+    IN_KW       reduce using rule 61 (binLogicalExp)
+    BIN_LOG_OP  reduce using rule 61 (binLogicalExp)
+    ')'         reduce using rule 61 (binLogicalExp)
+
+
+State 165
+
+   63 unLogicalExp: relationalExp •
+   64 relationalExp: relationalExp • REL_OP sumExp
+
+    REL_OP  shift, and go to state 228
+
+    IN_KW       reduce using rule 63 (unLogicalExp)
+    BIN_LOG_OP  reduce using rule 63 (unLogicalExp)
+    ')'         reduce using rule 63 (unLogicalExp)
+
+
+State 166
+
+   65 relationalExp: sumExp •
+   66 sumExp: sumExp • SUM_OP mulExp
+
+    SUM_OP  shift, and go to state 229
+
+    IN_KW       reduce using rule 65 (relationalExp)
+    BIN_LOG_OP  reduce using rule 65 (relationalExp)
+    REL_OP      reduce using rule 65 (relationalExp)
+    ')'         reduce using rule 65 (relationalExp)
+
+
+State 167
+
+   67 sumExp: mulExp •
+   68 mulExp: mulExp • MUL_OP factor
+
+    MUL_OP  shift, and go to state 230
+
+    IN_KW       reduce using rule 67 (sumExp)
+    SUM_OP      reduce using rule 67 (sumExp)
+    BIN_LOG_OP  reduce using rule 67 (sumExp)
+    REL_OP      reduce using rule 67 (sumExp)
+    ')'         reduce using rule 67 (sumExp)
+
+
+State 168
+
+   69 mulExp: factor •
+
+    IN_KW       reduce using rule 69 (mulExp)
+    SUM_OP      reduce using rule 69 (mulExp)
+    MUL_OP      reduce using rule 69 (mulExp)
+    BIN_LOG_OP  reduce using rule 69 (mulExp)
+    REL_OP      reduce using rule 69 (mulExp)
+    ')'         reduce using rule 69 (mulExp)
+
+
+State 169
+
+   72 factor: functionCall •
+
+    IN_KW       reduce using rule 72 (factor)
+    SUM_OP      reduce using rule 72 (factor)
+    MUL_OP      reduce using rule 72 (factor)
+    BIN_LOG_OP  reduce using rule 72 (factor)
+    REL_OP      reduce using rule 72 (factor)
+    ')'         reduce using rule 72 (factor)
+
+
+State 170
+
+   52 constOP: INT •
+
+    IN_KW       reduce using rule 52 (constOP)
+    SUM_OP      reduce using rule 52 (constOP)
+    MUL_OP      reduce using rule 52 (constOP)
+    BIN_LOG_OP  reduce using rule 52 (constOP)
+    REL_OP      reduce using rule 52 (constOP)
+
+
+State 171
+
+   53 constOP: FLOAT •
+
+    IN_KW       reduce using rule 53 (constOP)
+    SUM_OP      reduce using rule 53 (constOP)
+    MUL_OP      reduce using rule 53 (constOP)
+    BIN_LOG_OP  reduce using rule 53 (constOP)
+    REL_OP      reduce using rule 53 (constOP)
+
+
+State 172
+
+   54 constOP: EMPTY •
+
+    IN_KW       reduce using rule 54 (constOP)
+    SUM_OP      reduce using rule 54 (constOP)
+    MUL_OP      reduce using rule 54 (constOP)
+    BIN_LOG_OP  reduce using rule 54 (constOP)
+    REL_OP      reduce using rule 54 (constOP)
+
+
+State 173
+
+   37 typeOP: ISSET_KW • '(' ID ')'
+
+    '('  shift, and go to state 231
+
+
+State 174
+
+   40 selectOP: EXISTS_KW • '(' pertOP ')'
+
+    '('  shift, and go to state 232
+
+
+State 175
+
+   71 factor: ID •
+   75 functionCall: ID • '(' callParams ')'
+
+    '('  shift, and go to state 233
+
+    IN_KW       reduce using rule 71 (factor)
+    SUM_OP      reduce using rule 71 (factor)
+    MUL_OP      reduce using rule 71 (factor)
+    BIN_LOG_OP  reduce using rule 71 (factor)
+    REL_OP      reduce using rule 71 (factor)
+
+
+State 176
+
+   70 mulExp: SUM_OP • factor
+
+    INT    shift, and go to state 170
+    FLOAT  shift, and go to state 171
+    EMPTY  shift, and go to state 172
+    ID     shift, and go to state 175
+    '('    shift, and go to state 178
+
+    constOP       go to state 181
+    factor        go to state 234
+    functionCall  go to state 188
+
+
+State 177
+
+   62 unLogicalExp: UN_LOG_OP • unLogicalExp
+
+    INT        shift, and go to state 170
+    FLOAT      shift, and go to state 171
+    EMPTY      shift, and go to state 172
+    ID         shift, and go to state 175
+    SUM_OP     shift, and go to state 176
+    UN_LOG_OP  shift, and go to state 177
+    '('        shift, and go to state 178
+
+    constOP        go to state 181
+    unLogicalExp   go to state 235
+    relationalExp  go to state 184
+    sumExp         go to state 185
+    mulExp         go to state 186
+    factor         go to state 187
+    functionCall   go to state 188
+
+
+State 178
+
+   73 factor: '(' • simpleExp ')'
+
+    INT        shift, and go to state 150
+    FLOAT      shift, and go to state 151
+    EMPTY      shift, and go to state 152
+    ISSET_KW   shift, and go to state 153
+    EXISTS_KW  shift, and go to state 154
+    ID         shift, and go to state 155
+    SUM_OP     shift, and go to state 156
+    UN_LOG_OP  shift, and go to state 157
+    '('        shift, and go to state 158
+
+    pertOP         go to state 159
+    typeOP         go to state 160
+    selectOP       go to state 161
+    simpleExp      go to state 236
+    constOP        go to state 162
+    binLogicalExp  go to state 163
+    unLogicalExp   go to state 164
+    relationalExp  go to state 165
+    sumExp         go to state 166
+    mulExp         go to state 167
+    factor         go to state 168
+    functionCall   go to state 169
+
+
+State 179
+
+   51 simpleExp: typeOP •
+
+    IN_KW  reduce using rule 51 (simpleExp)
+
+
+State 180
+
+   50 simpleExp: selectOP •
+
+    IN_KW  reduce using rule 50 (simpleExp)
+
+
+State 181
+
+   74 factor: constOP •
+
+    IN_KW       reduce using rule 74 (factor)
+    SUM_OP      reduce using rule 74 (factor)
+    MUL_OP      reduce using rule 74 (factor)
+    BIN_LOG_OP  reduce using rule 74 (factor)
+    REL_OP      reduce using rule 74 (factor)
+
+
+State 182
+
+   48 simpleExp: binLogicalExp •
+   60 binLogicalExp: binLogicalExp • BIN_LOG_OP unLogicalExp
+
+    BIN_LOG_OP  shift, and go to state 237
+
+    IN_KW  reduce using rule 48 (simpleExp)
+
+
+State 183
+
+   61 binLogicalExp: unLogicalExp •
+
+    IN_KW       reduce using rule 61 (binLogicalExp)
+    BIN_LOG_OP  reduce using rule 61 (binLogicalExp)
+
+
+State 184
+
+   63 unLogicalExp: relationalExp •
+   64 relationalExp: relationalExp • REL_OP sumExp
+
+    REL_OP  shift, and go to state 238
+
+    IN_KW       reduce using rule 63 (unLogicalExp)
+    BIN_LOG_OP  reduce using rule 63 (unLogicalExp)
+
+
+State 185
+
+   65 relationalExp: sumExp •
+   66 sumExp: sumExp • SUM_OP mulExp
+
+    SUM_OP  shift, and go to state 239
+
+    IN_KW       reduce using rule 65 (relationalExp)
+    BIN_LOG_OP  reduce using rule 65 (relationalExp)
+    REL_OP      reduce using rule 65 (relationalExp)
+
+
+State 186
+
+   67 sumExp: mulExp •
+   68 mulExp: mulExp • MUL_OP factor
+
+    MUL_OP  shift, and go to state 240
+
+    IN_KW       reduce using rule 67 (sumExp)
+    SUM_OP      reduce using rule 67 (sumExp)
+    BIN_LOG_OP  reduce using rule 67 (sumExp)
+    REL_OP      reduce using rule 67 (sumExp)
+
+
+State 187
+
+   69 mulExp: factor •
+
+    IN_KW       reduce using rule 69 (mulExp)
+    SUM_OP      reduce using rule 69 (mulExp)
+    MUL_OP      reduce using rule 69 (mulExp)
+    BIN_LOG_OP  reduce using rule 69 (mulExp)
+    REL_OP      reduce using rule 69 (mulExp)
+
+
+State 188
+
+   72 factor: functionCall •
+
+    IN_KW       reduce using rule 72 (factor)
+    SUM_OP      reduce using rule 72 (factor)
+    MUL_OP      reduce using rule 72 (factor)
+    BIN_LOG_OP  reduce using rule 72 (factor)
+    REL_OP      reduce using rule 72 (factor)
+
+
+State 189
+
+   52 constOP: INT •
+
+    IN_KW       reduce using rule 52 (constOP)
+    SUM_OP      reduce using rule 52 (constOP)
+    MUL_OP      reduce using rule 52 (constOP)
+    BIN_LOG_OP  reduce using rule 52 (constOP)
+    REL_OP      reduce using rule 52 (constOP)
+    ')'         reduce using rule 52 (constOP)
+    ','         reduce using rule 52 (constOP)
+
+
+State 190
+
+   53 constOP: FLOAT •
+
+    IN_KW       reduce using rule 53 (constOP)
+    SUM_OP      reduce using rule 53 (constOP)
+    MUL_OP      reduce using rule 53 (constOP)
+    BIN_LOG_OP  reduce using rule 53 (constOP)
+    REL_OP      reduce using rule 53 (constOP)
+    ')'         reduce using rule 53 (constOP)
+    ','         reduce using rule 53 (constOP)
+
+
+State 191
+
+   54 constOP: EMPTY •
+
+    IN_KW       reduce using rule 54 (constOP)
+    SUM_OP      reduce using rule 54 (constOP)
+    MUL_OP      reduce using rule 54 (constOP)
+    BIN_LOG_OP  reduce using rule 54 (constOP)
+    REL_OP      reduce using rule 54 (constOP)
+    ')'         reduce using rule 54 (constOP)
+    ','         reduce using rule 54 (constOP)
+
+
+State 192
+
+   37 typeOP: ISSET_KW • '(' ID ')'
+
+    '('  shift, and go to state 241
+
+
+State 193
+
+   40 selectOP: EXISTS_KW • '(' pertOP ')'
+
+    '('  shift, and go to state 242
+
+
+State 194
+
+   71 factor: ID •
+   75 functionCall: ID • '(' callParams ')'
+
+    '('  shift, and go to state 243
+
+    IN_KW       reduce using rule 71 (factor)
+    SUM_OP      reduce using rule 71 (factor)
+    MUL_OP      reduce using rule 71 (factor)
+    BIN_LOG_OP  reduce using rule 71 (factor)
+    REL_OP      reduce using rule 71 (factor)
+    ')'         reduce using rule 71 (factor)
+    ','         reduce using rule 71 (factor)
+
+
+State 195
+
+   70 mulExp: SUM_OP • factor
+
+    INT    shift, and go to state 189
+    FLOAT  shift, and go to state 190
+    EMPTY  shift, and go to state 191
+    ID     shift, and go to state 194
+    '('    shift, and go to state 197
+
+    constOP       go to state 201
+    factor        go to state 244
+    functionCall  go to state 208
+
+
+State 196
+
+   62 unLogicalExp: UN_LOG_OP • unLogicalExp
+
+    INT        shift, and go to state 189
+    FLOAT      shift, and go to state 190
+    EMPTY      shift, and go to state 191
+    ID         shift, and go to state 194
+    SUM_OP     shift, and go to state 195
+    UN_LOG_OP  shift, and go to state 196
+    '('        shift, and go to state 197
+
+    constOP        go to state 201
+    unLogicalExp   go to state 245
+    relationalExp  go to state 204
+    sumExp         go to state 205
+    mulExp         go to state 206
+    factor         go to state 207
+    functionCall   go to state 208
+
+
+State 197
+
+   73 factor: '(' • simpleExp ')'
+
+    INT        shift, and go to state 150
+    FLOAT      shift, and go to state 151
+    EMPTY      shift, and go to state 152
+    ISSET_KW   shift, and go to state 153
+    EXISTS_KW  shift, and go to state 154
+    ID         shift, and go to state 155
+    SUM_OP     shift, and go to state 156
+    UN_LOG_OP  shift, and go to state 157
+    '('        shift, and go to state 158
+
+    pertOP         go to state 159
+    typeOP         go to state 160
+    selectOP       go to state 161
+    simpleExp      go to state 246
+    constOP        go to state 162
+    binLogicalExp  go to state 163
+    unLogicalExp   go to state 164
+    relationalExp  go to state 165
+    sumExp         go to state 166
+    mulExp         go to state 167
+    factor         go to state 168
+    functionCall   go to state 169
+
+
+State 198
+
+   49 simpleExp: pertOP •
+
+    IN_KW  reduce using rule 49 (simpleExp)
+    ')'    reduce using rule 49 (simpleExp)
+    ','    reduce using rule 49 (simpleExp)
+
+
+State 199
+
+   51 simpleExp: typeOP •
+
+    IN_KW  reduce using rule 51 (simpleExp)
+    ')'    reduce using rule 51 (simpleExp)
+    ','    reduce using rule 51 (simpleExp)
+
+
+State 200
+
+   50 simpleExp: selectOP •
+
+    IN_KW  reduce using rule 50 (simpleExp)
+    ')'    reduce using rule 50 (simpleExp)
+    ','    reduce using rule 50 (simpleExp)
+
+
+State 201
+
+   74 factor: constOP •
+
+    IN_KW       reduce using rule 74 (factor)
+    SUM_OP      reduce using rule 74 (factor)
+    MUL_OP      reduce using rule 74 (factor)
+    BIN_LOG_OP  reduce using rule 74 (factor)
+    REL_OP      reduce using rule 74 (factor)
+    ')'         reduce using rule 74 (factor)
+    ','         reduce using rule 74 (factor)
+
+
+State 202
+
+   48 simpleExp: binLogicalExp •
+   60 binLogicalExp: binLogicalExp • BIN_LOG_OP unLogicalExp
+
+    BIN_LOG_OP  shift, and go to state 247
+
+    IN_KW  reduce using rule 48 (simpleExp)
+    ')'    reduce using rule 48 (simpleExp)
+    ','    reduce using rule 48 (simpleExp)
+
+
+State 203
+
+   61 binLogicalExp: unLogicalExp •
+
+    IN_KW       reduce using rule 61 (binLogicalExp)
+    BIN_LOG_OP  reduce using rule 61 (binLogicalExp)
+    ')'         reduce using rule 61 (binLogicalExp)
+    ','         reduce using rule 61 (binLogicalExp)
+
+
+State 204
+
+   63 unLogicalExp: relationalExp •
+   64 relationalExp: relationalExp • REL_OP sumExp
+
+    REL_OP  shift, and go to state 248
+
+    IN_KW       reduce using rule 63 (unLogicalExp)
+    BIN_LOG_OP  reduce using rule 63 (unLogicalExp)
+    ')'         reduce using rule 63 (unLogicalExp)
+    ','         reduce using rule 63 (unLogicalExp)
+
+
+State 205
+
+   65 relationalExp: sumExp •
+   66 sumExp: sumExp • SUM_OP mulExp
+
+    SUM_OP  shift, and go to state 249
+
+    IN_KW       reduce using rule 65 (relationalExp)
+    BIN_LOG_OP  reduce using rule 65 (relationalExp)
+    REL_OP      reduce using rule 65 (relationalExp)
+    ')'         reduce using rule 65 (relationalExp)
+    ','         reduce using rule 65 (relationalExp)
+
+
+State 206
+
+   67 sumExp: mulExp •
+   68 mulExp: mulExp • MUL_OP factor
+
+    MUL_OP  shift, and go to state 250
+
+    IN_KW       reduce using rule 67 (sumExp)
+    SUM_OP      reduce using rule 67 (sumExp)
+    BIN_LOG_OP  reduce using rule 67 (sumExp)
+    REL_OP      reduce using rule 67 (sumExp)
+    ')'         reduce using rule 67 (sumExp)
+    ','         reduce using rule 67 (sumExp)
+
+
+State 207
+
+   69 mulExp: factor •
+
+    IN_KW       reduce using rule 69 (mulExp)
+    SUM_OP      reduce using rule 69 (mulExp)
+    MUL_OP      reduce using rule 69 (mulExp)
+    BIN_LOG_OP  reduce using rule 69 (mulExp)
+    REL_OP      reduce using rule 69 (mulExp)
+    ')'         reduce using rule 69 (mulExp)
+    ','         reduce using rule 69 (mulExp)
+
+
+State 208
+
+   72 factor: functionCall •
+
+    IN_KW       reduce using rule 72 (factor)
+    SUM_OP      reduce using rule 72 (factor)
+    MUL_OP      reduce using rule 72 (factor)
+    BIN_LOG_OP  reduce using rule 72 (factor)
+    REL_OP      reduce using rule 72 (factor)
+    ')'         reduce using rule 72 (factor)
+    ','         reduce using rule 72 (factor)
+
+
+State 209
+
+   33 pertOP: simpleExp IN_KW • ID
+   34       | simpleExp IN_KW • setReturner
+
+    ADD_KW     shift, and go to state 251
+    REMOVE_KW  shift, and go to state 252
+    ID         shift, and go to state 253
+
+    setReturner  go to state 254
+    addOP        go to state 255
+    remOP        go to state 256
+
+
+State 210
+
+   38 addOP: ADD_KW • '(' pertOP ')'
+
+    '('  shift, and go to state 257
+
+
+State 211
+
+   39 remOP: REMOVE_KW • '(' pertOP ')'
+
+    '('  shift, and go to state 258
+
+
+State 212
+
+   35 setReturner: addOP •
+
+    IN_KW  reduce using rule 35 (setReturner)
+    ';'    reduce using rule 35 (setReturner)
+
+
+State 213
+
+   36 setReturner: remOP •
+
+    IN_KW  reduce using rule 36 (setReturner)
+    ';'    reduce using rule 36 (setReturner)
+
+
+State 214
+
+   33 pertOP: simpleExp IN_KW • ID
+   34       | simpleExp IN_KW • setReturner
+
+    ADD_KW     shift, and go to state 259
+    REMOVE_KW  shift, and go to state 260
+    ID         shift, and go to state 261
+
+    setReturner  go to state 262
+    addOP        go to state 263
+    remOP        go to state 264
+
+
+State 215
+
+   14 compoundStmt: '{' • localDeclarations stmtList '}'
+   15             | '{' • stmtList '}'
+
+    INT        shift, and go to state 24
+    FLOAT      shift, and go to state 25
+    EMPTY      shift, and go to state 26
+    IF_KW      shift, and go to state 27
+    FOR_KW     shift, and go to state 28
+    FORALL_KW  shift, and go to state 29
+    RETURN_KW  shift, and go to state 30
+    ISSET_KW   shift, and go to state 31
+    ADD_KW     shift, and go to state 32
+    REMOVE_KW  shift, and go to state 33
+    EXISTS_KW  shift, and go to state 34
+    OUT        shift, and go to state 35
+    IN         shift, and go to state 36
+    TYPE       shift, and go to state 147
+    ID         shift, and go to state 37
+    SUM_OP     shift, and go to state 38
+    UN_LOG_OP  shift, and go to state 39
+    '{'        shift, and go to state 148
+    '('        shift, and go to state 40
+
+    varDeclaration      go to state 41
+    simpleVDeclaration  go to state 149
+    compoundStmt        go to state 42
+    localDeclarations   go to state 265
+    stmtList            go to state 266
+    primitiveStmt       go to state 45
+    exprStmt            go to state 46
+    condStmt            go to state 47
+    iterStmt            go to state 48
+    returnStmt          go to state 49
+    setStmt             go to state 50
+    pertOP              go to state 51
+    setReturner         go to state 52
+    typeOP              go to state 53
+    addOP               go to state 54
+    remOP               go to state 55
+    selectOP            go to state 56
+    forallOP            go to state 57
+    expression          go to state 58
+    assignExp           go to state 59
+    simpleExp           go to state 60
+    constOP             go to state 61
+    inOP                go to state 62
+    outOP               go to state 63
+    binLogicalExp       go to state 64
+    unLogicalExp        go to state 65
+    relationalExp       go to state 66
+    sumExp              go to state 67
+    mulExp              go to state 68
+    factor              go to state 69
+    functionCall        go to state 70
+
+
+State 216
+
+   47 assignExp: ID • ASS_OP expression
+
+    ASS_OP  shift, and go to state 267
+
+
+State 217
+
+   12 simpleVDeclaration: TYPE ID •
+
+    ';'  reduce using rule 12 (simpleVDeclaration)
+
+
+State 218
+
+   14 compoundStmt: '{' localDeclarations • stmtList '}'
+   16 localDeclarations: localDeclarations • varDeclaration
+   17                  | localDeclarations • error
+
+    error      shift, and go to state 89
+    INT        shift, and go to state 24
+    FLOAT      shift, and go to state 25
+    EMPTY      shift, and go to state 26
+    IF_KW      shift, and go to state 27
+    FOR_KW     shift, and go to state 28
+    FORALL_KW  shift, and go to state 29
+    RETURN_KW  shift, and go to state 30
+    ISSET_KW   shift, and go to state 31
+    ADD_KW     shift, and go to state 32
+    REMOVE_KW  shift, and go to state 33
+    EXISTS_KW  shift, and go to state 34
+    OUT        shift, and go to state 35
+    IN         shift, and go to state 36
+    TYPE       shift, and go to state 147
+    ID         shift, and go to state 37
+    SUM_OP     shift, and go to state 38
+    UN_LOG_OP  shift, and go to state 39
+    '{'        shift, and go to state 148
+    '('        shift, and go to state 40
+
+    varDeclaration      go to state 90
+    simpleVDeclaration  go to state 149
+    compoundStmt        go to state 42
+    stmtList            go to state 268
+    primitiveStmt       go to state 45
+    exprStmt            go to state 46
+    condStmt            go to state 47
+    iterStmt            go to state 48
+    returnStmt          go to state 49
+    setStmt             go to state 50
+    pertOP              go to state 51
+    setReturner         go to state 52
+    typeOP              go to state 53
+    addOP               go to state 54
+    remOP               go to state 55
+    selectOP            go to state 56
+    forallOP            go to state 57
+    expression          go to state 58
+    assignExp           go to state 59
+    simpleExp           go to state 60
+    constOP             go to state 61
+    inOP                go to state 62
+    outOP               go to state 63
+    binLogicalExp       go to state 64
+    unLogicalExp        go to state 65
+    relationalExp       go to state 66
+    sumExp              go to state 67
+    mulExp              go to state 68
+    factor              go to state 69
+    functionCall        go to state 70
+
+
+State 219
+
+   15 compoundStmt: '{' stmtList • '}'
+   19 stmtList: stmtList • primitiveStmt
+
+    INT        shift, and go to state 24
+    FLOAT      shift, and go to state 25
+    EMPTY      shift, and go to state 26
+    IF_KW      shift, and go to state 27
+    FOR_KW     shift, and go to state 28
+    FORALL_KW  shift, and go to state 29
+    RETURN_KW  shift, and go to state 30
+    ISSET_KW   shift, and go to state 31
+    ADD_KW     shift, and go to state 32
+    REMOVE_KW  shift, and go to state 33
+    EXISTS_KW  shift, and go to state 34
+    OUT        shift, and go to state 35
+    IN         shift, and go to state 36
+    ID         shift, and go to state 37
+    SUM_OP     shift, and go to state 38
+    UN_LOG_OP  shift, and go to state 39
+    '{'        shift, and go to state 148
+    '}'        shift, and go to state 269
+    '('        shift, and go to state 40
+
+    compoundStmt   go to state 42
+    primitiveStmt  go to state 93
+    exprStmt       go to state 46
+    condStmt       go to state 47
+    iterStmt       go to state 48
+    returnStmt     go to state 49
+    setStmt        go to state 50
+    pertOP         go to state 51
+    setReturner    go to state 52
+    typeOP         go to state 53
+    addOP          go to state 54
+    remOP          go to state 55
+    selectOP       go to state 56
+    forallOP       go to state 57
+    expression     go to state 58
+    assignExp      go to state 59
+    simpleExp      go to state 60
+    constOP        go to state 61
+    inOP           go to state 62
+    outOP          go to state 63
+    binLogicalExp  go to state 64
+    unLogicalExp   go to state 65
+    relationalExp  go to state 66
+    sumExp         go to state 67
+    mulExp         go to state 68
+    factor         go to state 69
+    functionCall   go to state 70
+
+
+State 220
+
+    6 varDeclaration: simpleVDeclaration ';' •
+
+    error      reduce using rule 6 (varDeclaration)
+    INT        reduce using rule 6 (varDeclaration)
+    FLOAT      reduce using rule 6 (varDeclaration)
+    EMPTY      reduce using rule 6 (varDeclaration)
+    IF_KW      reduce using rule 6 (varDeclaration)
+    FOR_KW     reduce using rule 6 (varDeclaration)
+    FORALL_KW  reduce using rule 6 (varDeclaration)
+    RETURN_KW  reduce using rule 6 (varDeclaration)
+    ISSET_KW   reduce using rule 6 (varDeclaration)
+    ADD_KW     reduce using rule 6 (varDeclaration)
+    REMOVE_KW  reduce using rule 6 (varDeclaration)
+    EXISTS_KW  reduce using rule 6 (varDeclaration)
+    OUT        reduce using rule 6 (varDeclaration)
+    IN         reduce using rule 6 (varDeclaration)
+    TYPE       reduce using rule 6 (varDeclaration)
+    ID         reduce using rule 6 (varDeclaration)
+    SUM_OP     reduce using rule 6 (varDeclaration)
+    UN_LOG_OP  reduce using rule 6 (varDeclaration)
+    '{'        reduce using rule 6 (varDeclaration)
+    '('        reduce using rule 6 (varDeclaration)
+
+
+State 221
+
+   37 typeOP: ISSET_KW '(' • ID ')'
+
+    ID  shift, and go to state 270
+
+
+State 222
+
+   40 selectOP: EXISTS_KW '(' • pertOP ')'
+
+    INT        shift, and go to state 170
+    FLOAT      shift, and go to state 171
+    EMPTY      shift, and go to state 172
+    ISSET_KW   shift, and go to state 173
+    EXISTS_KW  shift, and go to state 174
+    ID         shift, and go to state 175
+    SUM_OP     shift, and go to state 176
+    UN_LOG_OP  shift, and go to state 177
+    '('        shift, and go to state 178
+
+    pertOP         go to state 271
+    typeOP         go to state 179
+    selectOP       go to state 180
+    simpleExp      go to state 104
+    constOP        go to state 181
+    binLogicalExp  go to state 182
+    unLogicalExp   go to state 183
+    relationalExp  go to state 184
+    sumExp         go to state 185
+    mulExp         go to state 186
+    factor         go to state 187
+    functionCall   go to state 188
+
+
+State 223
+
+   75 functionCall: ID '(' • callParams ')'
+
+    INT        shift, and go to state 189
+    FLOAT      shift, and go to state 190
+    EMPTY      shift, and go to state 191
+    ISSET_KW   shift, and go to state 192
+    EXISTS_KW  shift, and go to state 193
+    ID         shift, and go to state 194
+    SUM_OP     shift, and go to state 195
+    UN_LOG_OP  shift, and go to state 196
+    '('        shift, and go to state 197
+
+    pertOP         go to state 198
+    typeOP         go to state 199
+    selectOP       go to state 200
+    simpleExp      go to state 116
+    constOP        go to state 201
+    binLogicalExp  go to state 202
+    unLogicalExp   go to state 203
+    relationalExp  go to state 204
+    sumExp         go to state 205
+    mulExp         go to state 206
+    factor         go to state 207
+    functionCall   go to state 208
+    callParams     go to state 272
+
+
+State 224
+
+   70 mulExp: SUM_OP factor •
+
+    IN_KW       reduce using rule 70 (mulExp)
+    SUM_OP      reduce using rule 70 (mulExp)
+    MUL_OP      reduce using rule 70 (mulExp)
+    BIN_LOG_OP  reduce using rule 70 (mulExp)
+    REL_OP      reduce using rule 70 (mulExp)
+    ')'         reduce using rule 70 (mulExp)
+
+
+State 225
+
+   62 unLogicalExp: UN_LOG_OP unLogicalExp •
+
+    IN_KW       reduce using rule 62 (unLogicalExp)
+    BIN_LOG_OP  reduce using rule 62 (unLogicalExp)
+    ')'         reduce using rule 62 (unLogicalExp)
+
+
+State 226
+
+   33 pertOP: simpleExp • IN_KW ID
+   34       | simpleExp • IN_KW setReturner
+   73 factor: '(' simpleExp • ')'
+
+    IN_KW  shift, and go to state 209
+    ')'    shift, and go to state 273
+
+
+State 227
+
+   60 binLogicalExp: binLogicalExp BIN_LOG_OP • unLogicalExp
+
+    INT        shift, and go to state 150
+    FLOAT      shift, and go to state 151
+    EMPTY      shift, and go to state 152
+    ID         shift, and go to state 155
+    SUM_OP     shift, and go to state 156
+    UN_LOG_OP  shift, and go to state 157
+    '('        shift, and go to state 158
+
+    constOP        go to state 162
+    unLogicalExp   go to state 274
+    relationalExp  go to state 165
+    sumExp         go to state 166
+    mulExp         go to state 167
+    factor         go to state 168
+    functionCall   go to state 169
+
+
+State 228
+
+   64 relationalExp: relationalExp REL_OP • sumExp
+
+    INT     shift, and go to state 150
+    FLOAT   shift, and go to state 151
+    EMPTY   shift, and go to state 152
+    ID      shift, and go to state 155
+    SUM_OP  shift, and go to state 156
+    '('     shift, and go to state 158
+
+    constOP       go to state 162
+    sumExp        go to state 275
+    mulExp        go to state 167
+    factor        go to state 168
+    functionCall  go to state 169
+
+
+State 229
+
+   66 sumExp: sumExp SUM_OP • mulExp
+
+    INT     shift, and go to state 150
+    FLOAT   shift, and go to state 151
+    EMPTY   shift, and go to state 152
+    ID      shift, and go to state 155
+    SUM_OP  shift, and go to state 156
+    '('     shift, and go to state 158
+
+    constOP       go to state 162
+    mulExp        go to state 276
+    factor        go to state 168
+    functionCall  go to state 169
+
+
+State 230
+
+   68 mulExp: mulExp MUL_OP • factor
+
+    INT    shift, and go to state 150
+    FLOAT  shift, and go to state 151
+    EMPTY  shift, and go to state 152
+    ID     shift, and go to state 155
+    '('    shift, and go to state 158
+
+    constOP       go to state 162
+    factor        go to state 277
+    functionCall  go to state 169
+
+
+State 231
+
+   37 typeOP: ISSET_KW '(' • ID ')'
+
+    ID  shift, and go to state 278
+
+
+State 232
+
+   40 selectOP: EXISTS_KW '(' • pertOP ')'
+
+    INT        shift, and go to state 170
+    FLOAT      shift, and go to state 171
+    EMPTY      shift, and go to state 172
+    ISSET_KW   shift, and go to state 173
+    EXISTS_KW  shift, and go to state 174
+    ID         shift, and go to state 175
+    SUM_OP     shift, and go to state 176
+    UN_LOG_OP  shift, and go to state 177
+    '('        shift, and go to state 178
+
+    pertOP         go to state 279
+    typeOP         go to state 179
+    selectOP       go to state 180
+    simpleExp      go to state 104
+    constOP        go to state 181
+    binLogicalExp  go to state 182
+    unLogicalExp   go to state 183
+    relationalExp  go to state 184
+    sumExp         go to state 185
+    mulExp         go to state 186
+    factor         go to state 187
+    functionCall   go to state 188
+
+
+State 233
+
+   75 functionCall: ID '(' • callParams ')'
+
+    INT        shift, and go to state 189
+    FLOAT      shift, and go to state 190
+    EMPTY      shift, and go to state 191
+    ISSET_KW   shift, and go to state 192
+    EXISTS_KW  shift, and go to state 193
+    ID         shift, and go to state 194
+    SUM_OP     shift, and go to state 195
+    UN_LOG_OP  shift, and go to state 196
+    '('        shift, and go to state 197
+
+    pertOP         go to state 198
+    typeOP         go to state 199
+    selectOP       go to state 200
+    simpleExp      go to state 116
+    constOP        go to state 201
+    binLogicalExp  go to state 202
+    unLogicalExp   go to state 203
+    relationalExp  go to state 204
+    sumExp         go to state 205
+    mulExp         go to state 206
+    factor         go to state 207
+    functionCall   go to state 208
+    callParams     go to state 280
+
+
+State 234
+
+   70 mulExp: SUM_OP factor •
+
+    IN_KW       reduce using rule 70 (mulExp)
+    SUM_OP      reduce using rule 70 (mulExp)
+    MUL_OP      reduce using rule 70 (mulExp)
+    BIN_LOG_OP  reduce using rule 70 (mulExp)
+    REL_OP      reduce using rule 70 (mulExp)
+
+
+State 235
+
+   62 unLogicalExp: UN_LOG_OP unLogicalExp •
+
+    IN_KW       reduce using rule 62 (unLogicalExp)
+    BIN_LOG_OP  reduce using rule 62 (unLogicalExp)
+
+
+State 236
+
+   33 pertOP: simpleExp • IN_KW ID
+   34       | simpleExp • IN_KW setReturner
+   73 factor: '(' simpleExp • ')'
+
+    IN_KW  shift, and go to state 209
+    ')'    shift, and go to state 281
+
+
+State 237
+
+   60 binLogicalExp: binLogicalExp BIN_LOG_OP • unLogicalExp
+
+    INT        shift, and go to state 170
+    FLOAT      shift, and go to state 171
+    EMPTY      shift, and go to state 172
+    ID         shift, and go to state 175
+    SUM_OP     shift, and go to state 176
+    UN_LOG_OP  shift, and go to state 177
+    '('        shift, and go to state 178
+
+    constOP        go to state 181
+    unLogicalExp   go to state 282
+    relationalExp  go to state 184
+    sumExp         go to state 185
+    mulExp         go to state 186
+    factor         go to state 187
+    functionCall   go to state 188
+
+
+State 238
+
+   64 relationalExp: relationalExp REL_OP • sumExp
+
+    INT     shift, and go to state 170
+    FLOAT   shift, and go to state 171
+    EMPTY   shift, and go to state 172
+    ID      shift, and go to state 175
+    SUM_OP  shift, and go to state 176
+    '('     shift, and go to state 178
+
+    constOP       go to state 181
+    sumExp        go to state 283
+    mulExp        go to state 186
+    factor        go to state 187
+    functionCall  go to state 188
+
+
+State 239
+
+   66 sumExp: sumExp SUM_OP • mulExp
+
+    INT     shift, and go to state 170
+    FLOAT   shift, and go to state 171
+    EMPTY   shift, and go to state 172
+    ID      shift, and go to state 175
+    SUM_OP  shift, and go to state 176
+    '('     shift, and go to state 178
+
+    constOP       go to state 181
+    mulExp        go to state 284
+    factor        go to state 187
+    functionCall  go to state 188
+
+
+State 240
+
+   68 mulExp: mulExp MUL_OP • factor
+
+    INT    shift, and go to state 170
+    FLOAT  shift, and go to state 171
+    EMPTY  shift, and go to state 172
+    ID     shift, and go to state 175
+    '('    shift, and go to state 178
+
+    constOP       go to state 181
+    factor        go to state 285
+    functionCall  go to state 188
+
+
+State 241
+
+   37 typeOP: ISSET_KW '(' • ID ')'
+
+    ID  shift, and go to state 286
+
+
+State 242
+
+   40 selectOP: EXISTS_KW '(' • pertOP ')'
+
+    INT        shift, and go to state 170
+    FLOAT      shift, and go to state 171
+    EMPTY      shift, and go to state 172
+    ISSET_KW   shift, and go to state 173
+    EXISTS_KW  shift, and go to state 174
+    ID         shift, and go to state 175
+    SUM_OP     shift, and go to state 176
+    UN_LOG_OP  shift, and go to state 177
+    '('        shift, and go to state 178
+
+    pertOP         go to state 287
+    typeOP         go to state 179
+    selectOP       go to state 180
+    simpleExp      go to state 104
+    constOP        go to state 181
+    binLogicalExp  go to state 182
+    unLogicalExp   go to state 183
+    relationalExp  go to state 184
+    sumExp         go to state 185
+    mulExp         go to state 186
+    factor         go to state 187
+    functionCall   go to state 188
+
+
+State 243
+
+   75 functionCall: ID '(' • callParams ')'
+
+    INT        shift, and go to state 189
+    FLOAT      shift, and go to state 190
+    EMPTY      shift, and go to state 191
+    ISSET_KW   shift, and go to state 192
+    EXISTS_KW  shift, and go to state 193
+    ID         shift, and go to state 194
+    SUM_OP     shift, and go to state 195
+    UN_LOG_OP  shift, and go to state 196
+    '('        shift, and go to state 197
+
+    pertOP         go to state 198
+    typeOP         go to state 199
+    selectOP       go to state 200
+    simpleExp      go to state 116
+    constOP        go to state 201
+    binLogicalExp  go to state 202
+    unLogicalExp   go to state 203
+    relationalExp  go to state 204
+    sumExp         go to state 205
+    mulExp         go to state 206
+    factor         go to state 207
+    functionCall   go to state 208
+    callParams     go to state 288
+
+
+State 244
+
+   70 mulExp: SUM_OP factor •
+
+    IN_KW       reduce using rule 70 (mulExp)
+    SUM_OP      reduce using rule 70 (mulExp)
+    MUL_OP      reduce using rule 70 (mulExp)
+    BIN_LOG_OP  reduce using rule 70 (mulExp)
+    REL_OP      reduce using rule 70 (mulExp)
+    ')'         reduce using rule 70 (mulExp)
+    ','         reduce using rule 70 (mulExp)
+
+
+State 245
+
+   62 unLogicalExp: UN_LOG_OP unLogicalExp •
+
+    IN_KW       reduce using rule 62 (unLogicalExp)
+    BIN_LOG_OP  reduce using rule 62 (unLogicalExp)
+    ')'         reduce using rule 62 (unLogicalExp)
+    ','         reduce using rule 62 (unLogicalExp)
+
+
+State 246
+
+   33 pertOP: simpleExp • IN_KW ID
+   34       | simpleExp • IN_KW setReturner
+   73 factor: '(' simpleExp • ')'
+
+    IN_KW  shift, and go to state 209
+    ')'    shift, and go to state 289
+
+
+State 247
+
+   60 binLogicalExp: binLogicalExp BIN_LOG_OP • unLogicalExp
+
+    INT        shift, and go to state 189
+    FLOAT      shift, and go to state 190
+    EMPTY      shift, and go to state 191
+    ID         shift, and go to state 194
+    SUM_OP     shift, and go to state 195
+    UN_LOG_OP  shift, and go to state 196
+    '('        shift, and go to state 197
+
+    constOP        go to state 201
+    unLogicalExp   go to state 290
+    relationalExp  go to state 204
+    sumExp         go to state 205
+    mulExp         go to state 206
+    factor         go to state 207
+    functionCall   go to state 208
+
+
+State 248
+
+   64 relationalExp: relationalExp REL_OP • sumExp
+
+    INT     shift, and go to state 189
+    FLOAT   shift, and go to state 190
+    EMPTY   shift, and go to state 191
+    ID      shift, and go to state 194
+    SUM_OP  shift, and go to state 195
+    '('     shift, and go to state 197
+
+    constOP       go to state 201
+    sumExp        go to state 291
+    mulExp        go to state 206
+    factor        go to state 207
+    functionCall  go to state 208
+
+
+State 249
+
+   66 sumExp: sumExp SUM_OP • mulExp
+
+    INT     shift, and go to state 189
+    FLOAT   shift, and go to state 190
+    EMPTY   shift, and go to state 191
+    ID      shift, and go to state 194
+    SUM_OP  shift, and go to state 195
+    '('     shift, and go to state 197
+
+    constOP       go to state 201
+    mulExp        go to state 292
+    factor        go to state 207
+    functionCall  go to state 208
+
+
+State 250
+
+   68 mulExp: mulExp MUL_OP • factor
+
+    INT    shift, and go to state 189
+    FLOAT  shift, and go to state 190
+    EMPTY  shift, and go to state 191
+    ID     shift, and go to state 194
+    '('    shift, and go to state 197
+
+    constOP       go to state 201
+    factor        go to state 293
+    functionCall  go to state 208
+
+
+State 251
+
+   38 addOP: ADD_KW • '(' pertOP ')'
+
+    '('  shift, and go to state 294
+
+
+State 252
+
+   39 remOP: REMOVE_KW • '(' pertOP ')'
+
+    '('  shift, and go to state 295
+
+
+State 253
+
+   33 pertOP: simpleExp IN_KW ID •
+
+    IN_KW  reduce using rule 33 (pertOP)
+    ')'    reduce using rule 33 (pertOP)
+
+
+State 254
+
+   34 pertOP: simpleExp IN_KW setReturner •
+
+    IN_KW  reduce using rule 34 (pertOP)
+    ')'    reduce using rule 34 (pertOP)
+
+
+State 255
+
+   35 setReturner: addOP •
+
+    IN_KW  reduce using rule 35 (setReturner)
+    ')'    reduce using rule 35 (setReturner)
+
+
+State 256
+
+   36 setReturner: remOP •
+
+    IN_KW  reduce using rule 36 (setReturner)
+    ')'    reduce using rule 36 (setReturner)
+
+
+State 257
+
+   38 addOP: ADD_KW '(' • pertOP ')'
+
+    INT        shift, and go to state 170
+    FLOAT      shift, and go to state 171
+    EMPTY      shift, and go to state 172
+    ISSET_KW   shift, and go to state 173
+    EXISTS_KW  shift, and go to state 174
+    ID         shift, and go to state 175
+    SUM_OP     shift, and go to state 176
+    UN_LOG_OP  shift, and go to state 177
+    '('        shift, and go to state 178
+
+    pertOP         go to state 296
+    typeOP         go to state 179
+    selectOP       go to state 180
+    simpleExp      go to state 104
+    constOP        go to state 181
+    binLogicalExp  go to state 182
+    unLogicalExp   go to state 183
+    relationalExp  go to state 184
+    sumExp         go to state 185
+    mulExp         go to state 186
+    factor         go to state 187
+    functionCall   go to state 188
+
+
+State 258
+
+   39 remOP: REMOVE_KW '(' • pertOP ')'
+
+    INT        shift, and go to state 170
+    FLOAT      shift, and go to state 171
+    EMPTY      shift, and go to state 172
+    ISSET_KW   shift, and go to state 173
+    EXISTS_KW  shift, and go to state 174
+    ID         shift, and go to state 175
+    SUM_OP     shift, and go to state 176
+    UN_LOG_OP  shift, and go to state 177
+    '('        shift, and go to state 178
+
+    pertOP         go to state 297
+    typeOP         go to state 179
+    selectOP       go to state 180
+    simpleExp      go to state 104
+    constOP        go to state 181
+    binLogicalExp  go to state 182
+    unLogicalExp   go to state 183
+    relationalExp  go to state 184
+    sumExp         go to state 185
+    mulExp         go to state 186
+    factor         go to state 187
+    functionCall   go to state 188
+
+
+State 259
+
+   38 addOP: ADD_KW • '(' pertOP ')'
+
+    '('  shift, and go to state 298
+
+
+State 260
+
+   39 remOP: REMOVE_KW • '(' pertOP ')'
+
+    '('  shift, and go to state 299
+
+
+State 261
+
+   33 pertOP: simpleExp IN_KW ID •
+
+    IN_KW  reduce using rule 33 (pertOP)
+    ')'    reduce using rule 33 (pertOP)
+    ','    reduce using rule 33 (pertOP)
+
+
+State 262
+
+   34 pertOP: simpleExp IN_KW setReturner •
+
+    IN_KW  reduce using rule 34 (pertOP)
+    ')'    reduce using rule 34 (pertOP)
+    ','    reduce using rule 34 (pertOP)
+
+
+State 263
+
+   35 setReturner: addOP •
+
+    IN_KW  reduce using rule 35 (setReturner)
+    ')'    reduce using rule 35 (setReturner)
+    ','    reduce using rule 35 (setReturner)
+
+
+State 264
+
+   36 setReturner: remOP •
+
+    IN_KW  reduce using rule 36 (setReturner)
+    ')'    reduce using rule 36 (setReturner)
+    ','    reduce using rule 36 (setReturner)
+
+
+State 265
+
+   14 compoundStmt: '{' localDeclarations • stmtList '}'
+   16 localDeclarations: localDeclarations • varDeclaration
+   17                  | localDeclarations • error
+
+    error      shift, and go to state 89
+    INT        shift, and go to state 24
+    FLOAT      shift, and go to state 25
+    EMPTY      shift, and go to state 26
+    IF_KW      shift, and go to state 27
+    FOR_KW     shift, and go to state 28
+    FORALL_KW  shift, and go to state 29
+    RETURN_KW  shift, and go to state 30
+    ISSET_KW   shift, and go to state 31
+    ADD_KW     shift, and go to state 32
+    REMOVE_KW  shift, and go to state 33
+    EXISTS_KW  shift, and go to state 34
+    OUT        shift, and go to state 35
+    IN         shift, and go to state 36
+    TYPE       shift, and go to state 147
+    ID         shift, and go to state 37
+    SUM_OP     shift, and go to state 38
+    UN_LOG_OP  shift, and go to state 39
+    '{'        shift, and go to state 148
+    '('        shift, and go to state 40
+
+    varDeclaration      go to state 90
+    simpleVDeclaration  go to state 149
+    compoundStmt        go to state 42
+    stmtList            go to state 300
+    primitiveStmt       go to state 45
+    exprStmt            go to state 46
+    condStmt            go to state 47
+    iterStmt            go to state 48
+    returnStmt          go to state 49
+    setStmt             go to state 50
+    pertOP              go to state 51
+    setReturner         go to state 52
+    typeOP              go to state 53
+    addOP               go to state 54
+    remOP               go to state 55
+    selectOP            go to state 56
+    forallOP            go to state 57
+    expression          go to state 58
+    assignExp           go to state 59
+    simpleExp           go to state 60
+    constOP             go to state 61
+    inOP                go to state 62
+    outOP               go to state 63
+    binLogicalExp       go to state 64
+    unLogicalExp        go to state 65
+    relationalExp       go to state 66
+    sumExp              go to state 67
+    mulExp              go to state 68
+    factor              go to state 69
+    functionCall        go to state 70
+
+
+State 266
+
+   15 compoundStmt: '{' stmtList • '}'
+   19 stmtList: stmtList • primitiveStmt
+
+    INT        shift, and go to state 24
+    FLOAT      shift, and go to state 25
+    EMPTY      shift, and go to state 26
+    IF_KW      shift, and go to state 27
+    FOR_KW     shift, and go to state 28
+    FORALL_KW  shift, and go to state 29
+    RETURN_KW  shift, and go to state 30
+    ISSET_KW   shift, and go to state 31
+    ADD_KW     shift, and go to state 32
+    REMOVE_KW  shift, and go to state 33
+    EXISTS_KW  shift, and go to state 34
+    OUT        shift, and go to state 35
+    IN         shift, and go to state 36
+    ID         shift, and go to state 37
+    SUM_OP     shift, and go to state 38
+    UN_LOG_OP  shift, and go to state 39
+    '{'        shift, and go to state 148
+    '}'        shift, and go to state 301
+    '('        shift, and go to state 40
+
+    compoundStmt   go to state 42
+    primitiveStmt  go to state 93
+    exprStmt       go to state 46
+    condStmt       go to state 47
+    iterStmt       go to state 48
+    returnStmt     go to state 49
+    setStmt        go to state 50
+    pertOP         go to state 51
+    setReturner    go to state 52
+    typeOP         go to state 53
+    addOP          go to state 54
+    remOP          go to state 55
+    selectOP       go to state 56
+    forallOP       go to state 57
+    expression     go to state 58
+    assignExp      go to state 59
+    simpleExp      go to state 60
+    constOP        go to state 61
+    inOP           go to state 62
+    outOP          go to state 63
+    binLogicalExp  go to state 64
+    unLogicalExp   go to state 65
+    relationalExp  go to state 66
+    sumExp         go to state 67
+    mulExp         go to state 68
+    factor         go to state 69
+    functionCall   go to state 70
+
+
+State 267
+
+   47 assignExp: ID ASS_OP • expression
+
+    INT        shift, and go to state 150
+    FLOAT      shift, and go to state 151
+    EMPTY      shift, and go to state 152
+    ISSET_KW   shift, and go to state 153
+    ADD_KW     shift, and go to state 302
+    REMOVE_KW  shift, and go to state 303
+    EXISTS_KW  shift, and go to state 154
+    OUT        shift, and go to state 304
+    IN         shift, and go to state 305
+    ID         shift, and go to state 306
+    SUM_OP     shift, and go to state 156
+    UN_LOG_OP  shift, and go to state 157
+    '('        shift, and go to state 158
+
+    pertOP         go to state 159
+    setReturner    go to state 307
+    typeOP         go to state 160
+    addOP          go to state 308
+    remOP          go to state 309
+    selectOP       go to state 161
+    expression     go to state 310
+    assignExp      go to state 311
+    simpleExp      go to state 312
+    constOP        go to state 162
+    inOP           go to state 313
+    outOP          go to state 314
+    binLogicalExp  go to state 163
+    unLogicalExp   go to state 164
+    relationalExp  go to state 165
+    sumExp         go to state 166
+    mulExp         go to state 167
+    factor         go to state 168
+    functionCall   go to state 169
+
+
+State 268
+
+   14 compoundStmt: '{' localDeclarations stmtList • '}'
+   19 stmtList: stmtList • primitiveStmt
+
+    INT        shift, and go to state 24
+    FLOAT      shift, and go to state 25
+    EMPTY      shift, and go to state 26
+    IF_KW      shift, and go to state 27
+    FOR_KW     shift, and go to state 28
+    FORALL_KW  shift, and go to state 29
+    RETURN_KW  shift, and go to state 30
+    ISSET_KW   shift, and go to state 31
+    ADD_KW     shift, and go to state 32
+    REMOVE_KW  shift, and go to state 33
+    EXISTS_KW  shift, and go to state 34
+    OUT        shift, and go to state 35
+    IN         shift, and go to state 36
+    ID         shift, and go to state 37
+    SUM_OP     shift, and go to state 38
+    UN_LOG_OP  shift, and go to state 39
+    '{'        shift, and go to state 148
+    '}'        shift, and go to state 315
+    '('        shift, and go to state 40
+
+    compoundStmt   go to state 42
+    primitiveStmt  go to state 93
+    exprStmt       go to state 46
+    condStmt       go to state 47
+    iterStmt       go to state 48
+    returnStmt     go to state 49
+    setStmt        go to state 50
+    pertOP         go to state 51
+    setReturner    go to state 52
+    typeOP         go to state 53
+    addOP          go to state 54
+    remOP          go to state 55
+    selectOP       go to state 56
+    forallOP       go to state 57
+    expression     go to state 58
+    assignExp      go to state 59
+    simpleExp      go to state 60
+    constOP        go to state 61
+    inOP           go to state 62
+    outOP          go to state 63
+    binLogicalExp  go to state 64
+    unLogicalExp   go to state 65
+    relationalExp  go to state 66
+    sumExp         go to state 67
+    mulExp         go to state 68
+    factor         go to state 69
+    functionCall   go to state 70
+
+
+State 269
+
+   15 compoundStmt: '{' stmtList '}' •
+
+    INT        reduce using rule 15 (compoundStmt)
+    FLOAT      reduce using rule 15 (compoundStmt)
+    EMPTY      reduce using rule 15 (compoundStmt)
+    IF_KW      reduce using rule 15 (compoundStmt)
+    FOR_KW     reduce using rule 15 (compoundStmt)
+    FORALL_KW  reduce using rule 15 (compoundStmt)
+    RETURN_KW  reduce using rule 15 (compoundStmt)
+    ISSET_KW   reduce using rule 15 (compoundStmt)
+    ADD_KW     reduce using rule 15 (compoundStmt)
+    REMOVE_KW  reduce using rule 15 (compoundStmt)
+    EXISTS_KW  reduce using rule 15 (compoundStmt)
+    OUT        reduce using rule 15 (compoundStmt)
+    IN         reduce using rule 15 (compoundStmt)
+    ID         reduce using rule 15 (compoundStmt)
+    SUM_OP     reduce using rule 15 (compoundStmt)
+    UN_LOG_OP  reduce using rule 15 (compoundStmt)
+    '{'        reduce using rule 15 (compoundStmt)
+    '}'        reduce using rule 15 (compoundStmt)
+    '('        reduce using rule 15 (compoundStmt)
+
+
+State 270
+
+   37 typeOP: ISSET_KW '(' ID • ')'
+
+    ')'  shift, and go to state 316
+
+
+State 271
+
+   40 selectOP: EXISTS_KW '(' pertOP • ')'
+   49 simpleExp: pertOP •
+
+    ')'  shift, and go to state 317
+
+    IN_KW  reduce using rule 49 (simpleExp)
+
+
+State 272
+
+   75 functionCall: ID '(' callParams • ')'
+   76 callParams: callParams • ',' simpleExp
+
+    ')'  shift, and go to state 318
+    ','  shift, and go to state 136
+
+
+State 273
+
+   73 factor: '(' simpleExp ')' •
+
+    IN_KW       reduce using rule 73 (factor)
+    SUM_OP      reduce using rule 73 (factor)
+    MUL_OP      reduce using rule 73 (factor)
+    BIN_LOG_OP  reduce using rule 73 (factor)
+    REL_OP      reduce using rule 73 (factor)
+    ')'         reduce using rule 73 (factor)
+
+
+State 274
+
+   60 binLogicalExp: binLogicalExp BIN_LOG_OP unLogicalExp •
+
+    IN_KW       reduce using rule 60 (binLogicalExp)
+    BIN_LOG_OP  reduce using rule 60 (binLogicalExp)
+    ')'         reduce using rule 60 (binLogicalExp)
+
+
+State 275
+
+   64 relationalExp: relationalExp REL_OP sumExp •
+   66 sumExp: sumExp • SUM_OP mulExp
+
+    SUM_OP  shift, and go to state 229
+
+    IN_KW       reduce using rule 64 (relationalExp)
+    BIN_LOG_OP  reduce using rule 64 (relationalExp)
+    REL_OP      reduce using rule 64 (relationalExp)
+    ')'         reduce using rule 64 (relationalExp)
+
+
+State 276
+
+   66 sumExp: sumExp SUM_OP mulExp •
+   68 mulExp: mulExp • MUL_OP factor
+
+    MUL_OP  shift, and go to state 230
+
+    IN_KW       reduce using rule 66 (sumExp)
+    SUM_OP      reduce using rule 66 (sumExp)
+    BIN_LOG_OP  reduce using rule 66 (sumExp)
+    REL_OP      reduce using rule 66 (sumExp)
+    ')'         reduce using rule 66 (sumExp)
+
+
+State 277
+
+   68 mulExp: mulExp MUL_OP factor •
+
+    IN_KW       reduce using rule 68 (mulExp)
+    SUM_OP      reduce using rule 68 (mulExp)
+    MUL_OP      reduce using rule 68 (mulExp)
+    BIN_LOG_OP  reduce using rule 68 (mulExp)
+    REL_OP      reduce using rule 68 (mulExp)
+    ')'         reduce using rule 68 (mulExp)
+
+
+State 278
+
+   37 typeOP: ISSET_KW '(' ID • ')'
+
+    ')'  shift, and go to state 319
+
+
+State 279
+
+   40 selectOP: EXISTS_KW '(' pertOP • ')'
+   49 simpleExp: pertOP •
+
+    ')'  shift, and go to state 320
+
+    IN_KW  reduce using rule 49 (simpleExp)
+
+
+State 280
+
+   75 functionCall: ID '(' callParams • ')'
+   76 callParams: callParams • ',' simpleExp
+
+    ')'  shift, and go to state 321
+    ','  shift, and go to state 136
+
+
+State 281
+
+   73 factor: '(' simpleExp ')' •
+
+    IN_KW       reduce using rule 73 (factor)
+    SUM_OP      reduce using rule 73 (factor)
+    MUL_OP      reduce using rule 73 (factor)
+    BIN_LOG_OP  reduce using rule 73 (factor)
+    REL_OP      reduce using rule 73 (factor)
+
+
+State 282
+
+   60 binLogicalExp: binLogicalExp BIN_LOG_OP unLogicalExp •
+
+    IN_KW       reduce using rule 60 (binLogicalExp)
+    BIN_LOG_OP  reduce using rule 60 (binLogicalExp)
+
+
+State 283
+
+   64 relationalExp: relationalExp REL_OP sumExp •
+   66 sumExp: sumExp • SUM_OP mulExp
+
+    SUM_OP  shift, and go to state 239
+
+    IN_KW       reduce using rule 64 (relationalExp)
+    BIN_LOG_OP  reduce using rule 64 (relationalExp)
+    REL_OP      reduce using rule 64 (relationalExp)
+
+
+State 284
+
+   66 sumExp: sumExp SUM_OP mulExp •
+   68 mulExp: mulExp • MUL_OP factor
+
+    MUL_OP  shift, and go to state 240
+
+    IN_KW       reduce using rule 66 (sumExp)
+    SUM_OP      reduce using rule 66 (sumExp)
+    BIN_LOG_OP  reduce using rule 66 (sumExp)
+    REL_OP      reduce using rule 66 (sumExp)
+
+
+State 285
+
+   68 mulExp: mulExp MUL_OP factor •
+
+    IN_KW       reduce using rule 68 (mulExp)
+    SUM_OP      reduce using rule 68 (mulExp)
+    MUL_OP      reduce using rule 68 (mulExp)
+    BIN_LOG_OP  reduce using rule 68 (mulExp)
+    REL_OP      reduce using rule 68 (mulExp)
+
+
+State 286
+
+   37 typeOP: ISSET_KW '(' ID • ')'
+
+    ')'  shift, and go to state 322
+
+
+State 287
+
+   40 selectOP: EXISTS_KW '(' pertOP • ')'
+   49 simpleExp: pertOP •
+
+    ')'  shift, and go to state 323
+
+    IN_KW  reduce using rule 49 (simpleExp)
+
+
+State 288
+
+   75 functionCall: ID '(' callParams • ')'
+   76 callParams: callParams • ',' simpleExp
+
+    ')'  shift, and go to state 324
+    ','  shift, and go to state 136
+
+
+State 289
+
+   73 factor: '(' simpleExp ')' •
+
+    IN_KW       reduce using rule 73 (factor)
+    SUM_OP      reduce using rule 73 (factor)
+    MUL_OP      reduce using rule 73 (factor)
+    BIN_LOG_OP  reduce using rule 73 (factor)
+    REL_OP      reduce using rule 73 (factor)
+    ')'         reduce using rule 73 (factor)
+    ','         reduce using rule 73 (factor)
+
+
+State 290
+
+   60 binLogicalExp: binLogicalExp BIN_LOG_OP unLogicalExp •
+
+    IN_KW       reduce using rule 60 (binLogicalExp)
+    BIN_LOG_OP  reduce using rule 60 (binLogicalExp)
+    ')'         reduce using rule 60 (binLogicalExp)
+    ','         reduce using rule 60 (binLogicalExp)
+
+
+State 291
+
+   64 relationalExp: relationalExp REL_OP sumExp •
+   66 sumExp: sumExp • SUM_OP mulExp
+
+    SUM_OP  shift, and go to state 249
+
+    IN_KW       reduce using rule 64 (relationalExp)
+    BIN_LOG_OP  reduce using rule 64 (relationalExp)
+    REL_OP      reduce using rule 64 (relationalExp)
+    ')'         reduce using rule 64 (relationalExp)
+    ','         reduce using rule 64 (relationalExp)
+
+
+State 292
+
+   66 sumExp: sumExp SUM_OP mulExp •
+   68 mulExp: mulExp • MUL_OP factor
+
+    MUL_OP  shift, and go to state 250
+
+    IN_KW       reduce using rule 66 (sumExp)
+    SUM_OP      reduce using rule 66 (sumExp)
+    BIN_LOG_OP  reduce using rule 66 (sumExp)
+    REL_OP      reduce using rule 66 (sumExp)
+    ')'         reduce using rule 66 (sumExp)
+    ','         reduce using rule 66 (sumExp)
+
+
+State 293
+
+   68 mulExp: mulExp MUL_OP factor •
+
+    IN_KW       reduce using rule 68 (mulExp)
+    SUM_OP      reduce using rule 68 (mulExp)
+    MUL_OP      reduce using rule 68 (mulExp)
+    BIN_LOG_OP  reduce using rule 68 (mulExp)
+    REL_OP      reduce using rule 68 (mulExp)
+    ')'         reduce using rule 68 (mulExp)
+    ','         reduce using rule 68 (mulExp)
+
+
+State 294
+
+   38 addOP: ADD_KW '(' • pertOP ')'
+
+    INT        shift, and go to state 170
+    FLOAT      shift, and go to state 171
+    EMPTY      shift, and go to state 172
+    ISSET_KW   shift, and go to state 173
+    EXISTS_KW  shift, and go to state 174
+    ID         shift, and go to state 175
+    SUM_OP     shift, and go to state 176
+    UN_LOG_OP  shift, and go to state 177
+    '('        shift, and go to state 178
+
+    pertOP         go to state 325
+    typeOP         go to state 179
+    selectOP       go to state 180
+    simpleExp      go to state 104
+    constOP        go to state 181
+    binLogicalExp  go to state 182
+    unLogicalExp   go to state 183
+    relationalExp  go to state 184
+    sumExp         go to state 185
+    mulExp         go to state 186
+    factor         go to state 187
+    functionCall   go to state 188
+
+
+State 295
+
+   39 remOP: REMOVE_KW '(' • pertOP ')'
+
+    INT        shift, and go to state 170
+    FLOAT      shift, and go to state 171
+    EMPTY      shift, and go to state 172
+    ISSET_KW   shift, and go to state 173
+    EXISTS_KW  shift, and go to state 174
+    ID         shift, and go to state 175
+    SUM_OP     shift, and go to state 176
+    UN_LOG_OP  shift, and go to state 177
+    '('        shift, and go to state 178
+
+    pertOP         go to state 326
+    typeOP         go to state 179
+    selectOP       go to state 180
+    simpleExp      go to state 104
+    constOP        go to state 181
+    binLogicalExp  go to state 182
+    unLogicalExp   go to state 183
+    relationalExp  go to state 184
+    sumExp         go to state 185
+    mulExp         go to state 186
+    factor         go to state 187
+    functionCall   go to state 188
+
+
+State 296
+
+   38 addOP: ADD_KW '(' pertOP • ')'
+   49 simpleExp: pertOP •
+
+    ')'  shift, and go to state 327
+
+    IN_KW  reduce using rule 49 (simpleExp)
+
+
+State 297
+
+   39 remOP: REMOVE_KW '(' pertOP • ')'
+   49 simpleExp: pertOP •
+
+    ')'  shift, and go to state 328
+
+    IN_KW  reduce using rule 49 (simpleExp)
+
+
+State 298
+
+   38 addOP: ADD_KW '(' • pertOP ')'
+
+    INT        shift, and go to state 170
+    FLOAT      shift, and go to state 171
+    EMPTY      shift, and go to state 172
+    ISSET_KW   shift, and go to state 173
+    EXISTS_KW  shift, and go to state 174
+    ID         shift, and go to state 175
+    SUM_OP     shift, and go to state 176
+    UN_LOG_OP  shift, and go to state 177
+    '('        shift, and go to state 178
+
+    pertOP         go to state 329
+    typeOP         go to state 179
+    selectOP       go to state 180
+    simpleExp      go to state 104
+    constOP        go to state 181
+    binLogicalExp  go to state 182
+    unLogicalExp   go to state 183
+    relationalExp  go to state 184
+    sumExp         go to state 185
+    mulExp         go to state 186
+    factor         go to state 187
+    functionCall   go to state 188
+
+
+State 299
+
+   39 remOP: REMOVE_KW '(' • pertOP ')'
+
+    INT        shift, and go to state 170
+    FLOAT      shift, and go to state 171
+    EMPTY      shift, and go to state 172
+    ISSET_KW   shift, and go to state 173
+    EXISTS_KW  shift, and go to state 174
+    ID         shift, and go to state 175
+    SUM_OP     shift, and go to state 176
+    UN_LOG_OP  shift, and go to state 177
+    '('        shift, and go to state 178
+
+    pertOP         go to state 330
+    typeOP         go to state 179
+    selectOP       go to state 180
+    simpleExp      go to state 104
+    constOP        go to state 181
+    binLogicalExp  go to state 182
+    unLogicalExp   go to state 183
+    relationalExp  go to state 184
+    sumExp         go to state 185
+    mulExp         go to state 186
+    factor         go to state 187
+    functionCall   go to state 188
+
+
+State 300
+
+   14 compoundStmt: '{' localDeclarations stmtList • '}'
+   19 stmtList: stmtList • primitiveStmt
+
+    INT        shift, and go to state 24
+    FLOAT      shift, and go to state 25
+    EMPTY      shift, and go to state 26
+    IF_KW      shift, and go to state 27
+    FOR_KW     shift, and go to state 28
+    FORALL_KW  shift, and go to state 29
+    RETURN_KW  shift, and go to state 30
+    ISSET_KW   shift, and go to state 31
+    ADD_KW     shift, and go to state 32
+    REMOVE_KW  shift, and go to state 33
+    EXISTS_KW  shift, and go to state 34
+    OUT        shift, and go to state 35
+    IN         shift, and go to state 36
+    ID         shift, and go to state 37
+    SUM_OP     shift, and go to state 38
+    UN_LOG_OP  shift, and go to state 39
+    '{'        shift, and go to state 148
+    '}'        shift, and go to state 331
+    '('        shift, and go to state 40
+
+    compoundStmt   go to state 42
+    primitiveStmt  go to state 93
+    exprStmt       go to state 46
+    condStmt       go to state 47
+    iterStmt       go to state 48
+    returnStmt     go to state 49
+    setStmt        go to state 50
+    pertOP         go to state 51
+    setReturner    go to state 52
+    typeOP         go to state 53
+    addOP          go to state 54
+    remOP          go to state 55
+    selectOP       go to state 56
+    forallOP       go to state 57
+    expression     go to state 58
+    assignExp      go to state 59
+    simpleExp      go to state 60
+    constOP        go to state 61
+    inOP           go to state 62
+    outOP          go to state 63
+    binLogicalExp  go to state 64
+    unLogicalExp   go to state 65
+    relationalExp  go to state 66
+    sumExp         go to state 67
+    mulExp         go to state 68
+    factor         go to state 69
+    functionCall   go to state 70
+
+
+State 301
+
+   15 compoundStmt: '{' stmtList '}' •
+
+    INT        reduce using rule 15 (compoundStmt)
+    FLOAT      reduce using rule 15 (compoundStmt)
+    EMPTY      reduce using rule 15 (compoundStmt)
+    IF_KW      reduce using rule 15 (compoundStmt)
+    ELSE_KW    reduce using rule 15 (compoundStmt)
+    FOR_KW     reduce using rule 15 (compoundStmt)
+    FORALL_KW  reduce using rule 15 (compoundStmt)
+    RETURN_KW  reduce using rule 15 (compoundStmt)
+    ISSET_KW   reduce using rule 15 (compoundStmt)
+    ADD_KW     reduce using rule 15 (compoundStmt)
+    REMOVE_KW  reduce using rule 15 (compoundStmt)
+    EXISTS_KW  reduce using rule 15 (compoundStmt)
+    OUT        reduce using rule 15 (compoundStmt)
+    IN         reduce using rule 15 (compoundStmt)
+    ID         reduce using rule 15 (compoundStmt)
+    SUM_OP     reduce using rule 15 (compoundStmt)
+    UN_LOG_OP  reduce using rule 15 (compoundStmt)
+    '{'        reduce using rule 15 (compoundStmt)
+    '}'        reduce using rule 15 (compoundStmt)
+    '('        reduce using rule 15 (compoundStmt)
+
+
+State 302
+
+   38 addOP: ADD_KW • '(' pertOP ')'
+
+    '('  shift, and go to state 332
+
+
+State 303
+
+   39 remOP: REMOVE_KW • '(' pertOP ')'
+
+    '('  shift, and go to state 333
+
+
+State 304
+
+   56 outOP: OUT • '(' outConst ')'
+
+    '('  shift, and go to state 334
+
+
+State 305
+
+   55 inOP: IN • '(' ID ')'
+
+    '('  shift, and go to state 335
+
+
+State 306
+
+   47 assignExp: ID • ASS_OP expression
+   71 factor: ID •
+   75 functionCall: ID • '(' callParams ')'
+
+    ASS_OP  shift, and go to state 267
+    '('     shift, and go to state 223
+
+    IN_KW       reduce using rule 71 (factor)
+    SUM_OP      reduce using rule 71 (factor)
+    MUL_OP      reduce using rule 71 (factor)
+    BIN_LOG_OP  reduce using rule 71 (factor)
+    REL_OP      reduce using rule 71 (factor)
+    ')'         reduce using rule 71 (factor)
+
+
+State 307
+
+   44 expression: setReturner •
+
+    ')'  reduce using rule 44 (expression)
+
+
+State 308
+
+   35 setReturner: addOP •
+
+    ')'  reduce using rule 35 (setReturner)
+
+
+State 309
+
+   36 setReturner: remOP •
+
+    ')'  reduce using rule 36 (setReturner)
+
+
+State 310
+
+   47 assignExp: ID ASS_OP expression •
+
+    ')'  reduce using rule 47 (assignExp)
+
+
+State 311
+
+   42 expression: assignExp •
+
+    ')'  reduce using rule 42 (expression)
+
+
+State 312
+
+   33 pertOP: simpleExp • IN_KW ID
+   34       | simpleExp • IN_KW setReturner
+   43 expression: simpleExp •
+
+    IN_KW  shift, and go to state 209
+
+    ')'  reduce using rule 43 (expression)
+
+
+State 313
+
+   45 expression: inOP •
+
+    ')'  reduce using rule 45 (expression)
+
+
+State 314
+
+   46 expression: outOP •
+
+    ')'  reduce using rule 46 (expression)
+
+
+State 315
+
+   14 compoundStmt: '{' localDeclarations stmtList '}' •
+
+    INT        reduce using rule 14 (compoundStmt)
+    FLOAT      reduce using rule 14 (compoundStmt)
+    EMPTY      reduce using rule 14 (compoundStmt)
+    IF_KW      reduce using rule 14 (compoundStmt)
+    FOR_KW     reduce using rule 14 (compoundStmt)
+    FORALL_KW  reduce using rule 14 (compoundStmt)
+    RETURN_KW  reduce using rule 14 (compoundStmt)
+    ISSET_KW   reduce using rule 14 (compoundStmt)
+    ADD_KW     reduce using rule 14 (compoundStmt)
+    REMOVE_KW  reduce using rule 14 (compoundStmt)
+    EXISTS_KW  reduce using rule 14 (compoundStmt)
+    OUT        reduce using rule 14 (compoundStmt)
+    IN         reduce using rule 14 (compoundStmt)
+    ID         reduce using rule 14 (compoundStmt)
+    SUM_OP     reduce using rule 14 (compoundStmt)
+    UN_LOG_OP  reduce using rule 14 (compoundStmt)
+    '{'        reduce using rule 14 (compoundStmt)
+    '}'        reduce using rule 14 (compoundStmt)
+    '('        reduce using rule 14 (compoundStmt)
+
+
+State 316
+
+   37 typeOP: ISSET_KW '(' ID ')' •
+
+    IN_KW  reduce using rule 37 (typeOP)
+    ')'    reduce using rule 37 (typeOP)
+
+
+State 317
+
+   40 selectOP: EXISTS_KW '(' pertOP ')' •
+
+    IN_KW  reduce using rule 40 (selectOP)
+    ')'    reduce using rule 40 (selectOP)
+
+
+State 318
+
+   75 functionCall: ID '(' callParams ')' •
+
+    IN_KW       reduce using rule 75 (functionCall)
+    SUM_OP      reduce using rule 75 (functionCall)
+    MUL_OP      reduce using rule 75 (functionCall)
+    BIN_LOG_OP  reduce using rule 75 (functionCall)
+    REL_OP      reduce using rule 75 (functionCall)
+    ')'         reduce using rule 75 (functionCall)
+
+
+State 319
+
+   37 typeOP: ISSET_KW '(' ID ')' •
+
+    IN_KW  reduce using rule 37 (typeOP)
+
+
+State 320
+
+   40 selectOP: EXISTS_KW '(' pertOP ')' •
+
+    IN_KW  reduce using rule 40 (selectOP)
+
+
+State 321
+
+   75 functionCall: ID '(' callParams ')' •
+
+    IN_KW       reduce using rule 75 (functionCall)
+    SUM_OP      reduce using rule 75 (functionCall)
+    MUL_OP      reduce using rule 75 (functionCall)
+    BIN_LOG_OP  reduce using rule 75 (functionCall)
+    REL_OP      reduce using rule 75 (functionCall)
+
+
+State 322
+
+   37 typeOP: ISSET_KW '(' ID ')' •
+
+    IN_KW  reduce using rule 37 (typeOP)
+    ')'    reduce using rule 37 (typeOP)
+    ','    reduce using rule 37 (typeOP)
+
+
+State 323
+
+   40 selectOP: EXISTS_KW '(' pertOP ')' •
+
+    IN_KW  reduce using rule 40 (selectOP)
+    ')'    reduce using rule 40 (selectOP)
+    ','    reduce using rule 40 (selectOP)
+
+
+State 324
+
+   75 functionCall: ID '(' callParams ')' •
+
+    IN_KW       reduce using rule 75 (functionCall)
+    SUM_OP      reduce using rule 75 (functionCall)
+    MUL_OP      reduce using rule 75 (functionCall)
+    BIN_LOG_OP  reduce using rule 75 (functionCall)
+    REL_OP      reduce using rule 75 (functionCall)
+    ')'         reduce using rule 75 (functionCall)
+    ','         reduce using rule 75 (functionCall)
+
+
+State 325
+
+   38 addOP: ADD_KW '(' pertOP • ')'
+   49 simpleExp: pertOP •
+
+    ')'  shift, and go to state 336
+
+    IN_KW  reduce using rule 49 (simpleExp)
+
+
+State 326
+
+   39 remOP: REMOVE_KW '(' pertOP • ')'
+   49 simpleExp: pertOP •
+
+    ')'  shift, and go to state 337
+
+    IN_KW  reduce using rule 49 (simpleExp)
+
+
+State 327
+
+   38 addOP: ADD_KW '(' pertOP ')' •
+
+    IN_KW  reduce using rule 38 (addOP)
+    ';'    reduce using rule 38 (addOP)
+
+
+State 328
+
+   39 remOP: REMOVE_KW '(' pertOP ')' •
+
+    IN_KW  reduce using rule 39 (remOP)
+    ';'    reduce using rule 39 (remOP)
+
+
+State 329
+
+   38 addOP: ADD_KW '(' pertOP • ')'
+   49 simpleExp: pertOP •
+
+    ')'  shift, and go to state 338
+
+    IN_KW  reduce using rule 49 (simpleExp)
+
+
+State 330
+
+   39 remOP: REMOVE_KW '(' pertOP • ')'
+   49 simpleExp: pertOP •
+
+    ')'  shift, and go to state 339
+
+    IN_KW  reduce using rule 49 (simpleExp)
+
+
+State 331
+
+   14 compoundStmt: '{' localDeclarations stmtList '}' •
+
+    INT        reduce using rule 14 (compoundStmt)
+    FLOAT      reduce using rule 14 (compoundStmt)
+    EMPTY      reduce using rule 14 (compoundStmt)
+    IF_KW      reduce using rule 14 (compoundStmt)
+    ELSE_KW    reduce using rule 14 (compoundStmt)
+    FOR_KW     reduce using rule 14 (compoundStmt)
+    FORALL_KW  reduce using rule 14 (compoundStmt)
+    RETURN_KW  reduce using rule 14 (compoundStmt)
+    ISSET_KW   reduce using rule 14 (compoundStmt)
+    ADD_KW     reduce using rule 14 (compoundStmt)
+    REMOVE_KW  reduce using rule 14 (compoundStmt)
+    EXISTS_KW  reduce using rule 14 (compoundStmt)
+    OUT        reduce using rule 14 (compoundStmt)
+    IN         reduce using rule 14 (compoundStmt)
+    ID         reduce using rule 14 (compoundStmt)
+    SUM_OP     reduce using rule 14 (compoundStmt)
+    UN_LOG_OP  reduce using rule 14 (compoundStmt)
+    '{'        reduce using rule 14 (compoundStmt)
+    '}'        reduce using rule 14 (compoundStmt)
+    '('        reduce using rule 14 (compoundStmt)
+
+
+State 332
+
+   38 addOP: ADD_KW '(' • pertOP ')'
+
+    INT        shift, and go to state 170
+    FLOAT      shift, and go to state 171
+    EMPTY      shift, and go to state 172
+    ISSET_KW   shift, and go to state 173
+    EXISTS_KW  shift, and go to state 174
+    ID         shift, and go to state 175
+    SUM_OP     shift, and go to state 176
+    UN_LOG_OP  shift, and go to state 177
+    '('        shift, and go to state 178
+
+    pertOP         go to state 340
+    typeOP         go to state 179
+    selectOP       go to state 180
+    simpleExp      go to state 104
+    constOP        go to state 181
+    binLogicalExp  go to state 182
+    unLogicalExp   go to state 183
+    relationalExp  go to state 184
+    sumExp         go to state 185
+    mulExp         go to state 186
+    factor         go to state 187
+    functionCall   go to state 188
+
+
+State 333
+
+   39 remOP: REMOVE_KW '(' • pertOP ')'
+
+    INT        shift, and go to state 170
+    FLOAT      shift, and go to state 171
+    EMPTY      shift, and go to state 172
+    ISSET_KW   shift, and go to state 173
+    EXISTS_KW  shift, and go to state 174
+    ID         shift, and go to state 175
+    SUM_OP     shift, and go to state 176
+    UN_LOG_OP  shift, and go to state 177
+    '('        shift, and go to state 178
+
+    pertOP         go to state 341
+    typeOP         go to state 179
+    selectOP       go to state 180
+    simpleExp      go to state 104
+    constOP        go to state 181
+    binLogicalExp  go to state 182
+    unLogicalExp   go to state 183
+    relationalExp  go to state 184
+    sumExp         go to state 185
+    mulExp         go to state 186
+    factor         go to state 187
+    functionCall   go to state 188
+
+
+State 334
+
+   56 outOP: OUT '(' • outConst ')'
+
+    INT        shift, and go to state 150
+    FLOAT      shift, and go to state 151
+    EMPTY      shift, and go to state 152
+    ISSET_KW   shift, and go to state 153
+    EXISTS_KW  shift, and go to state 154
+    ID         shift, and go to state 155
+    SUM_OP     shift, and go to state 156
+    UN_LOG_OP  shift, and go to state 157
+    STRING     shift, and go to state 110
+    CHAR       shift, and go to state 111
+    '('        shift, and go to state 158
+
+    pertOP         go to state 159
+    typeOP         go to state 160
+    selectOP       go to state 161
+    simpleExp      go to state 112
+    constOP        go to state 162
+    outConst       go to state 342
+    binLogicalExp  go to state 163
+    unLogicalExp   go to state 164
+    relationalExp  go to state 165
+    sumExp         go to state 166
+    mulExp         go to state 167
+    factor         go to state 168
+    functionCall   go to state 169
+
+
+State 335
+
+   55 inOP: IN '(' • ID ')'
+
+    ID  shift, and go to state 343
+
+
+State 336
+
+   38 addOP: ADD_KW '(' pertOP ')' •
+
+    IN_KW  reduce using rule 38 (addOP)
+    ')'    reduce using rule 38 (addOP)
+
+
+State 337
+
+   39 remOP: REMOVE_KW '(' pertOP ')' •
+
+    IN_KW  reduce using rule 39 (remOP)
+    ')'    reduce using rule 39 (remOP)
+
+
+State 338
+
+   38 addOP: ADD_KW '(' pertOP ')' •
+
+    IN_KW  reduce using rule 38 (addOP)
+    ')'    reduce using rule 38 (addOP)
+    ','    reduce using rule 38 (addOP)
+
+
+State 339
+
+   39 remOP: REMOVE_KW '(' pertOP ')' •
+
+    IN_KW  reduce using rule 39 (remOP)
+    ')'    reduce using rule 39 (remOP)
+    ','    reduce using rule 39 (remOP)
+
+
+State 340
+
+   38 addOP: ADD_KW '(' pertOP • ')'
+   49 simpleExp: pertOP •
+
+    ')'  shift, and go to state 344
+
+    IN_KW  reduce using rule 49 (simpleExp)
+
+
+State 341
+
+   39 remOP: REMOVE_KW '(' pertOP • ')'
+   49 simpleExp: pertOP •
+
+    ')'  shift, and go to state 345
+
+    IN_KW  reduce using rule 49 (simpleExp)
+
+
+State 342
+
+   56 outOP: OUT '(' outConst • ')'
+
+    ')'  shift, and go to state 346
+
+
+State 343
+
+   55 inOP: IN '(' ID • ')'
+
+    ')'  shift, and go to state 347
+
+
+State 344
+
+   38 addOP: ADD_KW '(' pertOP ')' •
+
+    ')'  reduce using rule 38 (addOP)
+
+
+State 345
+
+   39 remOP: REMOVE_KW '(' pertOP ')' •
+
+    ')'  reduce using rule 39 (remOP)
+
+
+State 346
+
+   56 outOP: OUT '(' outConst ')' •
+
+    ')'  reduce using rule 56 (outOP)
+
+
+State 347
+
+   55 inOP: IN '(' ID ')' •
+
+    ')'  reduce using rule 55 (inOP)

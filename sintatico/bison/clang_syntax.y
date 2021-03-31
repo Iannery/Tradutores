@@ -34,6 +34,7 @@
 %left  <token> SUM_OP MUL_OP
 %left  <token> BIN_LOG_OP
 %right <token> UN_LOG_OP
+%right THEN ELSE_KW
 %token <token> REL_OP ASS_OP
 %token <token> STRING CHAR
 %token <token> '{' '}' '(' ')' ';' ','
@@ -160,7 +161,7 @@ simpleVDeclaration:
         insertSymbol(symbolTable, 
                     $2.t_title, 
                     $1.t_title, 
-                    "Variable", 
+                    0, 
                     $2.t_line, 
                     $2.t_column);
     }
@@ -173,7 +174,7 @@ simpleFDeclaration:
         insertSymbol(symbolTable, 
                     $2.t_title, 
                     $1.t_title, 
-                    "Function", 
+                    1, 
                     $2.t_line, 
                     $2.t_column);
     }
@@ -197,8 +198,7 @@ localDeclarations:
         $$->node2 = $2;
     }
     | localDeclarations error {
-        $$ = createNode("localDeclarations");
-        $$->node1 = $1;
+        // printf("DEU PAU\n");
     }
     | varDeclaration {
         $$ = createNode("localDeclarations");
@@ -243,6 +243,14 @@ primitiveStmt:
         $$ = createNode("PrimitiveStmt");
         $$->node1 = $1;
     }
+    | inOP ';' {
+        $$ = createNode("PrimitiveStmt");
+        $$->node1 = $1;
+    }
+    | outOP ';' {
+        $$ = createNode("PrimitiveStmt");
+        $$->node1 = $1;
+    }
 ;
 
 exprStmt:
@@ -253,12 +261,12 @@ exprStmt:
 ;
 
 condStmt:
-    IF_KW '(' simpleExp ')' compoundStmt {
+    IF_KW '(' simpleExp ')' primitiveStmt %prec THEN {
         $$ = createNode("ifStmt");
         $$->node1 = $3;
         $$->node2 = $5;
     }
-    | IF_KW '(' simpleExp ')' compoundStmt ELSE_KW compoundStmt {
+    | IF_KW '(' simpleExp ')' primitiveStmt ELSE_KW primitiveStmt {
         $$ = createNode("ifElseStmt");
         $$->node1 = $3;
         $$->node2 = $5;
@@ -267,7 +275,7 @@ condStmt:
 ;
 
 iterStmt:
-    FOR_KW '(' assignExp ';' simpleExp ';' assignExp ')' compoundStmt {
+    FOR_KW '(' assignExp ';' simpleExp ';' assignExp ')' primitiveStmt {
         $$ = createNode("forStmt");
         $$->node1 = $3;
         $$->node2 = $5;
@@ -284,28 +292,20 @@ returnStmt:
 ;
 
 setStmt:
-    typeOP ';' {
-        $$ = createNode("setStmt");
-        $$->node1 = $1;
-    }
-    | setReturner ';' {
-        $$ = createNode("setStmt");
-        $$->node1 = $1;
-    }
-    | forallOP {
+    forallOP {
         $$ = createNode("setStmt");
         $$->node1 = $1;
     }
 ;
 
 pertOP:
-    simpleExp IN_KW ID {
-        $$ = createNode("inOP");
+    simpleExp IN_KW ID{
+        $$ = createNode("in");
         $$->s_token = createSymbol($3.t_title, $3.t_line, $3.t_column);
         $$->node1 = $1;
     }
     | simpleExp IN_KW setReturner {
-        $$ = createNode("inOP");
+        $$ = createNode("in");
         $$->node1 = $1;
         $$->node2 = $3;
     }
@@ -351,7 +351,7 @@ selectOP:
 ;
 
 forallOP:
-    FORALL_KW '(' pertOP ')' compoundStmt {
+    FORALL_KW '(' pertOP ')' primitiveStmt {
         $$ = createNode("forallOP");
         $$->node1 = $3;
         $$->node2 = $5;
@@ -367,11 +367,7 @@ expression:
         $$ = createNode("expression");
         $$->node1 = $1;
     }
-    | inOP {
-        $$ = createNode("expression");
-        $$->node1 = $1;
-    }
-    | outOP {
+    | setReturner {
         $$ = createNode("expression");
         $$->node1 = $1;
     }
@@ -395,6 +391,10 @@ simpleExp:
         $$->node1 = $1;
     }
     | selectOP {
+        $$ = createNode("simpleExp");
+        $$->node1 = $1;
+    }
+    | typeOP {
         $$ = createNode("simpleExp");
         $$->node1 = $1;
     }
@@ -539,6 +539,10 @@ functionCall:
         $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
         $$->node1 = $3;
     }
+    | ID '(' ')' {
+        $$ = createNode("functionCall");
+        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+    }
 ;
 
 callParams: 
@@ -585,13 +589,13 @@ int main(int argc, char **argv){
     fclose(yyin);
     if(!errors){
         printf("Correct program.\n");
-        printTable(symbolTable);
-        printTree(tree, 0);
     }
     else{
         printf(BRED"The Abstract Syntax Tree nor the Symbol Table will not be shown if there are errors.\n");
         printf(reset);
     }
+    printTable(symbolTable);
+    printTree(tree, 0);
     freeTree(tree);
     yylex_destroy();
     return 0;

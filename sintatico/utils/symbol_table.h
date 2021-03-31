@@ -22,7 +22,7 @@ extern Symbol* createSymbol(char* title, int line, int column);
 extern void insertSymbol(Symbol* s, 
                         char* title, 
                         char* type, 
-                        char* funcvar, 
+                        int funcvar, 
                         int line, 
                         int column);
 extern void freeSymbol(Symbol* s);

@@ -29,13 +29,18 @@ extern Symbol* createSymbol(char* title, int line, int column){
 extern void insertSymbol(Symbol* s, 
                         char* title, 
                         char* type, 
-                        char* funcvar, 
+                        int funcvar, 
                         int line, 
                         int column){
     int pos = findEmpty(s);
     strcpy(s[pos].s_title, title);
     strcpy(s[pos].s_type, type);
-    strcpy(s[pos].s_funcvar, funcvar);
+    if(funcvar){
+        strcpy(s[pos].s_funcvar, "Function");
+    }
+    else{
+        strcpy(s[pos].s_funcvar, "Variable");
+    }
     s[pos].s_line = line;
     s[pos].s_column = column;
     s[pos].s_scope = seeTop(&scope);
