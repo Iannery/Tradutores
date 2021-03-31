@@ -1,3 +1,8 @@
+/***********************
+ *  Ian Nery Bandeira  *
+ *  170144739          *
+ ***********************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -70,6 +75,10 @@ extern void printTable(Symbol* s){
     }
     printf("\n");
     for(int i = 0; i < pos; i++){
+        if(strlen(s[i].s_title) > 20){
+            s[i].s_title[16] = '\0';
+            strcat(s[i].s_title, " ...\0");
+        }
         printf("| %-8s | %-20s | %-10s | %-6d | %-6d | %-6d |\n", 
             s[i].s_type, 
             s[i].s_title, 

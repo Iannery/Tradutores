@@ -1,3 +1,7 @@
+/***********************
+ *  Ian Nery Bandeira  *
+ *  170144739          *
+ ***********************/
 #ifndef S_TABLE_H
 #define S_TABLE_H
 

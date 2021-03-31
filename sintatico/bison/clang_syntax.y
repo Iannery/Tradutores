@@ -78,11 +78,11 @@
 %type <node> factor
 %type <node> functionCall
 %type <node> callParams
-
+%type <node> setParams 
 
 
 %%
-program: 
+program:
     declarationList {
         tree = $$;
     }
@@ -147,7 +147,9 @@ param:
 
 simpleVDeclaration:
     TYPE ID {
-        $$ = createNode("variable ID");
+        char auxstr[100];
+        strcpy(auxstr, $1.t_title);
+        $$ = createNode(strcat(auxstr," variable ID"));
         $$->s_token = createSymbol($2.t_title, $2.t_line, $2.t_column);
         insertSymbol(symbolTable, 
                     $2.t_title, 
@@ -161,7 +163,9 @@ simpleVDeclaration:
 
 simpleFDeclaration:
     TYPE ID {
-        $$ = createNode("function ID");
+        char auxstr[100];
+        strcpy(auxstr, $1.t_title);
+        $$ = createNode(strcat(auxstr," function ID"));
         $$->s_token = createSymbol($2.t_title, $2.t_line, $2.t_column);
         insertSymbol(symbolTable, 
                     $2.t_title, 
@@ -268,7 +272,8 @@ setStmt:
 pertOP:
     simpleExp IN_KW ID{
         $$ = createNode("in operator");
-        $$ = $1;
+        $$->node1 = $1;
+        $$->s_token = createSymbol($3.t_title, $3.t_line, $3.t_column);
     }
     | simpleExp IN_KW setReturner {
         $$ = createNode("in operator");
@@ -287,10 +292,31 @@ setReturner:
 ;
 
 typeOP:
-    ISSET_KW '(' ID ')' {
+    ISSET_KW '(' setParams ')' {
         $$ = createNode("is_set operator");
-        $$->s_token = createSymbol($3.t_title, $3.t_line, $3.t_column);
+        $$->node1 = $3;
     }
+    | UN_LOG_OP ISSET_KW '(' setParams ')' {
+        $$ = createNode("is_set operator");
+        $$->node1 = $4;
+    }
+;
+
+setParams: 
+    ID {
+        $$ = createNode("is_set parameter");
+        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+    }
+    | pertOP {
+        $$ = $1;
+    }
+    | setReturner {
+        $$ = $1;
+    }
+    | constOP {
+        $$ = $1;
+    }
+
 ;
 
 addOP:
@@ -516,8 +542,8 @@ extern void yyerror(const char* a) {
 int main(int argc, char **argv){
     FILE *fp = fopen(argv[1], "r");
     initTable(symbolTable);
-    initStack(&scope);
-    pushStack(&scope, 0);
+    initScopeStack(&scope);
+    pushScopeStack(&scope, 0);
     if(argc > 1){
         if(fp){
             yyin = fp;
@@ -542,7 +568,8 @@ int main(int argc, char **argv){
         printf(reset);
     }
     printTable(symbolTable);
-    freeTree(tree);
+    freeTreeEmergency();
+    // freeTree(tree);
     yylex_destroy();
     return 0;
 }

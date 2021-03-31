@@ -3,6 +3,7 @@
 %{
     #include    "clang_syntax.tab.h"
     #include    "stack.h"
+    #include    "tree.h"
     #include    "symbol_table.h"
     #include    <stdio.h>
     #include    <stdlib.h>
@@ -236,7 +237,7 @@ OUT     write|writeln
     yylval.token.t_column = column;
     strcpy(yylval.token.t_title, yytext);
     context++;
-    pushStack(&scope, context);
+    pushScopeStack(&scope, context);
     column += yyleng;
     return '{';
 }
@@ -245,7 +246,7 @@ OUT     write|writeln
     yylval.token.t_line = line;
     yylval.token.t_column = column;
     strcpy(yylval.token.t_title, yytext);
-    popStack(&scope);
+    popScopeStack(&scope);
     column += yyleng;
     return '}';
 }

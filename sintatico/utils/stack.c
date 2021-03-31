@@ -1,28 +1,33 @@
+/***********************
+ *  Ian Nery Bandeira  *
+ *  170144739          *
+ ***********************/
+
 #include <stdio.h>
 #include <string.h>
 #include "stack.h"
 
 
-extern void initStack(Scope* s){
-    for(int i = 0; i < 1000000; i++){
+extern void initScopeStack(Scope* s){
+    for(int i = 0; i < 100000; i++){
         s->stack[i] = -1;
     }
 }
 
-extern int emptyStack(Scope* s){
+extern int emptyScopeStack(Scope* s){
     return (s->stack[0] == -1);
 }
 
-extern int searchStack(Scope* s){
-    for(int i = 0; i < 1000000; i++){
+extern int searchScopeStack(Scope* s){
+    for(int i = 0; i < 100000; i++){
         if(s->stack[i] == -1){
             return i;
         }
     }
     return -1;
 }
-extern void pushStack(Scope* s, int context){
-    int idx = searchStack(s);
+extern void pushScopeStack(Scope* s, int context){
+    int idx = searchScopeStack(s);
     if(idx >= 0){
         s->stack[idx] = context;
     }
@@ -30,8 +35,8 @@ extern void pushStack(Scope* s, int context){
         printf("Push error!");
     }
 }
-extern int popStack(Scope* s){
-    int idx = searchStack(s);
+extern int popScopeStack(Scope* s){
+    int idx = searchScopeStack(s);
     if(idx > 0){
         idx--;
         int val = s->stack[idx];
@@ -44,7 +49,7 @@ extern int popStack(Scope* s){
     }
 }
 extern int seeTop(Scope* s){
-    int idx = searchStack(s);
+    int idx = searchScopeStack(s);
     if(idx > 0){
         idx--;
         int val = s->stack[idx];
