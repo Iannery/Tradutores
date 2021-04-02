@@ -3268,8 +3268,8 @@ int main(int argc, char **argv){
     printTable(symbolTable);
         
 
-    freeTreeEmergency();
-    // freeTree(tree);
+    freeTree();
+    // freeNode(tree);
     yylex_destroy();
     return 0;
 }

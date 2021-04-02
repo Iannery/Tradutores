@@ -23,7 +23,7 @@ extern Node* createNode(char* n_type){
     node->node3 = NULL;
     node->node4 = NULL;
     node->s_token = NULL;
-    pushNodeStack(node);
+    appendNode(node);
     return node;
 }
 
@@ -33,7 +33,7 @@ extern Node* createNode(char* n_type){
  * It runs a dfs (depth-first search) on the tree, freeing
  * the existing nodes recursively. 
 **/
-extern void freeTree(Node* node) {
+extern void freeNode(Node* node) {
     // recursion base, if the node does not exist, return to the recursion stack.
     if(!node){
         return;
@@ -44,10 +44,14 @@ extern void freeTree(Node* node) {
         free(node->s_token);
     }
     // goes into the recursion to all four nodes.
-    // freeTree(node->node1);
-    // freeTree(node->node2);
-    // freeTree(node->node3);
-    // freeTree(node->node4);
+    // ***********UPDATE************
+    // it does not do the recursion anymore, since it is now just a subroutine
+    // of freeTree.
+
+    // freeNode(node->node1);
+    // freeNode(node->node2);
+    // freeNode(node->node3);
+    // freeNode(node->node4);
     // free the current node.
     free(node);
 }
@@ -96,58 +100,66 @@ extern void printTree(Node* node, int depth){
 
 }
 
-extern void initNodeStack(){
+// Initializes the global nodeArray with all nodes pointing to NULL.
+extern void initNodeArray(){
     for(int i = 0; i < 100000; i++){
-        nodeStack[i] = NULL;
+        nodeArray[i] = NULL;
     }
 }
 
-extern int emptyNodeStack(){
-    return (nodeStack[0] == NULL);
+// Returns if the node array is null.
+extern int emptyNodeArray(){
+    return (nodeArray[0] == NULL);
 }
 
-extern int searchNodeStack(){
+// Search for the first occurrence of a null pointing to null and return its array position.
+extern int searchNodeArray(){
     for(int i = 0; i < 100000; i++){
-        if(nodeStack[i] == NULL){
+        if(nodeArray[i] == NULL){
             return i;
         }
     }
     return -1;
 }
 
-extern void pushNodeStack(Node* n){
-    int idx = searchNodeStack();
+// Points the first occurrence of a null node and point it to an existing node.
+extern void appendNode(Node* n){
+    int idx = searchNodeArray();
     if(idx >= 0){
-        nodeStack[idx] = n;
+        nodeArray[idx] = n;
     }
     else{
         printf("Push error!");
     }
 }
-extern void freeTreeEmergency(){
-    for(int i = searchNodeStack(); !emptyNodeStack(); i--){
-        // if(nodeStack[i]->s_token){
-        //     free(nodeStack[i]->s_token);
+
+// Goes through the whole tree and frees all the nodes, until the array is empty.
+extern void freeTree(){
+    for(int i = searchNodeArray(); !emptyNodeArray(); i--){
+        // if(nodeArray[i]->s_token){
+        //     free(nodeArray[i]->s_token);
         // }
-        // free(nodeStack[i]);
-        freeTree(nodeStack[i]);
-        nodeStack[i] = NULL;
+        // free(nodeArray[i]);
+        freeNode(nodeArray[i]);
+        nodeArray[i] = NULL;
     }
-    // int idx = searchNodeStack();
+    // int idx = searchNodeArray();
     // if(idx > 0){
     //     idx--;
-    //     int val = nodeStack[idx];
-    //     nodeStack[idx] = NULL;
+    //     int val = nodeArray[idx];
+    //     nodeArray[idx] = NULL;
     // }
     // else{
     //     printf("Pop error!");
     // }
 }
+
+// returns the last node not pointing to null inside the array.
 extern Node* seeNodeTop(){
-    int idx = searchNodeStack();
+    int idx = searchNodeArray();
     if(idx > 0){
         idx--;
-        Node* val = nodeStack[idx];
+        Node* val = nodeArray[idx];
         return val;
     }
     else{

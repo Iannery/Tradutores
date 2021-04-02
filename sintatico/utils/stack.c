@@ -7,17 +7,21 @@
 #include <string.h>
 #include "stack.h"
 
-
+// Initializes a scope stack with -1 as their value, since the scopes
+// start at zero.
 extern void initScopeStack(Scope* s){
     for(int i = 0; i < 100000; i++){
         s->stack[i] = -1;
     }
 }
 
+// Returns if the stack is empty, that is, 
+// if the first stack element is -1.
 extern int emptyScopeStack(Scope* s){
     return (s->stack[0] == -1);
 }
 
+// Returns the first non-occupied position in the stack.
 extern int searchScopeStack(Scope* s){
     for(int i = 0; i < 100000; i++){
         if(s->stack[i] == -1){
@@ -26,6 +30,8 @@ extern int searchScopeStack(Scope* s){
     }
     return -1;
 }
+
+// Pushes a context value into the stack, to generate the scope.
 extern void pushScopeStack(Scope* s, int context){
     int idx = searchScopeStack(s);
     if(idx >= 0){
@@ -35,6 +41,8 @@ extern void pushScopeStack(Scope* s, int context){
         printf("Push error!");
     }
 }
+
+// Pops a context value out of the stack. 
 extern int popScopeStack(Scope* s){
     int idx = searchScopeStack(s);
     if(idx > 0){
@@ -48,6 +56,8 @@ extern int popScopeStack(Scope* s){
         return -1;
     }
 }
+
+// See the top of the scope stack.
 extern int seeTop(Scope* s){
     int idx = searchScopeStack(s);
     if(idx > 0){

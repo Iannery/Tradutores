@@ -568,8 +568,7 @@ int main(int argc, char **argv){
         printf(reset);
     }
     printTable(symbolTable);
-    freeTreeEmergency();
-    // freeTree(tree);
+    freeTree();
     yylex_destroy();
     return 0;
 }

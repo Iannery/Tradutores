@@ -18,6 +18,11 @@
  *
  *  The n_type attribute is also to display the correct node title
  *  when printing the tree.
+ * 
+ *  There is a global node, to determine the tree root; and a global
+ *  array of nodes, used to free all nodes, even in case of syntax errors.
+ * 
+ *  The nodeArray methods are based in the ones made for the scope stack.
  **/ 
 typedef struct Node {
     struct Node*  node1;
@@ -28,16 +33,16 @@ typedef struct Node {
     char   n_type[100];
 } Node;
 Node* tree;
-Node* nodeStack[100000];
+Node* nodeArray[100000];
 
 extern Node* createNode(char* n_type);
 extern void printTree(Node* node, int depth);
-extern void freeTree(Node* node);
+extern void freeNode(Node* node);
 extern Node* seeNodeTop();
-extern void initNodeStack();
-extern int emptyNodeStack();
-extern int searchNodeStack();
-extern void freeTreeEmergency();
-extern void pushNodeStack(Node* n);
+extern void initNodeArray();
+extern int emptyNodeArray();
+extern int searchNodeArray();
+extern void freeTree();
+extern void appendNode(Node* n);
 
 #endif
