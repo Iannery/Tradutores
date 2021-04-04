@@ -515,6 +515,9 @@ char *yytext;
 #line 1 "flex/clang_lexical.l"
 #define YY_NO_INPUT 1
 #line 4 "flex/clang_lexical.l"
+    // I'm afraid to comment inside this file, but it will be done eventually.
+    // Hopefully without breaking everything and making me regret all the
+    // life choices I made in the last 23 years for about 3 hours.
     #include    "clang_syntax.tab.h"
     #include    "stack.h"
     #include    "tree.h"
@@ -525,14 +528,18 @@ char *yytext;
     #define     BRED "\e[1;31m"
     #define     BMAG "\e[1;35m"
     #define     reset "\e[0m"
+    // The external variables along with the other files are working,
+    // but as to what is external and what is not, it was purely done
+    // by trial and error. The important part is that it works.  
+    // I should refactor it eventually, I know. But again, it works.
     int     line    = 1;
     int     column  = 1;
     int     errors  = 0;
     int     context = 0;
     extern Scope scope;
     extern Symbol symbolTable[10000];
-#line 535 "flex/lex.yy.c"
-#line 536 "flex/lex.yy.c"
+#line 542 "flex/lex.yy.c"
+#line 543 "flex/lex.yy.c"
 
 #define INITIAL 0
 
@@ -747,11 +754,11 @@ YY_DECL
 		}
 
 	{
-#line 57 "flex/clang_lexical.l"
+#line 64 "flex/clang_lexical.l"
 
 
 
-#line 755 "flex/lex.yy.c"
+#line 762 "flex/lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -810,7 +817,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 60 "flex/clang_lexical.l"
+#line 67 "flex/clang_lexical.l"
 {
     // 
     column += yyleng;
@@ -819,7 +826,7 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 66 "flex/clang_lexical.l"
+#line 73 "flex/clang_lexical.l"
 {
     line++;
     column = 1;
@@ -827,7 +834,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 71 "flex/clang_lexical.l"
+#line 78 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -838,7 +845,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 79 "flex/clang_lexical.l"
+#line 86 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -849,7 +856,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 87 "flex/clang_lexical.l"
+#line 94 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -860,7 +867,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 95 "flex/clang_lexical.l"
+#line 102 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -900,7 +907,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 133 "flex/clang_lexical.l"
+#line 140 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -911,7 +918,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 141 "flex/clang_lexical.l"
+#line 148 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -922,7 +929,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 149 "flex/clang_lexical.l"
+#line 156 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -933,7 +940,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 157 "flex/clang_lexical.l"
+#line 164 "flex/clang_lexical.l"
 {
     yylval.token.t_context = seeTop(&scope);
     yylval.token.t_line = line;
@@ -945,7 +952,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 166 "flex/clang_lexical.l"
+#line 173 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -956,7 +963,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 174 "flex/clang_lexical.l"
+#line 181 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -967,7 +974,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 182 "flex/clang_lexical.l"
+#line 189 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -978,7 +985,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 190 "flex/clang_lexical.l"
+#line 197 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -989,7 +996,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 198 "flex/clang_lexical.l"
+#line 205 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1000,7 +1007,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 206 "flex/clang_lexical.l"
+#line 213 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1011,7 +1018,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 214 "flex/clang_lexical.l"
+#line 221 "flex/clang_lexical.l"
 {
 //FAZ NADA
 }
@@ -1019,7 +1026,7 @@ YY_RULE_SETUP
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-#line 218 "flex/clang_lexical.l"
+#line 225 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1031,7 +1038,7 @@ YY_RULE_SETUP
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-#line 226 "flex/clang_lexical.l"
+#line 233 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1042,7 +1049,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 235 "flex/clang_lexical.l"
+#line 242 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1055,7 +1062,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 245 "flex/clang_lexical.l"
+#line 252 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1067,7 +1074,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 255 "flex/clang_lexical.l"
+#line 262 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1078,7 +1085,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 263 "flex/clang_lexical.l"
+#line 270 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1089,7 +1096,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 271 "flex/clang_lexical.l"
+#line 278 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1100,7 +1107,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 279 "flex/clang_lexical.l"
+#line 286 "flex/clang_lexical.l"
 {
     yylval.token.t_line = line;
     yylval.token.t_column = column;
@@ -1111,7 +1118,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 286 "flex/clang_lexical.l"
+#line 293 "flex/clang_lexical.l"
 {
     errors++;
     printf(BRED"[%d:%d] ", line, column);
@@ -1122,10 +1129,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 294 "flex/clang_lexical.l"
+#line 301 "flex/clang_lexical.l"
 ECHO;
 	YY_BREAK
-#line 1129 "flex/lex.yy.c"
+#line 1136 "flex/lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2093,5 +2100,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 294 "flex/clang_lexical.l"
+#line 301 "flex/clang_lexical.l"
 

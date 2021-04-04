@@ -14,7 +14,10 @@
  *  a node will ever have (when a for statement is declared).
  *
  *  The node also have a token structure, as to store and properly
- *  display existing tokens when printing the tree.
+ *  display existing tokens when printing the tree. This structure
+ *  is defined and declared in the symbol_table.h, and it is being
+ *  used like this since the .y %union token struct is a lot tricky to
+ *  manipulate in other files, and was leading to a lot of issues.
  *
  *  The n_type attribute is also to display the correct node title
  *  when printing the tree.

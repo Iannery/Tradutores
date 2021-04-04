@@ -2,12 +2,39 @@
 %define parse.error verbose
 %define lr.type canonical-lr
 %{
+
+    /**
+    * IMPORTANT DISCLAIMER
+    * 
+    * This file, along with all files that have been documented
+    * contains a lot of self-deprecating, sincere and (maybe?) 
+    * funny comments that I really hope brings you a little laugh
+    * while reading and correcting it. It was really tough making 
+    * this project alone, and it would not be possible without José's
+    * and all my colleagues' help. 
+    *
+    * I believe this should be a group project.
+    * 
+    * All the jokes are means of relieving a little bit of the sanity
+    * I lost while making this. If this and all the comments are unappreciated,
+    * I'm sincerely sorry for those, but I won't remove any of them.
+    * 
+    * I hope you have a good one, whoever you might be,
+    * 
+    * Ian Nery Bandeira
+    **/
+
+    // I'm afraid to comment inside this file, but it will be done eventually.
+    // Hopefully without breaking everything and making me regret all the
+    // life choices I made in the last 23 years for about 3 hours.
     #include "symbol_table.h"
     #include "stack.h"
     #include "tree.h"
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
+    // All things are extern and global, since there was a
+    // metric ton of scope issues, and could not be solved without those.
     extern int yylex();
     extern int yylex_destroy();
     extern void yyerror(const char* a);
@@ -148,9 +175,11 @@ param:
 simpleVDeclaration:
     TYPE ID {
         char auxstr[100];
-        strcpy(auxstr, $1.t_title);
+        strcpy(auxstr, BMAG);
+        strcat(auxstr, $1.t_title);
+        strcat(auxstr, reset);
         $$ = createNode(strcat(auxstr," variable ID"));
-        $$->s_token = createSymbol($2.t_title, $2.t_line, $2.t_column);
+        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column);
         insertSymbol(symbolTable, 
                     $2.t_title, 
                     $1.t_title, 
@@ -164,9 +193,11 @@ simpleVDeclaration:
 simpleFDeclaration:
     TYPE ID {
         char auxstr[100];
-        strcpy(auxstr, $1.t_title);
+        strcpy(auxstr, BMAG);
+        strcat(auxstr, $1.t_title);
+        strcat(auxstr, reset);
         $$ = createNode(strcat(auxstr," function ID"));
-        $$->s_token = createSymbol($2.t_title, $2.t_line, $2.t_column);
+        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column);
         insertSymbol(symbolTable, 
                     $2.t_title, 
                     $1.t_title, 
@@ -273,7 +304,7 @@ pertOP:
     simpleExp IN_KW ID{
         $$ = createNode("in operator");
         $$->node1 = $1;
-        $$->s_token = createSymbol($3.t_title, $3.t_line, $3.t_column);
+        $$->s_token = emulateToken($3.t_title, $3.t_line, $3.t_column);
     }
     | simpleExp IN_KW setReturner {
         $$ = createNode("in operator");
@@ -305,7 +336,7 @@ typeOP:
 setParams: 
     ID {
         $$ = createNode("is_set parameter");
-        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
     }
     | pertOP {
         $$ = $1;
@@ -363,7 +394,7 @@ expression:
 assignExp:
     ID ASS_OP expression {
         $$ = createNode("assignment opertator");
-        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
         $$->node1 = $3;
     }
 ;
@@ -385,30 +416,30 @@ simpleExp:
 
 constOP:
     INT {
-        $$ = createNode("CONST INT");
-        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$ = createNode("CONST"BMAG" int"reset);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
     }
     | FLOAT {
-        $$ = createNode("CONST FLOAT");
-        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$ = createNode("CONST"BMAG" float"reset);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
     }
     | EMPTY {
-        $$ = createNode("CONST EMPTY");
-        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$ = createNode("CONST"BMAG" EMPTY"reset);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
     }
 ;
 
 inOP:
     IN '(' ID ')' ';' {
         $$ = createNode("read");
-        $$->s_token = createSymbol($3.t_title, $3.t_line, $3.t_column);
+        $$->s_token = emulateToken($3.t_title, $3.t_line, $3.t_column);
     }
 ;
 
 outOP:
     OUT '(' outConst ')' ';' {
         $$ = createNode("write/writeln");
-        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
         $$->node1 = $3;
     }
 ;
@@ -416,11 +447,11 @@ outOP:
 outConst:
     STRING {
         $$ = createNode("CONST STRING");
-        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
     }
     | CHAR {
         $$ = createNode("CONST CHAR");
-        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
     }
     | simpleExp {
         $$ = $1;
@@ -430,7 +461,7 @@ outConst:
 binLogicalExp:
     binLogicalExp BIN_LOG_OP unLogicalExp {
         $$ = createNode("binary expression");
-        $$->s_token = createSymbol($2.t_title, $2.t_line, $2.t_column);
+        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column);
         $$->node1 = $1;
         $$->node2 = $3;
     }
@@ -442,7 +473,7 @@ binLogicalExp:
 unLogicalExp:
     UN_LOG_OP unLogicalExp {
         $$ = createNode("unary expression");
-        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
         $$->node1 = $2;
     }
     | relationalExp {
@@ -453,7 +484,7 @@ unLogicalExp:
 relationalExp:
     relationalExp REL_OP sumExp {
         $$ = createNode("relational expression");
-        $$->s_token = createSymbol($2.t_title, $2.t_line, $2.t_column);
+        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column);
         $$->node1 = $1;
         $$->node2 = $3;
     }
@@ -465,7 +496,7 @@ relationalExp:
 sumExp:
     sumExp SUM_OP mulExp {
         $$ = createNode("+/- operation");
-        $$->s_token = createSymbol($2.t_title, $2.t_line, $2.t_column);
+        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column);
         $$->node1 = $1;
         $$->node2 = $3;
     }
@@ -477,7 +508,7 @@ sumExp:
 mulExp:
     mulExp MUL_OP factor {
         $$ = createNode("*/÷ operation");
-        $$->s_token = createSymbol($2.t_title, $2.t_line, $2.t_column);
+        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column);
         $$->node1 = $1;
         $$->node2 = $3;
     }
@@ -486,7 +517,7 @@ mulExp:
     }
     | SUM_OP factor {
         $$ = createNode("signed factor");
-        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
         $$->node1 = $2;
     }
 ;
@@ -494,7 +525,7 @@ mulExp:
 factor:
     ID {
         $$ = createNode("ID");
-        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
     }
     | functionCall {
         $$ = $1;
@@ -510,12 +541,12 @@ factor:
 functionCall:
     ID '(' callParams ')' {
         $$ = createNode("function call");
-        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
         $$->node1 = $3;
     }
     | ID '(' ')' {
         $$ = createNode("function call");
-        $$->s_token = createSymbol($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
     }
 ;
 

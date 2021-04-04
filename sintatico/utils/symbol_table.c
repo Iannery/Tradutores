@@ -9,11 +9,17 @@
 #include "symbol_table.h"
 #include "stack.h"
 
+/**
+ * Initializes the symbol table with -1 as their value, 
+ * since the lines always start at zero.
+ **/
 extern void initTable(Symbol* s){
     for(int i = 0; i < 10000; i++){
         s[i].s_line = -1;
     }
 }
+
+// Returns the first non-occupied position in the symbol table vector.
 extern int findEmpty(Symbol* s){
     for(int i = 0; i < 10000; i++){
         if(s[i].s_line == -1){
@@ -22,8 +28,14 @@ extern int findEmpty(Symbol* s){
     }
     return -1;
 }
-
-extern Symbol* createSymbol(char* title, int line, int column){
+/**
+ * Self explanatory function. It emulates a token, and returns it 
+ * to the node.
+ * 
+ * As to why a method like this even exists, see the block comment 
+ * at the symbol table header file.
+ **/
+extern Symbol* emulateToken(char* title, int line, int column){
     Symbol* s = (Symbol*) malloc(sizeof(Symbol));  
     
     s->s_line = line;                   
@@ -31,6 +43,14 @@ extern Symbol* createSymbol(char* title, int line, int column){
     strcpy(s->s_title,title);
     return s;
 }
+
+/**
+ * This function "creates" a symbol, using the attributes
+ * passed as parameters to this function, into the symbol table 
+ * vector. 
+ * 
+ * Might need refactoring in the future, but it works.
+ **/
 extern void insertSymbol(Symbol* s, 
                         char* title, 
                         char* type, 
@@ -51,14 +71,21 @@ extern void insertSymbol(Symbol* s,
     s[pos].s_column = column;
     s[pos].s_scope = context;
 }
+
+// Might be needed in the future, but not now.
 extern void freeSymbol(Symbol* s){
     // int pos = findEmpty(s);
     // for(int i = 0; i < pos; i++){
     //     free
     // }
 }
+
+// Prints an aesthetically pleasing symbol table.
+// (as much as possible, since it's into a terminal, obviously)
 extern void printTable(Symbol* s){
     int pos = findEmpty(s);
+
+    /************* HEADER PRINTING BLOCK *************/
     for(int i = 0; i < 75; i++){
         printf("-");
     }
@@ -74,7 +101,12 @@ extern void printTable(Symbol* s){
         printf("-");
     }
     printf("\n");
+    /******************* END BLOCK *******************/
+
+    /************* ELEMENT PRINTING BLOCK *************/
     for(int i = 0; i < pos; i++){
+        // big titles handler, so the table stays formatted.
+        // it adds an ellipsis in the end of a string, basically.
         if(strlen(s[i].s_title) > 20){
             s[i].s_title[16] = '\0';
             strcat(s[i].s_title, " ...\0");
@@ -90,5 +122,6 @@ extern void printTable(Symbol* s){
     for(int i = 0; i < 75; i++){
         printf("-");
     }
+    /******************* END BLOCK *******************/
     printf("\n");
 }

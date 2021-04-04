@@ -1,6 +1,9 @@
 %option noinput nounput
 %option noyywrap
 %{
+    // I'm afraid to comment inside this file, but it will be done eventually.
+    // Hopefully without breaking everything and making me regret all the
+    // life choices I made in the last 23 years for about 3 hours.
     #include    "clang_syntax.tab.h"
     #include    "stack.h"
     #include    "tree.h"
@@ -11,6 +14,10 @@
     #define     BRED "\e[1;31m"
     #define     BMAG "\e[1;35m"
     #define     reset "\e[0m"
+    // The external variables along with the other files are working,
+    // but as to what is external and what is not, it was purely done
+    // by trial and error. The important part is that it works.  
+    // I should refactor it eventually, I know. But again, it works.
     int     line    = 1;
     int     column  = 1;
     int     errors  = 0;
