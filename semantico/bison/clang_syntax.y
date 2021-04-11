@@ -38,6 +38,7 @@
     extern int yylex();
     extern int yylex_destroy();
     extern void yyerror(const char* a);
+    extern void scopeHandler(char* title, int line, int column);
     extern int line;
     extern int column;
     extern int errors;
@@ -320,6 +321,7 @@ setStmt:
 
 pertOP:
     simpleExp IN_KW ID{
+        scopeHandler($3.t_title, $3.t_line, $3.t_column);
         $$ = createNode("in operator");
         $$->node1 = $1;
         $$->s_token = emulateToken($3.t_title, $3.t_line, $3.t_column);
@@ -353,6 +355,7 @@ typeOP:
 
 setParams: 
     ID {
+        scopeHandler($1.t_title, $1.t_line, $1.t_column);
         $$ = createNode("is_set parameter");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
     }
@@ -411,6 +414,7 @@ expression:
 
 assignExp:
     ID ASS_OP expression {
+        scopeHandler($1.t_title, $1.t_line, $1.t_column);
         $$ = createNode("assignment opertator");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
         $$->node1 = $3;
@@ -449,6 +453,7 @@ constOP:
 
 inOP:
     IN '(' ID ')' ';' {
+        scopeHandler($3.t_title, $3.t_line, $3.t_column);
         $$ = createNode("read");
         $$->s_token = emulateToken($3.t_title, $3.t_line, $3.t_column);
     }
@@ -542,6 +547,7 @@ mulExp:
 
 factor:
     ID {
+        scopeHandler($1.t_title, $1.t_line, $1.t_column);
         $$ = createNode("ID");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
     }
@@ -558,11 +564,13 @@ factor:
 
 functionCall:
     ID '(' callParams ')' {
+        scopeHandler($1.t_title, $1.t_line, $1.t_column);
         $$ = createNode("function call");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
         $$->node1 = $3;
     }
     | ID '(' ')' {
+        scopeHandler($1.t_title, $1.t_line, $1.t_column);
         $$ = createNode("function call");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
     }
@@ -582,11 +590,29 @@ callParams:
 %%
 extern void yyerror(const char* a) {
     printf(BRED"[%d:%d] ", line, column);
-    printf("SYNTAX ERROR - ");
+    printf("SYNTAX ERROR -->");
     printf("%s\n"reset, a);
     errors++;
 }
 
+extern void scopeHandler(char* title, int line, int column){
+    int idx = searchScopeStack(&scope);
+    int inContext = 0;
+    int varContext = searchVarContext(symbolTable, title);
+    if(varContext != -1){
+        for(int i = 0; i < idx; i++){
+            if(scope.stack[i] == varContext){
+                inContext = 1;
+            }
+        }
+    }
+    if(!inContext){
+        errors++;
+        printf(BRED"[%d:%d] ", line, column);
+        printf("SEMANTIC ERROR --> Undeclared variable in context: %s\n"reset, title);
+    }
+
+}
 
 int main(int argc, char **argv){
     FILE *fp = fopen(argv[1], "r");
@@ -608,10 +634,11 @@ int main(int argc, char **argv){
         printf("No Input Files.\n");
     }
     fclose(yyin);
-    checkParams(symbolTable);
+    populateParams(symbolTable);
+    
     if(!errors){
         printf("Correct program.\n");
-        printTree(tree, 0);
+        // printTree(tree, 0);
     }
     else{
         printf(BRED"The Abstract Syntax Tree will not be shown if there are errors.\n");

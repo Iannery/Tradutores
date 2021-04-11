@@ -88,7 +88,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 47 "bison/clang_syntax.y"
+#line 48 "bison/clang_syntax.y"
 
     struct Token {
         int     t_line;

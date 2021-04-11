@@ -6,10 +6,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "clang_syntax.tab.h"
 #include "symbol_table.h"
 #include "stack.h"
 
-extern void checkParams(Symbol *s){
+extern void populateParams(Symbol *s){
     int pos = findEmpty(s);
     int funcpos = -1;
     for(int i = 0; i < pos; i++){
@@ -25,25 +26,37 @@ extern void checkParams(Symbol *s){
             for(int j = 0; j < 100; j++){
                 if(!strcmp(s[funcpos].s_typeParams[j],"\0")){
                     strcpy(s[funcpos].s_typeParams[j],s[i].s_type);
+                    break;
                 }
             }
         }
     }
 }
 
+extern int searchVarContext(Symbol *s, char* title){
+    int pos = findEmpty(s);
+    for(int i = 0; i < pos; i++){
+        if(!strcmp(title, s[i].s_title)){
+            return s[i].s_scope;
+        }
+    }
+    return -1;
+}
+
+
 /**
  * Initializes the symbol table with -1 as their value, 
  * since the lines always start at zero.
  **/
 extern void initTable(Symbol* s){
-    for(int i = 0; i < 10000; i++){
+    for(int i = 0; i < 1000; i++){
         s[i].s_line = -1;
     }
 }
 
 // Returns the first non-occupied position in the symbol table vector.
 extern int findEmpty(Symbol* s){
-    for(int i = 0; i < 10000; i++){
+    for(int i = 0; i < 1000; i++){
         if(s[i].s_line == -1){
             return i;
         }
@@ -81,22 +94,37 @@ extern void insertSymbol(Symbol* s,
                         int column,
                         int context){
     int pos = findEmpty(s);
-    strcpy(s[pos].s_title, title);
-    strcpy(s[pos].s_type, type);
+    char auxstr[10];
+    int duplicatedSymbol = 0;
+    for(int i = 0; i < pos; i++){
+        if(s[i].s_scope == context && !strcmp(s[i].s_title, title)){
+            duplicatedSymbol = 1;
+        }
+    }
     switch(funcvar){
         case 0:
-            strcpy(s[pos].s_funcvar, "Variable");
+            strcpy(auxstr, "Variable");
             break;
         case 1:
-            strcpy(s[pos].s_funcvar, "Function");
+            strcpy(auxstr, "Function");
             break;
         case 2:
-            strcpy(s[pos].s_funcvar, "Parameter");
+            strcpy(auxstr, "Parameter");
             break;
     }
-    s[pos].s_line = line;
-    s[pos].s_column = column;
-    s[pos].s_scope = context;
+    if(!duplicatedSymbol){
+        strcpy(s[pos].s_title, title);
+        strcpy(s[pos].s_type, type);
+        strcpy(s[pos].s_funcvar, auxstr);
+        s[pos].s_line = line;
+        s[pos].s_column = column;
+        s[pos].s_scope = context;
+    }
+    else{
+        errors++;
+        printf(BRED"[%d:%d] ", line, column);
+        printf("SEMANTIC ERROR --> Redefinition of %s: %s\n"reset, auxstr, title);
+    }
 }
 
 // Might be needed in the future, but not now.

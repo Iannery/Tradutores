@@ -2,7 +2,7 @@ compile:
 	bison -o bison/clang_syntax.tab.c -d bison/clang_syntax.y -Wcounterexamples
 	flex -o flex/lex.yy.c flex/clang_lexical.l
 	gcc -g -c utils/stack.c -o ./obj/stack.o
-	gcc -g -c utils/symbol_table.c -o obj/symbol_table.o
+	gcc -g -c utils/symbol_table.c -o obj/symbol_table.o -I bison
 	gcc -g -c utils/tree.c -o obj/tree.o
 	gcc -g bison/clang_syntax.tab.c flex/lex.yy.c obj/stack.o obj/symbol_table.o obj/tree.o -I utils -I bison -I flex -Wall
 

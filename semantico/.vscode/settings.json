@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "symbol_table.h": "c",
+        "clang_syntax.tab.h": "c",
+        "stack.h": "c"
+    }
+}

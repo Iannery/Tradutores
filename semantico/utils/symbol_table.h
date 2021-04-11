@@ -39,8 +39,10 @@ typedef struct Symbol {
     int     s_numParams;
     char    s_typeParams[100][31];
 } Symbol;
-Symbol symbolTable[10000];
-extern void checkParams(Symbol *s);
+Symbol symbolTable[1000];
+extern int errors;
+extern void populateParams(Symbol *s);
+extern int searchVarContext(Symbol *s, char* title);
 extern void initTable(Symbol *s);
 extern int findEmpty(Symbol *s);
 extern Symbol* emulateToken(char* title, int line, int column);

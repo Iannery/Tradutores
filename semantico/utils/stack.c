@@ -10,7 +10,7 @@
 // Initializes a scope stack with -1 as their value, since the scopes
 // start at zero.
 extern void initScopeStack(Scope* s){
-    for(int i = 0; i < 100000; i++){
+    for(int i = 0; i < 1000; i++){
         s->stack[i] = -1;
     }
 }
@@ -23,7 +23,7 @@ extern int emptyScopeStack(Scope* s){
 
 // Returns the first non-occupied position in the stack.
 extern int searchScopeStack(Scope* s){
-    for(int i = 0; i < 100000; i++){
+    for(int i = 0; i < 1000; i++){
         if(s->stack[i] == -1){
             return i;
         }

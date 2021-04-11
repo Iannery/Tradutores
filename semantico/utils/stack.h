@@ -15,7 +15,7 @@
  * declared here and defined in the .c make it work as a stack.
  **/ 
 typedef struct{
-    int stack[100000];
+    int stack[1000];
 } Scope;
 Scope scope;
 

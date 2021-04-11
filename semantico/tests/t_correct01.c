@@ -11,13 +11,16 @@ set subsum(set s, float target, int cur_sum, set ans) {
     remove (el in s);
     return EMPTY;
 }
+// set subsum(){
+//     int a;
+// }
 
 //EXAMPLE 2
 
 int main() {
     int a;
+    a = b;
     int b;
     float c;
 
-    c = b + a;
 }
