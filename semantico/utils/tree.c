@@ -15,9 +15,9 @@
  * The only functionality is to allocate the node, point every
  * pointer to null (as to reduce valgrind errors) and return it.
 **/
-extern Node* createNode(char* n_type){
+extern Node* createNode(char* n_title){
     Node* node = (Node*)malloc(sizeof(Node));
-    strcpy(node->n_type, n_type);
+    strcpy(node->n_title, n_title);
     node->node1 = NULL;
     node->node2 = NULL;
     node->node3 = NULL;
@@ -25,6 +25,33 @@ extern Node* createNode(char* n_type){
     node->s_token = NULL;
     appendNode(node);
     return node;
+}
+
+extern void paramsHandler(Node* node){
+    if(!node){
+        return;
+    }
+    // print the depth as the string "--", if any, and then print the node title.
+    printf("-> %s\n", node->n_title);
+    // goes recursively into each children, if any, to print them with the new depth.
+    if(node->node1){
+        paramsHandler(node->node1);
+    }
+    if(node->node2){
+        paramsHandler(node->node2);
+    }
+    if(node->node3){
+        paramsHandler(node->node3);
+    }
+    if(node->node4){
+        paramsHandler(node->node4);
+    }
+    // if theres a token inside the node, then print them along with their line and column.
+    if(node->s_token){
+        printf("~> [%d:%d] %s\n"reset, node->s_token->s_line,
+        node->s_token->s_column,
+        node->s_token->s_title);
+    }
 }
 
 /**
@@ -74,7 +101,7 @@ extern void printTree(Node* node, int depth){
     for(int i = 0; i < depth; i++){
         printf("--");
     }
-    printf("-> %s\n", node->n_type);
+    printf("-> %s\n", node->n_title);
     // goes recursively into each children, if any, to print them with the new depth.
     if(node->node1){
         printTree(node->node1, depth + 1);

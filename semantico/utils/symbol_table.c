@@ -32,11 +32,26 @@ extern void populateParams(Symbol *s){
         }
     }
 }
+extern int findMain(Symbol *s){
+    int pos = findEmpty(s);
+    int found = 0;
+    for(int i = 0; i < pos; i++){
+        if(!strcmp("main", s[i].s_title) && !strcmp("Function", s[i].s_funcvar)){
+            found = 1;
+        }
+    }
+    if(!found){
+        printf(BRED"[x:x] ");
+        printf("SEMANTIC ERROR --> Undefined reference to 'main'\n"reset);
+        return 1;
+    }
+    return 0;
+}
 
-extern int searchVarContext(Symbol *s, char* title){
+extern int searchVarContext(Symbol *s, char* title, int context){
     int pos = findEmpty(s);
     for(int i = 0; i < pos; i++){
-        if(!strcmp(title, s[i].s_title)){
+        if(!strcmp(title, s[i].s_title) && context == s[i].s_scope){
             return s[i].s_scope;
         }
     }

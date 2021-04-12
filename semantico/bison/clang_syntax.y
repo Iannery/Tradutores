@@ -134,6 +134,7 @@ declaration:
     }
     | funcDeclaration {
         $$ = $1;
+        populateParams(symbolTable);
     }
 ;
 
@@ -568,6 +569,7 @@ functionCall:
         $$ = createNode("function call");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
         $$->node1 = $3;
+        paramsHandler($$);
     }
     | ID '(' ')' {
         scopeHandler($1.t_title, $1.t_line, $1.t_column);
@@ -598,12 +600,9 @@ extern void yyerror(const char* a) {
 extern void scopeHandler(char* title, int line, int column){
     int idx = searchScopeStack(&scope);
     int inContext = 0;
-    int varContext = searchVarContext(symbolTable, title);
-    if(varContext != -1){
-        for(int i = 0; i < idx; i++){
-            if(scope.stack[i] == varContext){
-                inContext = 1;
-            }
+    for(int i = 0; i < idx; i++){
+        if(searchVarContext(symbolTable, title, scope.stack[i]) >= 0){
+            inContext = 1;
         }
     }
     if(!inContext){
@@ -623,8 +622,6 @@ int main(int argc, char **argv){
         if(fp){
             yyin = fp;
             yyparse();
-            printf("\nAnalysis completed with %d error(s)\n", errors);
-
         }
         else{
             printf("Input File Path does not exist.\n");
@@ -634,8 +631,10 @@ int main(int argc, char **argv){
         printf("No Input Files.\n");
     }
     fclose(yyin);
-    populateParams(symbolTable);
     
+    errors += findMain(symbolTable);
+
+    printf("\nAnalysis completed with %d error(s)\n", errors);
     if(!errors){
         printf("Correct program.\n");
         // printTree(tree, 0);

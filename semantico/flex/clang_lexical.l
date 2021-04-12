@@ -23,7 +23,7 @@
     int     errors  = 0;
     int     context = 0;
     extern Scope scope;
-    extern Symbol symbolTable[10000];
+    extern Symbol symbolTable[1000];
 %}
 
 

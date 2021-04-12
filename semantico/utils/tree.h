@@ -19,7 +19,7 @@
  *  used like this since the .y %union token struct is a lot tricky to
  *  manipulate in other files, and was leading to a lot of issues.
  *
- *  The n_type attribute is also to display the correct node title
+ *  The n_title attribute is also to display the correct node title
  *  when printing the tree.
  * 
  *  There is a global node, to determine the tree root; and a global
@@ -33,13 +33,15 @@ typedef struct Node {
     struct Node*  node3;
     struct Node*  node4;
     struct Symbol* s_token;
-    char   n_type[100];
+    char   n_title[100];
+    char   n_type[6];
 } Node;
 Node* tree;
 Node* nodeArray[100000];
 
-extern Node* createNode(char* n_type);
+extern Node* createNode(char* n_title);
 extern void printTree(Node* node, int depth);
+extern void paramsHandler(Node* node);
 extern void freeNode(Node* node);
 extern Node* seeNodeTop();
 extern void initNodeArray();

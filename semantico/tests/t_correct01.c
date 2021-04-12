@@ -1,26 +1,29 @@
-// EXAMPLES PROVIDED BY CLAUDIA NALON
-// EXAMPLE 1
-set subsum(set s, float target, int cur_sum, set ans) {
-    int el;
-    remove((exists (el in s)) in s);
-    if(subsum(s, target, cur_sum, ans)) return ans;
-    cur_sum = cur_sum + el;
-    add(el in ans);
-    if(subsum(s, target, cur_sum, ans)) return ans;
-    add(el in s);
-    remove (el in s);
-    return EMPTY;
-}
-// set subsum(){
-//     int a;
-// }
-
-//EXAMPLE 2
-
-int main() {
-    int a;
-    a = b;
-    int b;
+int f(int a, int b, int c) {
+    set s;
     float c;
 
+  return b;
+
+}
+
+int g(int asdads, int oasdks, float fm, int a, int b, int c) {
+    set s;
+    float c;
+
+  return b;
+
+}
+
+int h() {
+    set s;
+    float c;
+
+  return b;
+
+}
+int main(){
+  int d;
+  int e;
+  int g;
+  f(10 + 10, e, g);
 }
