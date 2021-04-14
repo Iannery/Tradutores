@@ -34,14 +34,14 @@ typedef struct Node {
     struct Node*  node4;
     struct Symbol* s_token;
     char   n_title[100];
-    char   n_type[6];
+    char   n_type[11];
 } Node;
 Node* tree;
 Node* nodeArray[100000];
 
 extern Node* createNode(char* n_title);
 extern void printTree(Node* node, int depth);
-extern void paramsHandler(Node* node);
+extern char* typeHandler(Node* node);
 extern void freeNode(Node* node);
 extern Node* seeNodeTop();
 extern void initNodeArray();

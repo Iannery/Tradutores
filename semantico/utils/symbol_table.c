@@ -32,6 +32,21 @@ extern void populateParams(Symbol *s){
         }
     }
 }
+
+extern int findArgs(Symbol *s, char* title){
+    int pos = findEmpty(s);
+    for(int i = 0; i < pos; i++){
+        if(s[i].s_scope == 0){
+            if(!strcmp(s[i].s_funcvar, "Function")){
+                if(!strcmp(title, s[i].s_title)){
+                    return s[i].s_numParams;
+                }
+            }
+        }
+    }
+    return -1;
+}
+
 extern int findMain(Symbol *s){
     int pos = findEmpty(s);
     int found = 0;
@@ -52,7 +67,7 @@ extern int searchVarContext(Symbol *s, char* title, int context){
     int pos = findEmpty(s);
     for(int i = 0; i < pos; i++){
         if(!strcmp(title, s[i].s_title) && context == s[i].s_scope){
-            return s[i].s_scope;
+            return i;
         }
     }
     return -1;
@@ -85,12 +100,15 @@ extern int findEmpty(Symbol* s){
  * As to why a method like this even exists, see the block comment 
  * at the symbol table header file.
  **/
-extern Symbol* emulateToken(char* title, int line, int column){
-    Symbol* s = (Symbol*) malloc(sizeof(Symbol));  
+extern Symbol* emulateToken(char* title, int line, int column, char* type){
+    Symbol* s = (Symbol*) malloc(sizeof(Symbol));
     
-    s->s_line = line;                   
+    s->s_line = line;
     s->s_column = column;
     strcpy(s->s_title,title);
+    if(type){
+        strcpy(s->s_type,type);
+    }
     return s;
 }
 
@@ -101,7 +119,7 @@ extern Symbol* emulateToken(char* title, int line, int column){
  * 
  * Might need refactoring in the future, but it works.
  **/
-extern void insertSymbol(Symbol* s, 
+extern int insertSymbol(Symbol* s, 
                         char* title, 
                         char* type, 
                         int funcvar, 
@@ -134,11 +152,12 @@ extern void insertSymbol(Symbol* s,
         s[pos].s_line = line;
         s[pos].s_column = column;
         s[pos].s_scope = context;
+        return 0;
     }
     else{
-        errors++;
         printf(BRED"[%d:%d] ", line, column);
         printf("SEMANTIC ERROR --> Redefinition of %s: %s\n"reset, auxstr, title);
+        return 1;
     }
 }
 

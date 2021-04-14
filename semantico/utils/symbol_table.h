@@ -42,12 +42,13 @@ typedef struct Symbol {
 Symbol symbolTable[1000];
 extern int errors;
 extern void populateParams(Symbol *s);
+extern int findArgs(Symbol *s, char* title);
 extern int findMain(Symbol *s);
 extern int searchVarContext(Symbol *s, char* title, int context);
 extern void initTable(Symbol *s);
 extern int findEmpty(Symbol *s);
-extern Symbol* emulateToken(char* title, int line, int column);
-extern void insertSymbol(Symbol* s, 
+extern Symbol* emulateToken(char* title, int line, int column, char* type);
+extern int insertSymbol(Symbol* s, 
                         char* title, 
                         char* type, 
                         int funcvar, 

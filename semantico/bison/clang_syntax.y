@@ -38,11 +38,14 @@
     extern int yylex();
     extern int yylex_destroy();
     extern void yyerror(const char* a);
-    extern void scopeHandler(char* title, int line, int column);
+    extern char* scopeHandler(char* title, int line, int column);
+    extern void qtdHandler(char* title, int line, int column);
     extern int line;
     extern int column;
     extern int errors;
     extern int context;
+    int errors_sem;
+    int qtdParams;
     extern FILE *yyin;
 %}
 %union{
@@ -181,14 +184,14 @@ param:
         strcat(auxstr, $1.t_title);
         strcat(auxstr, reset);
         $$ = createNode(strcat(auxstr," parameter ID"));
-        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column);
-        insertSymbol(symbolTable, 
-                    $2.t_title, 
-                    $1.t_title, 
-                    2,
-                    $2.t_line, 
-                    $2.t_column,
-                    $2.t_context);
+        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, $1.t_title);
+        errors_sem += insertSymbol(symbolTable, 
+                        $2.t_title, 
+                        $1.t_title, 
+                        2,
+                        $2.t_line, 
+                        $2.t_column,
+                        $2.t_context);
     }
 ;
 
@@ -199,14 +202,14 @@ simpleVDeclaration:
         strcat(auxstr, $1.t_title);
         strcat(auxstr, reset);
         $$ = createNode(strcat(auxstr," variable ID"));
-        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column);
-        insertSymbol(symbolTable, 
-                    $2.t_title, 
-                    $1.t_title, 
-                    0,
-                    $2.t_line, 
-                    $2.t_column,
-                    $2.t_context);
+        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, $1.t_title);
+        errors_sem += insertSymbol(symbolTable, 
+                        $2.t_title, 
+                        $1.t_title, 
+                        0,
+                        $2.t_line, 
+                        $2.t_column,
+                        $2.t_context);
     }
 ;
 
@@ -217,14 +220,14 @@ simpleFDeclaration:
         strcat(auxstr, $1.t_title);
         strcat(auxstr, reset);
         $$ = createNode(strcat(auxstr," function ID"));
-        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column);
-        insertSymbol(symbolTable, 
-                    $2.t_title, 
-                    $1.t_title, 
-                    1, 
-                    $2.t_line, 
-                    $2.t_column,
-                    $2.t_context);
+        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, $1.t_title);
+        errors_sem += insertSymbol(symbolTable, 
+                        $2.t_title, 
+                        $1.t_title, 
+                        1, 
+                        $2.t_line, 
+                        $2.t_column,
+                        $2.t_context);
     }
 ;
 compoundStmt:
@@ -322,10 +325,11 @@ setStmt:
 
 pertOP:
     simpleExp IN_KW ID{
-        scopeHandler($3.t_title, $3.t_line, $3.t_column);
+        char typestr[11];
+        strcpy(typestr,scopeHandler($3.t_title, $3.t_line, $3.t_column));
         $$ = createNode("in operator");
         $$->node1 = $1;
-        $$->s_token = emulateToken($3.t_title, $3.t_line, $3.t_column);
+        $$->s_token = emulateToken($3.t_title, $3.t_line, $3.t_column, typestr);
     }
     | simpleExp IN_KW setReturner {
         $$ = createNode("in operator");
@@ -356,9 +360,10 @@ typeOP:
 
 setParams: 
     ID {
-        scopeHandler($1.t_title, $1.t_line, $1.t_column);
+        char typestr[11];
+        strcpy(typestr,scopeHandler($1.t_title, $1.t_line, $1.t_column));
         $$ = createNode("is_set parameter");
-        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, typestr);
     }
     | pertOP {
         $$ = $1;
@@ -415,10 +420,12 @@ expression:
 
 assignExp:
     ID ASS_OP expression {
-        scopeHandler($1.t_title, $1.t_line, $1.t_column);
+        char typestr[11];
+        strcpy(typestr,scopeHandler($1.t_title, $1.t_line, $1.t_column));
         $$ = createNode("assignment opertator");
-        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, typestr);
         $$->node1 = $3;
+        printf("TIPO FINAL VAMO VER SE ESSA PORRA FOI %s %s\n", $1.t_title ,typeHandler($$));
     }
 ;
 
@@ -440,30 +447,31 @@ simpleExp:
 constOP:
     INT {
         $$ = createNode("CONST"BMAG" int"reset);
-        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, "int");
     }
     | FLOAT {
         $$ = createNode("CONST"BMAG" float"reset);
-        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, "float");
     }
     | EMPTY {
         $$ = createNode("CONST"BMAG" EMPTY"reset);
-        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, "set");
     }
 ;
 
 inOP:
     IN '(' ID ')' ';' {
-        scopeHandler($3.t_title, $3.t_line, $3.t_column);
+        char typestr[11];
+        strcpy(typestr,scopeHandler($3.t_title, $3.t_line, $3.t_column));
         $$ = createNode("read");
-        $$->s_token = emulateToken($3.t_title, $3.t_line, $3.t_column);
+        $$->s_token = emulateToken($3.t_title, $3.t_line, $3.t_column, NULL);
     }
 ;
 
 outOP:
     OUT '(' outConst ')' ';' {
         $$ = createNode("write/writeln");
-        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
         $$->node1 = $3;
     }
 ;
@@ -471,11 +479,11 @@ outOP:
 outConst:
     STRING {
         $$ = createNode("CONST STRING");
-        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
     }
     | CHAR {
         $$ = createNode("CONST CHAR");
-        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
     }
     | simpleExp {
         $$ = $1;
@@ -485,7 +493,7 @@ outConst:
 binLogicalExp:
     binLogicalExp BIN_LOG_OP unLogicalExp {
         $$ = createNode("binary expression");
-        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column);
+        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
         $$->node1 = $1;
         $$->node2 = $3;
     }
@@ -497,7 +505,7 @@ binLogicalExp:
 unLogicalExp:
     UN_LOG_OP unLogicalExp {
         $$ = createNode("unary expression");
-        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
         $$->node1 = $2;
     }
     | relationalExp {
@@ -508,7 +516,7 @@ unLogicalExp:
 relationalExp:
     relationalExp REL_OP sumExp {
         $$ = createNode("relational expression");
-        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column);
+        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
         $$->node1 = $1;
         $$->node2 = $3;
     }
@@ -520,7 +528,7 @@ relationalExp:
 sumExp:
     sumExp SUM_OP mulExp {
         $$ = createNode("+/- operation");
-        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column);
+        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
         $$->node1 = $1;
         $$->node2 = $3;
     }
@@ -532,7 +540,7 @@ sumExp:
 mulExp:
     mulExp MUL_OP factor {
         $$ = createNode("*/÷ operation");
-        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column);
+        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
         $$->node1 = $1;
         $$->node2 = $3;
     }
@@ -541,16 +549,17 @@ mulExp:
     }
     | SUM_OP factor {
         $$ = createNode("signed factor");
-        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
         $$->node1 = $2;
     }
 ;
 
 factor:
     ID {
-        scopeHandler($1.t_title, $1.t_line, $1.t_column);
+        char typestr[11];
+        strcpy(typestr,scopeHandler($1.t_title, $1.t_line, $1.t_column));
         $$ = createNode("ID");
-        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, typestr);
     }
     | functionCall {
         $$ = $1;
@@ -564,27 +573,37 @@ factor:
 ;
 
 functionCall:
-    ID '(' callParams ')' {
-        scopeHandler($1.t_title, $1.t_line, $1.t_column);
+    ID '(' {
+        qtdParams = 0;
+    } 
+    callParams ')' {
+        char typestr[11];
+        strcpy(typestr,scopeHandler($1.t_title, $1.t_line, $1.t_column));
         $$ = createNode("function call");
-        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
-        $$->node1 = $3;
-        paramsHandler($$);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, typestr);
+        $$->node1 = $4;
+        qtdHandler($1.t_title, $1.t_line, $1.t_column);
+
+        // typeHandler($$);
     }
     | ID '(' ')' {
-        scopeHandler($1.t_title, $1.t_line, $1.t_column);
+        qtdParams = 0;
+        char typestr[11];
+        strcpy(typestr,scopeHandler($1.t_title, $1.t_line, $1.t_column));
         $$ = createNode("function call");
-        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column);
+        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, typestr);
     }
 ;
 
 callParams: 
     callParams ',' simpleExp{
+        qtdParams++;
         $$ = createNode("call parameters");
         $$->node1 = $1;
         $$->node2 = $3;
     }
     | simpleExp {
+        qtdParams++;
         $$ = $1;
     }
 ;
@@ -592,28 +611,44 @@ callParams:
 %%
 extern void yyerror(const char* a) {
     printf(BRED"[%d:%d] ", line, column);
-    printf("SYNTAX ERROR -->");
+    printf("SYNTAX ERROR --> ");
     printf("%s\n"reset, a);
     errors++;
 }
 
-extern void scopeHandler(char* title, int line, int column){
-    int idx = searchScopeStack(&scope);
-    int inContext = 0;
-    for(int i = 0; i < idx; i++){
-        if(searchVarContext(symbolTable, title, scope.stack[i]) >= 0){
-            inContext = 1;
-        }
-    }
-    if(!inContext){
-        errors++;
+extern void qtdHandler(char* title, int line, int column){
+    int qtdArgs = findArgs(symbolTable, title);
+    if(qtdArgs != qtdParams){
+        errors_sem++;
         printf(BRED"[%d:%d] ", line, column);
-        printf("SEMANTIC ERROR --> Undeclared variable in context: %s\n"reset, title);
+        printf("SEMANTIC ERROR --> Wrong number of arguments in function call: %s\n"reset, title);
+        printf(BRED"\t\t\t EXPECTED: %d\n"reset, qtdArgs);
+        printf(BRED"\t\t\t      GOT: %d\n"reset, qtdParams);
     }
 
 }
 
+extern char* scopeHandler(char* title, int line, int column){
+    int idx = searchScopeStack(&scope);
+    int inContext = 0;
+    int st_pos = 0;
+    for(int i = 0; i < idx; i++){
+        st_pos = searchVarContext(symbolTable, title, scope.stack[i]);
+        if(st_pos >= 0){
+            // printf("S TYPE DO SCOPE HANDLER ACHOU ISSO AQUI OW %s\n", symbolTable[st_pos].s_type);
+            return symbolTable[st_pos].s_type;
+        }
+    }
+    if(!inContext){
+        errors_sem++;
+        printf(BRED"[%d:%d] ", line, column);
+        printf("SEMANTIC ERROR --> Undeclared variable in context: %s\n"reset, title);
+    }
+    return NULL;
+}
+
 int main(int argc, char **argv){
+    errors_sem = 0;
     FILE *fp = fopen(argv[1], "r");
     initTable(symbolTable);
     initScopeStack(&scope);
@@ -632,15 +667,16 @@ int main(int argc, char **argv){
     }
     fclose(yyin);
     
-    errors += findMain(symbolTable);
+    errors_sem += findMain(symbolTable);
+    errors_sem += findMain(symbolTable);
 
-    printf("\nAnalysis completed with %d error(s)\n", errors);
-    if(!errors){
+    printf("\nAnalysis completed with %d error(s)\n", errors+errors_sem);
+    if(!errors && !errors_sem){
         printf("Correct program.\n");
         // printTree(tree, 0);
     }
-    else{
-        printf(BRED"The Abstract Syntax Tree will not be shown if there are errors.\n");
+    else if(errors){
+        printf(BRED"The Abstract Syntax Tree will not be shown if there are syntactic or lexical errors.\n");
         printf(reset);
     }
     printTable(symbolTable);

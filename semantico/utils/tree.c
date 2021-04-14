@@ -23,35 +23,41 @@ extern Node* createNode(char* n_title){
     node->node3 = NULL;
     node->node4 = NULL;
     node->s_token = NULL;
+    strcpy(node->n_type,"void");
     appendNode(node);
     return node;
 }
 
-extern void paramsHandler(Node* node){
+extern char* typeHandler(Node* node){
     if(!node){
-        return;
+        return NULL;
     }
-    // print the depth as the string "--", if any, and then print the node title.
-    printf("-> %s\n", node->n_title);
-    // goes recursively into each children, if any, to print them with the new depth.
-    if(node->node1){
-        paramsHandler(node->node1);
+    // VOU COLOCAR AQUI DUAS VARIAVEL PRA RECEBER ESSA MERDA 
+    // E VER SE DÁ CONFLITO ENTRE ELAS DUAS, AÍ SE TIVER CONFLITO A GENTE RESOLVE
+    if(node->node1 && node->node1->n_type){
+        strcpy(node->n_type,typeHandler(node->node1));
+        // printf("FILHO = %s\n", node->node1->n_title);
     }
-    if(node->node2){
-        paramsHandler(node->node2);
+    if(node->node2 && node->node2->n_type){
+        strcpy(node->n_type,typeHandler(node->node1));
+        // printf("FILHO = %s\n", node->node2->n_title);
     }
-    if(node->node3){
-        paramsHandler(node->node3);
+    if(node->n_title){
+        // printf("-> TIPO/TITULO NODO %s %s\n"reset, node->n_type, node->n_title);
     }
-    if(node->node4){
-        paramsHandler(node->node4);
-    }
-    // if theres a token inside the node, then print them along with their line and column.
     if(node->s_token){
-        printf("~> [%d:%d] %s\n"reset, node->s_token->s_line,
-        node->s_token->s_column,
-        node->s_token->s_title);
+        if(node->n_type){
+            // printf("ENTROU TEM TIPO\n");
+            strcpy(node->n_type,node->s_token->s_type);
+            // printf("~> TIPO/TITULO TOKEN %s %s\n"reset, node->s_token->s_type, node->s_token->s_title);
+        }
     }
+    return node->n_type;
+    // else{
+    //     // if(!strcmp(node->n_type, "void")){
+    //     //     strcpy(node->n_type,node->s_token->s_type);
+    //     // }
+    // }
 }
 
 /**
