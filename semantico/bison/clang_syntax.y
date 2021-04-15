@@ -644,7 +644,7 @@ extern char* scopeHandler(char* title, int line, int column){
         printf(BRED"[%d:%d] ", line, column);
         printf("SEMANTIC ERROR --> Undeclared variable in context: %s\n"reset, title);
     }
-    return NULL;
+    return "";
 }
 
 int main(int argc, char **argv){
@@ -672,6 +672,7 @@ int main(int argc, char **argv){
     printf("\nAnalysis completed with %d error(s)\n", errors+errors_sem);
     if(!errors && !errors_sem){
         printf("Correct program.\n");
+        printf("\n--------AST--------\n");
         printTree(tree, 0);
     }
     else if(errors){
@@ -679,8 +680,10 @@ int main(int argc, char **argv){
         printf(reset);
     }
     else{
+        printf("\n--------AST--------\n");
         printTree(tree, 0);
     }
+    printf("\n--------Symbol Table--------\n");
     printTable(symbolTable);
     freeTree();
     yylex_destroy();
