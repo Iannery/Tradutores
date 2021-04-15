@@ -422,10 +422,10 @@ assignExp:
     ID ASS_OP expression {
         char typestr[11];
         strcpy(typestr,scopeHandler($1.t_title, $1.t_line, $1.t_column));
-        $$ = createNode("assignment opertator");
+        $$ = createNode("assignment operator");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, typestr);
         $$->node1 = $3;
-        printf("TIPO FINAL VAMO VER SE ESSA PORRA FOI %s %s\n", $1.t_title ,typeHandler($$));
+        typeHandler($$);
     }
 ;
 
@@ -493,7 +493,7 @@ outConst:
 binLogicalExp:
     binLogicalExp BIN_LOG_OP unLogicalExp {
         $$ = createNode("binary expression");
-        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
+        // $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
         $$->node1 = $1;
         $$->node2 = $3;
     }
@@ -505,7 +505,7 @@ binLogicalExp:
 unLogicalExp:
     UN_LOG_OP unLogicalExp {
         $$ = createNode("unary expression");
-        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
+        // $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
         $$->node1 = $2;
     }
     | relationalExp {
@@ -516,7 +516,7 @@ unLogicalExp:
 relationalExp:
     relationalExp REL_OP sumExp {
         $$ = createNode("relational expression");
-        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
+        // $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
         $$->node1 = $1;
         $$->node2 = $3;
     }
@@ -528,7 +528,7 @@ relationalExp:
 sumExp:
     sumExp SUM_OP mulExp {
         $$ = createNode("+/- operation");
-        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
+        // $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
         $$->node1 = $1;
         $$->node2 = $3;
     }
@@ -540,7 +540,7 @@ sumExp:
 mulExp:
     mulExp MUL_OP factor {
         $$ = createNode("*/÷ operation");
-        $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
+        // $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
         $$->node1 = $1;
         $$->node2 = $3;
     }
@@ -549,7 +549,7 @@ mulExp:
     }
     | SUM_OP factor {
         $$ = createNode("signed factor");
-        $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
+        // $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
         $$->node1 = $2;
     }
 ;
@@ -668,16 +668,18 @@ int main(int argc, char **argv){
     fclose(yyin);
     
     errors_sem += findMain(symbolTable);
-    errors_sem += findMain(symbolTable);
 
     printf("\nAnalysis completed with %d error(s)\n", errors+errors_sem);
     if(!errors && !errors_sem){
         printf("Correct program.\n");
-        // printTree(tree, 0);
+        printTree(tree, 0);
     }
     else if(errors){
         printf(BRED"The Abstract Syntax Tree will not be shown if there are syntactic or lexical errors.\n");
         printf(reset);
+    }
+    else{
+        printTree(tree, 0);
     }
     printTable(symbolTable);
     freeTree();

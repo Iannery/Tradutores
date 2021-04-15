@@ -2,6 +2,6 @@ int main(){
   int d;
   int e;
   float g;
-  d = e = g = 4;
+  e = g = 5589.3 + 7;
 }
 

@@ -35,11 +35,13 @@ typedef struct Node {
     struct Symbol* s_token;
     char   n_title[100];
     char   n_type[11];
+    char   n_cast[11];
 } Node;
 Node* tree;
 Node* nodeArray[100000];
 
 extern Node* createNode(char* n_title);
+extern int stringNull(char* str);
 extern void printTree(Node* node, int depth);
 extern char* typeHandler(Node* node);
 extern void freeNode(Node* node);

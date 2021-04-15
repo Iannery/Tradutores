@@ -1,7 +1,6 @@
 int f(a) {
     set l;
-    int a;
+    int a
     set varComPontoVirgula;
-
     return 0;
 }

@@ -23,41 +23,54 @@ extern Node* createNode(char* n_title){
     node->node3 = NULL;
     node->node4 = NULL;
     node->s_token = NULL;
-    strcpy(node->n_type,"void");
+    strcpy(node->n_type,"");
+    strcpy(node->n_cast,"");
     appendNode(node);
     return node;
 }
 
+extern int stringNull(char* str){
+    if(strlen(str) <= 1){
+        return 1;
+    }
+    return 0;
+}
+
+
 extern char* typeHandler(Node* node){
+    char leftType[11]  = "";
+    char rightType[11] = "";
     if(!node){
         return NULL;
     }
-    // VOU COLOCAR AQUI DUAS VARIAVEL PRA RECEBER ESSA MERDA 
-    // E VER SE DÁ CONFLITO ENTRE ELAS DUAS, AÍ SE TIVER CONFLITO A GENTE RESOLVE
-    if(node->node1 && node->node1->n_type){
-        strcpy(node->n_type,typeHandler(node->node1));
-        // printf("FILHO = %s\n", node->node1->n_title);
+    if(node->node1){
+        strcpy(leftType,typeHandler(node->node1));
     }
-    if(node->node2 && node->node2->n_type){
-        strcpy(node->n_type,typeHandler(node->node1));
-        // printf("FILHO = %s\n", node->node2->n_title);
-    }
-    if(node->n_title){
-        // printf("-> TIPO/TITULO NODO %s %s\n"reset, node->n_type, node->n_title);
+    if(node->node2){
+        strcpy(rightType,typeHandler(node->node2));
     }
     if(node->s_token){
-        if(node->n_type){
-            // printf("ENTROU TEM TIPO\n");
-            strcpy(node->n_type,node->s_token->s_type);
-            // printf("~> TIPO/TITULO TOKEN %s %s\n"reset, node->s_token->s_type, node->s_token->s_title);
+        strcpy(node->n_type,node->s_token->s_type);
+        if(!stringNull(leftType)){
+            strcpy(node->node1->n_cast, node->n_type);
+        }
+        if(!stringNull(rightType)){
+            strcpy(node->node2->n_cast, node->n_type);
         }
     }
+    else{
+        if(!stringNull(leftType) && !stringNull(rightType)){
+            strcpy(node->n_type,leftType);
+        }
+        else if(!stringNull(rightType)){
+            strcpy(node->n_type,rightType);
+        }
+        else if(!stringNull(leftType)){
+            strcpy(node->n_type,leftType);
+        }
+    }
+    
     return node->n_type;
-    // else{
-    //     // if(!strcmp(node->n_type, "void")){
-    //     //     strcpy(node->n_type,node->s_token->s_type);
-    //     // }
-    // }
 }
 
 /**
@@ -106,6 +119,14 @@ extern void printTree(Node* node, int depth){
     // print the depth as the string "--", if any, and then print the node title.
     for(int i = 0; i < depth; i++){
         printf("--");
+    }
+    if(!stringNull(node->n_cast)){
+        strcat(node->n_title, " <");
+        strcat(node->n_title, node->n_type);
+        strcat(node->n_title, ">");
+        strcat(node->n_title, " (");
+        strcat(node->n_title, node->n_cast);
+        strcat(node->n_title, ")");
     }
     printf("-> %s\n", node->n_title);
     // goes recursively into each children, if any, to print them with the new depth.

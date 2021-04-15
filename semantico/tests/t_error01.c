@@ -1,7 +1,6 @@
-int f() {
-    set l;
+int erro_lexico() {
+    set $1;
     int a;
-    set varSemPontoVirgula
 
-    return 0;
+    return #a;
 }

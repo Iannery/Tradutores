@@ -2789,10 +2789,10 @@ yyreduce:
                          {
         char typestr[11];
         strcpy(typestr,scopeHandler((yyvsp[-2].token).t_title, (yyvsp[-2].token).t_line, (yyvsp[-2].token).t_column));
-        (yyval.node) = createNode("assignment opertator");
+        (yyval.node) = createNode("assignment operator");
         (yyval.node)->s_token = emulateToken((yyvsp[-2].token).t_title, (yyvsp[-2].token).t_line, (yyvsp[-2].token).t_column, typestr);
         (yyval.node)->node1 = (yyvsp[0].node);
-        printf("TIPO FINAL VAMO VER SE ESSA PORRA FOI %s %s\n", (yyvsp[-2].token).t_title ,typeHandler((yyval.node)));
+        typeHandler((yyval.node));
     }
 #line 2798 "bison/clang_syntax.tab.c"
     break;
@@ -2907,7 +2907,7 @@ yyreduce:
 #line 494 "bison/clang_syntax.y"
                                           {
         (yyval.node) = createNode("binary expression");
-        (yyval.node)->s_token = emulateToken((yyvsp[-1].token).t_title, (yyvsp[-1].token).t_line, (yyvsp[-1].token).t_column, NULL);
+        // $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
         (yyval.node)->node1 = (yyvsp[-2].node);
         (yyval.node)->node2 = (yyvsp[0].node);
     }
@@ -2926,7 +2926,7 @@ yyreduce:
 #line 506 "bison/clang_syntax.y"
                            {
         (yyval.node) = createNode("unary expression");
-        (yyval.node)->s_token = emulateToken((yyvsp[-1].token).t_title, (yyvsp[-1].token).t_line, (yyvsp[-1].token).t_column, NULL);
+        // $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
         (yyval.node)->node1 = (yyvsp[0].node);
     }
 #line 2933 "bison/clang_syntax.tab.c"
@@ -2944,7 +2944,7 @@ yyreduce:
 #line 517 "bison/clang_syntax.y"
                                 {
         (yyval.node) = createNode("relational expression");
-        (yyval.node)->s_token = emulateToken((yyvsp[-1].token).t_title, (yyvsp[-1].token).t_line, (yyvsp[-1].token).t_column, NULL);
+        // $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
         (yyval.node)->node1 = (yyvsp[-2].node);
         (yyval.node)->node2 = (yyvsp[0].node);
     }
@@ -2963,7 +2963,7 @@ yyreduce:
 #line 529 "bison/clang_syntax.y"
                          {
         (yyval.node) = createNode("+/- operation");
-        (yyval.node)->s_token = emulateToken((yyvsp[-1].token).t_title, (yyvsp[-1].token).t_line, (yyvsp[-1].token).t_column, NULL);
+        // $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
         (yyval.node)->node1 = (yyvsp[-2].node);
         (yyval.node)->node2 = (yyvsp[0].node);
     }
@@ -2982,7 +2982,7 @@ yyreduce:
 #line 541 "bison/clang_syntax.y"
                          {
         (yyval.node) = createNode("*/÷ operation");
-        (yyval.node)->s_token = emulateToken((yyvsp[-1].token).t_title, (yyvsp[-1].token).t_line, (yyvsp[-1].token).t_column, NULL);
+        // $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
         (yyval.node)->node1 = (yyvsp[-2].node);
         (yyval.node)->node2 = (yyvsp[0].node);
     }
@@ -3001,7 +3001,7 @@ yyreduce:
 #line 550 "bison/clang_syntax.y"
                     {
         (yyval.node) = createNode("signed factor");
-        (yyval.node)->s_token = emulateToken((yyvsp[-1].token).t_title, (yyvsp[-1].token).t_line, (yyvsp[-1].token).t_column, NULL);
+        // $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
         (yyval.node)->node1 = (yyvsp[0].node);
     }
 #line 3008 "bison/clang_syntax.tab.c"
@@ -3384,16 +3384,18 @@ int main(int argc, char **argv){
     fclose(yyin);
     
     errors_sem += findMain(symbolTable);
-    errors_sem += findMain(symbolTable);
 
     printf("\nAnalysis completed with %d error(s)\n", errors+errors_sem);
     if(!errors && !errors_sem){
         printf("Correct program.\n");
-        // printTree(tree, 0);
+        printTree(tree, 0);
     }
     else if(errors){
         printf(BRED"The Abstract Syntax Tree will not be shown if there are syntactic or lexical errors.\n");
         printf(reset);
+    }
+    else{
+        printTree(tree, 0);
     }
     printTable(symbolTable);
     freeTree();
