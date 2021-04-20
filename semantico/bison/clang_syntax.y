@@ -137,7 +137,6 @@ declaration:
     }
     | funcDeclaration {
         $$ = $1;
-        populateParams(symbolTable);
     }
 ;
 
@@ -152,11 +151,13 @@ funcDeclaration:
         context++;
         pushScopeStack(&scope, context);
     } 
-    params ')' compoundStmt {
+    params ')' {
+        populateParams(symbolTable);
+    } compoundStmt {
         $$ = createNode("function declaration");
         $$->node1 = $1;
         $$->node2 = $4;
-        $$->node3 = $6;
+        $$->node3 = $7;
         popScopeStack(&scope);
     }
     | simpleFDeclaration '(' ')' compoundStmt {
@@ -276,6 +277,9 @@ primitiveStmt:
         $$ = $1;
     }
     | varDeclaration {
+        $$ = $1;
+    }
+    | funcDeclaration {
         $$ = $1;
     }
 ;

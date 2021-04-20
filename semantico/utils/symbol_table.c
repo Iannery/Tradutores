@@ -36,11 +36,10 @@ extern void populateParams(Symbol *s){
 extern int findArgs(Symbol *s, char* title){
     int pos = findEmpty(s);
     for(int i = 0; i < pos; i++){
-        if(s[i].s_scope == 0){
-            if(!strcmp(s[i].s_funcvar, "Function")){
-                if(!strcmp(title, s[i].s_title)){
-                    return s[i].s_numParams;
-                }
+        if(!strcmp(s[i].s_funcvar, "Function")){
+            if(!strcmp(title, s[i].s_title)){
+                printf("ACHOU %s %d\n", s[i].s_title ,s[i].s_numParams);
+                return s[i].s_numParams;
             }
         }
     }
