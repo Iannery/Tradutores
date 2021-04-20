@@ -1,36 +1,33 @@
 int i;
 
-int fib(int i)
-{
+int fib(int i){
 
-    if (i == 1)
-        return 1;
+if (i == 1) return 1;
 
-    else if (i == 2)
-        return 1;
+else if (i == 2) return 1;
 
-    else
-        return fib(i - 1) + fib(i - 2);
+else return fib(i-1) + fib(i-2);
+
 }
 
-int main()
-{
+int main() {
 
-    int i;
+int i;
 
-    read(i);
+read(i);
 
-    if (i < 0)
-        write('e');
+if (i < 0) write('e');
 
-    else
-    {
+else {
 
-        i = fib(i);
+i = fib(i);
 
-        write("O resultado é:");
-        writeln(i);
-    }
+write("O resultado é:");
+writeln(i);
 
-    return 0;
 }
+
+return 0;
+
+}
+
