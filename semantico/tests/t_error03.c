@@ -1,18 +1,32 @@
-int b;
-int f(int a, int j) {
-    set l;
-    int a;
-    int a;
-    a = a + b;
-    {
-        int c;
-    }
-    a = b + c;
-    set varComPontoVirgula;
-    return 0;
-}
+int a() {
 
-int g(int b){
-    f(0, 5, 10923);
-    f(0);
+    if (1)
+
+        if (2) return 3;
+
+        else return 4;
+
+    return 5;
+
+}
+int main() {
+
+    int i;
+
+    if (2)
+
+        for (i = 0; i < 10; i = i + 1)
+
+            if (i < 8) {
+
+                writeln(42);
+
+            }
+
+            else {
+
+                writeln(81);
+
+            }
+
 }

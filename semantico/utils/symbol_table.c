@@ -38,7 +38,6 @@ extern int findArgs(Symbol* s, char* title) {
     for (int i = 0; i < pos; i++) {
         if (!strcmp(s[i].s_funcvar, "Function")) {
             if (!strcmp(title, s[i].s_title)) {
-                printf("ACHOU %s %d\n", s[i].s_title, s[i].s_numParams);
                 return s[i].s_numParams;
             }
         }
@@ -55,7 +54,7 @@ extern int findMain(Symbol* s) {
         }
     }
     if (!found) {
-        printf(BRED"[x:x] ");
+        printf(BRED"[xxx:xxx] ");
         printf("SEMANTIC ERROR --> Undefined reference to 'main'\n"reset);
         return 1;
     }
@@ -154,7 +153,7 @@ extern int insertSymbol(Symbol* s,
         return 0;
     }
     else {
-        printf(BRED"[%d:%d] ", line, column);
+        printf(BRED"[%03d:%03d] ", line, column);
         printf("SEMANTIC ERROR --> Redefinition of %s: %s\n"reset, auxstr, title);
         return 1;
     }

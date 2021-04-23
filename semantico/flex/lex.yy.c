@@ -1121,8 +1121,8 @@ YY_RULE_SETUP
 #line 293 "flex/clang_lexical.l"
 {
     errors++;
-    printf(BRED"[%d:%d] ", line, column);
-    printf("LEXICAL ERROR --> "reset);
+    printf(BRED"[%03d:%03d] ", line, column);
+    printf("LEXICAL  ERROR --> ");
     printf("Character not expected:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }

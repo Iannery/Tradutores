@@ -36,6 +36,22 @@ extern int stringNull(char* str) {
     return 0;
 }
 
+extern char* typeConflict(char* str1, char* str2){
+    if((!strcmp(str1, "int") && !strcmp(str2, "int"))
+    || (!strcmp(str1, "float") && !strcmp(str2, "float"))
+    || (!strcmp(str1, "float") && !strcmp(str2, "int"))
+    || (!strcmp(str1, "set") && !strcmp(str2, "set"))
+    || (!strcmp(str1, "elem") && !strcmp(str2, "elem"))){
+        return str1;
+    }
+    else if(!strcmp(str1, "float") && !strcmp(str2, "int")){
+        return str1;
+    }
+    else if(!strcmp(str1, "set") && !strcmp(str2, "set")){
+        return str1;
+    }
+}
+
 
 extern char* typeHandler(Node* node) {
     char leftType[11] = "";
@@ -60,7 +76,8 @@ extern char* typeHandler(Node* node) {
     }
     else {
         if (!stringNull(leftType) && !stringNull(rightType)) {
-            strcpy(node->n_type, leftType);
+            strcpy(node->n_type, rightType);
+            // strcpy(node->n_type, typeConflict(rightType, leftType));
         }
         else if (!stringNull(rightType)) {
             strcpy(node->n_type, rightType);
@@ -121,12 +138,14 @@ extern void printTree(Node* node, int depth) {
         printf("--");
     }
     if (!stringNull(node->n_cast)) {
-        strcat(node->n_title, " <");
-        strcat(node->n_title, node->n_type);
-        strcat(node->n_title, ">");
         strcat(node->n_title, " (");
         strcat(node->n_title, node->n_cast);
         strcat(node->n_title, ")");
+    }
+    if (!stringNull(node->n_type)) {
+        strcat(node->n_title, " <");
+        strcat(node->n_title, node->n_type);
+        strcat(node->n_title, ">");
     }
     printf("-> %s\n", node->n_title);
     // goes recursively into each children, if any, to print them with the new depth.
@@ -147,7 +166,7 @@ extern void printTree(Node* node, int depth) {
         for (int i = 0; i < depth; i++) {
             printf(BMAG"~~");
         }
-        printf("~> [%d:%d] %s\n"reset, node->s_token->s_line,
+        printf("~> [%03d:%03d] %s\n"reset, node->s_token->s_line,
             node->s_token->s_column,
             node->s_token->s_title);
     }

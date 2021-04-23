@@ -292,8 +292,8 @@ OUT     write|writeln
 }
 . {
     errors++;
-    printf(BRED"[%d:%d] ", line, column);
-    printf("LEXICAL ERROR --> "reset);
+    printf(BRED"[%03d:%03d] ", line, column);
+    printf("LEXICAL  ERROR --> ");
     printf("Character not expected:"BMAG" %s\n"reset, yytext);
     column += yyleng;
 }

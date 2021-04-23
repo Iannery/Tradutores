@@ -86,6 +86,8 @@
 %type <node> exprStmt
 %type <node> condStmt
 %type <node> iterStmt
+%type <node> iterAssign
+%type <node> iterExp
 %type <node> returnStmt
 %type <node> setStmt
 %type <node> pertOP
@@ -107,6 +109,7 @@
 %type <node> relationalExp
 %type <node> sumExp
 %type <node> mulExp
+%type <node> signedFactor
 %type <node> factor
 %type <node> functionCall
 %type <node> callParams
@@ -164,6 +167,10 @@ funcDeclaration:
         $$ = createNode("function declaration");
         $$->node1 = $1;
         $$->node2 = $4;
+    }
+    | simpleFDeclaration '(' ')' '{' '}' {
+        $$ = createNode("function declaration");
+        $$->node1 = $1;
     }
 ;
 
@@ -305,13 +312,24 @@ condStmt:
 ;
 
 iterStmt:
-    FOR_KW '(' assignExp ';' simpleExp ';' assignExp ')' primitiveStmt {
+    FOR_KW '(' iterAssign ';' iterExp ';' iterAssign ')' primitiveStmt {
         $$ = createNode("for statement");
         $$->node1 = $3;
         $$->node2 = $5;
         $$->node3 = $7;
         $$->node4 = $9;
     }
+;
+iterAssign:
+    assignExp {
+        $$ = $1;
+    } | {$$ = NULL;}
+;
+
+iterExp:
+    simpleExp {
+        $$ = $1;
+    } | {$$ = NULL;}
 ;
 
 returnStmt:
@@ -355,10 +373,6 @@ typeOP:
     ISSET_KW '(' setParams ')' {
         $$ = createNode("is_set operator");
         $$->node1 = $3;
-    }
-    | UN_LOG_OP ISSET_KW '(' setParams ')' {
-        $$ = createNode("is_set operator");
-        $$->node1 = $4;
     }
 ;
 
@@ -440,12 +454,7 @@ simpleExp:
     | pertOP {
         $$ = $1;
     }
-    | selectOP {
-        $$ = $1;
-    }
-    | typeOP {
-        $$ = $1;
-    }
+    
 ;
 
 constOP:
@@ -542,17 +551,26 @@ sumExp:
 ;
 
 mulExp:
-    mulExp MUL_OP factor {
+    mulExp MUL_OP signedFactor {
         $$ = createNode("*/÷ operation");
         // $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
         $$->node1 = $1;
         $$->node2 = $3;
     }
-    | factor {
+    | signedFactor {
         $$ = $1;
     }
-    | SUM_OP factor {
-        $$ = createNode("signed factor");
+;
+
+signedFactor:
+    factor {
+        $$ = $1;
+    }
+    | SUM_OP signedFactor {
+        char auxstr[100];
+        strcpy(auxstr, "signed factor ");
+        
+        $$ = createNode(strcat(auxstr, $1.t_title));
         // $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
         $$->node1 = $2;
     }
@@ -572,6 +590,12 @@ factor:
         $$ = $2;
     }
     | constOP {
+        $$ = $1;
+    }
+    | selectOP {
+        $$ = $1;
+    }
+    | typeOP {
         $$ = $1;
     }
 ;
@@ -596,6 +620,7 @@ functionCall:
         strcpy(typestr,scopeHandler($1.t_title, $1.t_line, $1.t_column));
         $$ = createNode("function call");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, typestr);
+        qtdHandler($1.t_title, $1.t_line, $1.t_column);
     }
 ;
 
@@ -614,8 +639,8 @@ callParams:
 
 %%
 extern void yyerror(const char* a) {
-    printf(BRED"[%d:%d] ", line, column);
-    printf("SYNTAX ERROR --> ");
+    printf(BRED"[%03d:%03d] ", line, column);
+    printf("SYNTAX   ERROR --> ");
     printf("%s\n"reset, a);
     errors++;
 }
@@ -624,10 +649,10 @@ extern void qtdHandler(char* title, int line, int column){
     int qtdArgs = findArgs(symbolTable, title);
     if(qtdArgs != qtdParams){
         errors_sem++;
-        printf(BRED"[%d:%d] ", line, column);
+        printf(BRED"[%03d:%03d] ", line, column);
         printf("SEMANTIC ERROR --> Wrong number of arguments in function call: %s\n"reset, title);
-        printf(BRED"\t\t\t EXPECTED: %d\n"reset, qtdArgs);
-        printf(BRED"\t\t\t      GOT: %d\n"reset, qtdParams);
+        printf(BRED"\t\t\t     EXPECTED: %d\n"reset, qtdArgs);
+        printf(BRED"\t\t\t          GOT: %d\n"reset, qtdParams);
     }
 
 }
@@ -645,7 +670,7 @@ extern char* scopeHandler(char* title, int line, int column){
     }
     if(!inContext){
         errors_sem++;
-        printf(BRED"[%d:%d] ", line, column);
+        printf(BRED"[%03d:%03d] ", line, column);
         printf("SEMANTIC ERROR --> Undeclared variable in context: %s\n"reset, title);
     }
     return "";
