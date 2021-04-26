@@ -30,14 +30,14 @@
   **/
 
 typedef struct Symbol {
-    char    s_type[11];
+    char    s_type[6];
     char    s_funcvar[11];
     int     s_line;
     int     s_column;
     int     s_scope;
     char    s_title[101];
     int     s_numParams;
-    char    s_typeParams[100][31];
+    char    s_typeParams[100][6];
 } Symbol;
 Symbol symbolTable[1000];
 extern int errors;

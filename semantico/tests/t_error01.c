@@ -1,6 +1,5 @@
-int erro_lexico() {
-    set $1;
+int erro() {
+    set #1;
     int a;
-
-    return #a;
+    return a;
 }

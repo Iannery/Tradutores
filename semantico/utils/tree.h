@@ -28,22 +28,27 @@
   *  The nodeArray methods are based in the ones made for the scope stack.
   **/
 typedef struct Node {
-    struct Node* node1;
-    struct Node* node2;
-    struct Node* node3;
-    struct Node* node4;
-    struct Symbol* s_token;
-    char   n_title[100];
-    char   n_type[11];
-    char   n_cast[11];
+  struct Node* node1;
+  struct Node* node2;
+  struct Node* node3;
+  struct Node* node4;
+  struct Symbol* s_token;
+  char   n_title[100];
+  char   n_type[6];
+  char   n_cast[6];
 } Node;
 Node* tree;
 Node* nodeArray[100000];
-
+char typeParams[100][6];
+extern int errors_sem;
+extern char lastFType[6];
 extern Node* createNode(char* n_title);
 extern int stringNull(char* str);
 extern void printTree(Node* node, int depth);
-extern char* typeHandler(Node* node);
+extern char* typeConflict(Node* left, Node* right);
+extern void paramsHandler(Symbol* s, char* title, int line, int column, Node* node, int index);
+extern void typeHandler(Node* node, int nline, int ncolumn);
+extern char* expTypeHandler(Node* node);
 extern void freeNode(Node* node);
 extern Node* seeNodeTop();
 extern void initNodeArray();

@@ -1,18 +1,19 @@
 set scope_zero_num1_look_at_this_beauty_of_an_ellipsis;
 int test_scopes(int param1, float param2, set param3){
-    int shouldbe1;
-    if(shouldbe1){
-        float shouldbe2;
+    int shouldbe2;
+    if(shouldbe2){
+        float shouldbe3;
     }
     int also1;
     {
-        set shouldbe2;
-        for(shouldbe2 = 0; shouldbe2 < 1; shouldbe2 = shouldbe2 + 1){
-            float this_is_4;
+        int shouldbe4;
+        for(shouldbe4 = 0; shouldbe4 < 1; shouldbe4 = shouldbe4 + 1){
+            float this_is_5;
         }
         float also3;
     }
-    float wow_also1;
+    float wow_also2;
+    return 1.5;
 }
 set scope_zero_num2_look_at_this_beauty_of_an_ellipsis;
 set scope_zero_num3_look_at_this_beauty_of_an_ellipsis;

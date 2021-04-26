@@ -39,13 +39,14 @@
     extern int yylex_destroy();
     extern void yyerror(const char* a);
     extern char* scopeHandler(char* title, int line, int column);
-    extern void qtdHandler(char* title, int line, int column);
+    extern int qtdHandler(char* title, int line, int column);
     extern int line;
     extern int column;
     extern int errors;
     extern int context;
     int errors_sem;
     int qtdParams;
+    char lastFType[6]; 
     extern FILE *yyin;
 %}
 %union{
@@ -236,6 +237,7 @@ simpleFDeclaration:
                         $2.t_line, 
                         $2.t_column,
                         $2.t_context);
+        strcpy(lastFType, $1.t_title);
     }
 ;
 compoundStmt:
@@ -303,12 +305,31 @@ condStmt:
         $$->node1 = $3;
         $$->node2 = $5;
     }
+    | IF_KW '(' simpleExp ')' '{' '}'  %prec THEN {
+        $$ = createNode("if else statement");
+        $$->node1 = $3;
+    }
     | IF_KW '(' simpleExp ')' primitiveStmt ELSE_KW primitiveStmt {
         $$ = createNode("if else statement");
         $$->node1 = $3;
         $$->node2 = $5;
         $$->node3 = $7;
     }
+    | IF_KW '(' simpleExp ')' '{' '}'  ELSE_KW primitiveStmt {
+        $$ = createNode("if else statement");
+        $$->node1 = $3;
+        $$->node3 = $8;
+    }
+    | IF_KW '(' simpleExp ')' primitiveStmt ELSE_KW '{' '}' {
+        $$ = createNode("if else statement");
+        $$->node1 = $3;
+        $$->node2 = $5;
+    }
+    | IF_KW '(' simpleExp ')' '{' '}' ELSE_KW '{' '}' {
+        $$ = createNode("if else statement");
+        $$->node1 = $3;
+    }
+    
 ;
 
 iterStmt:
@@ -318,6 +339,12 @@ iterStmt:
         $$->node2 = $5;
         $$->node3 = $7;
         $$->node4 = $9;
+    }
+    | FOR_KW '(' iterAssign ';' iterExp ';' iterAssign ')' '{' '}' {
+        $$ = createNode("for statement");
+        $$->node1 = $3;
+        $$->node2 = $5;
+        $$->node3 = $7;
     }
 ;
 iterAssign:
@@ -336,6 +363,7 @@ returnStmt:
     RETURN_KW expression ';' {
         $$ = createNode("return statement");
         $$->node1 = $2;
+        typeHandler($$, $1.t_line, $1.t_column);
     }
 ;
 
@@ -346,17 +374,11 @@ setStmt:
 ;
 
 pertOP:
-    simpleExp IN_KW ID{
-        char typestr[11];
-        strcpy(typestr,scopeHandler($3.t_title, $3.t_line, $3.t_column));
-        $$ = createNode("in operator");
-        $$->node1 = $1;
-        $$->s_token = emulateToken($3.t_title, $3.t_line, $3.t_column, typestr);
-    }
-    | simpleExp IN_KW setReturner {
+    simpleExp IN_KW factor {
         $$ = createNode("in operator");
         $$->node1 = $1;
         $$->node2 = $3;
+        typeHandler($$, $2.t_line, $2.t_column);
     }
 ;
 
@@ -373,12 +395,13 @@ typeOP:
     ISSET_KW '(' setParams ')' {
         $$ = createNode("is_set operator");
         $$->node1 = $3;
+        strcpy($$->n_type, "int");
     }
 ;
 
 setParams: 
     ID {
-        char typestr[11];
+        char typestr[6];
         strcpy(typestr,scopeHandler($1.t_title, $1.t_line, $1.t_column));
         $$ = createNode("is_set parameter");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, typestr);
@@ -399,6 +422,7 @@ addOP:
     ADD_KW '(' pertOP ')' {
         $$ = createNode("add operator");
         $$->node1 = $3;
+        strcpy($$->n_type, "set");
     }
 ;
 
@@ -406,13 +430,18 @@ remOP:
     REMOVE_KW '(' pertOP ')' {
         $$ = createNode("remove operator");
         $$->node1 = $3;
+        strcpy($$->n_type, "set");
     }
 ;
 
 selectOP:
-    EXISTS_KW '(' pertOP ')' {
+    EXISTS_KW '(' ID IN_KW factor ')' {
+        char typestr[6];
+        strcpy(typestr,scopeHandler($3.t_title, $3.t_line, $3.t_column));
         $$ = createNode("exists operator");
-        $$->node1 = $3;
+        $$->node1 = $5;
+        $$->s_token = emulateToken($3.t_title, $3.t_line, $3.t_column, typestr);
+        strcpy($$->n_type, "int");
     }
 ;
 
@@ -422,6 +451,10 @@ forallOP:
         $$->node1 = $3;
         $$->node2 = $5;
     }
+    |FORALL_KW '(' pertOP ')' '{' '}' {
+        $$ = createNode("forall statement");
+        $$->node1 = $3;
+    } 
 ;
 
 expression:
@@ -430,20 +463,18 @@ expression:
     }
     | simpleExp {
         $$ = $1;
-    }
-    | setReturner {
-        $$ = $1;
+        expTypeHandler($$);
     }
 ;
 
 assignExp:
     ID ASS_OP expression {
-        char typestr[11];
+        char typestr[6];
         strcpy(typestr,scopeHandler($1.t_title, $1.t_line, $1.t_column));
         $$ = createNode("assignment operator");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, typestr);
         $$->node1 = $3;
-        typeHandler($$);
+        typeHandler($$, $1.t_line, $1.t_column);
     }
 ;
 
@@ -459,22 +490,22 @@ simpleExp:
 
 constOP:
     INT {
-        $$ = createNode("CONST"BMAG" int"reset);
+        $$ = createNode("CONST");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, "int");
     }
     | FLOAT {
-        $$ = createNode("CONST"BMAG" float"reset);
+        $$ = createNode("CONST");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, "float");
     }
     | EMPTY {
-        $$ = createNode("CONST"BMAG" EMPTY"reset);
+        $$ = createNode("CONST");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, "set");
     }
 ;
 
 inOP:
     IN '(' ID ')' ';' {
-        char typestr[11];
+        char typestr[6];
         strcpy(typestr,scopeHandler($3.t_title, $3.t_line, $3.t_column));
         $$ = createNode("read");
         $$->s_token = emulateToken($3.t_title, $3.t_line, $3.t_column, NULL);
@@ -571,16 +602,16 @@ signedFactor:
         strcpy(auxstr, "signed factor ");
         
         $$ = createNode(strcat(auxstr, $1.t_title));
-        // $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
         $$->node1 = $2;
     }
 ;
 
 factor:
     ID {
-        char typestr[11];
+        char typestr[6];
         strcpy(typestr,scopeHandler($1.t_title, $1.t_line, $1.t_column));
         $$ = createNode("ID");
+
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, typestr);
     }
     | functionCall {
@@ -598,6 +629,9 @@ factor:
     | typeOP {
         $$ = $1;
     }
+    | setReturner {
+        $$ = $1;
+    }
 ;
 
 functionCall:
@@ -605,18 +639,18 @@ functionCall:
         qtdParams = 0;
     } 
     callParams ')' {
-        char typestr[11];
+        char typestr[6];
         strcpy(typestr,scopeHandler($1.t_title, $1.t_line, $1.t_column));
         $$ = createNode("function call");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, typestr);
         $$->node1 = $4;
-        qtdHandler($1.t_title, $1.t_line, $1.t_column);
-
-        // typeHandler($$);
+        if(qtdHandler($1.t_title, $1.t_line, $1.t_column)){
+            paramsHandler(symbolTable, $1.t_title, $1.t_line, $1.t_column, $4, qtdParams);
+        }
     }
     | ID '(' ')' {
         qtdParams = 0;
-        char typestr[11];
+        char typestr[6];
         strcpy(typestr,scopeHandler($1.t_title, $1.t_line, $1.t_column));
         $$ = createNode("function call");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, typestr);
@@ -630,10 +664,12 @@ callParams:
         $$ = createNode("call parameters");
         $$->node1 = $1;
         $$->node2 = $3;
+        expTypeHandler($3);
     }
     | simpleExp {
         qtdParams++;
         $$ = $1;
+        expTypeHandler($$);
     }
 ;
 
@@ -645,7 +681,7 @@ extern void yyerror(const char* a) {
     errors++;
 }
 
-extern void qtdHandler(char* title, int line, int column){
+extern int qtdHandler(char* title, int line, int column){
     int qtdArgs = findArgs(symbolTable, title);
     if(qtdArgs != qtdParams){
         errors_sem++;
@@ -653,15 +689,16 @@ extern void qtdHandler(char* title, int line, int column){
         printf("SEMANTIC ERROR --> Wrong number of arguments in function call: %s\n"reset, title);
         printf(BRED"\t\t\t     EXPECTED: %d\n"reset, qtdArgs);
         printf(BRED"\t\t\t          GOT: %d\n"reset, qtdParams);
+        return 0;
     }
-
+    return 1;
 }
 
 extern char* scopeHandler(char* title, int line, int column){
     int idx = searchScopeStack(&scope);
     int inContext = 0;
     int st_pos = 0;
-    for(int i = 0; i < idx; i++){
+    for(int i = idx - 1 ; i >= 0; i--){
         st_pos = searchVarContext(symbolTable, title, scope.stack[i]);
         if(st_pos >= 0){
             // printf("S TYPE DO SCOPE HANDLER ACHOU ISSO AQUI OW %s\n", symbolTable[st_pos].s_type);
@@ -702,6 +739,9 @@ int main(int argc, char **argv){
     if(!errors && !errors_sem){
         printf("Correct program.\n");
         printf("\n--------AST--------\n");
+        printf("\nTypecasting caption: \n");
+        printf("\t<type> \n");
+        printf("\t(cast) \n\n");
         printTree(tree, 0);
     }
     else if(errors){
@@ -710,6 +750,9 @@ int main(int argc, char **argv){
     }
     else{
         printf("\n--------AST--------\n");
+        printf("\nTypecasting caption: \n");
+        printf("\t<type> \n");
+        printf("\t(cast) \n\n");
         printTree(tree, 0);
     }
     printf("\n--------Symbol Table--------\n");

@@ -8,7 +8,7 @@
 #include <string.h>
 #include "tree.h"
 #include "symbol_table.h"
-
+#include "clang_syntax.tab.h"
  /**
   * This method created a node, based on a given title as a parameter.
   *
@@ -36,57 +36,216 @@ extern int stringNull(char* str) {
     return 0;
 }
 
-extern char* typeConflict(char* str1, char* str2){
-    if((!strcmp(str1, "int") && !strcmp(str2, "int"))
-    || (!strcmp(str1, "float") && !strcmp(str2, "float"))
-    || (!strcmp(str1, "float") && !strcmp(str2, "int"))
-    || (!strcmp(str1, "set") && !strcmp(str2, "set"))
-    || (!strcmp(str1, "elem") && !strcmp(str2, "elem"))){
-        return str1;
+extern int typeComparison(char* str1, char* type1, char* str2, char* type2) {
+    return (!strcmp(str1, type1) && !strcmp(str2, type2));
+}
+
+extern char* typeConflict(Node* left, Node* right) {
+    // TIPOS IGUAIS
+    if (typeComparison(left->n_type, "int", right->n_type, "int")
+        || typeComparison(left->n_type, "float", right->n_type, "float")
+        || typeComparison(left->n_type, "elem", right->n_type, "elem")) {
+
+        return left->n_type;
     }
-    else if(!strcmp(str1, "float") && !strcmp(str2, "int")){
-        return str1;
+    // TRATAMENTO PRA FLOAT
+    else if (typeComparison(left->n_type, "float", right->n_type, "int")
+        || typeComparison(left->n_type, "float", right->n_type, "elem")) {
+        strcpy(right->n_cast, left->n_type);
+        return left->n_type;
     }
-    else if(!strcmp(str1, "set") && !strcmp(str2, "set")){
-        return str1;
+    else if (typeComparison(right->n_type, "float", left->n_type, "int")
+        || typeComparison(right->n_type, "float", left->n_type, "elem")) {
+
+        strcpy(left->n_cast, right->n_type);
+        return right->n_type;
     }
+    // FIM DO TRATAMENTO PRA FLOAT
+    // TRATAMENTO PRA INT
+    else if (typeComparison(left->n_type, "int", right->n_type, "elem")) {
+        strcpy(right->n_cast, left->n_type);
+        return left->n_type;
+    }
+    else if (typeComparison(right->n_type, "int", left->n_type, "elem")) {
+        strcpy(left->n_cast, right->n_type);
+        return right->n_type;
+    }
+    // TRATAMENTO DE SET
+    else if (!strcmp(left->n_type, "set")) {
+        errors_sem++;
+        if (left->s_token) {
+            printf(BRED"[%03d:%03d] ", left->s_token->s_line, left->s_token->s_column);
+        }
+        else {
+            printf(BRED"[xxx:xxx] ");
+        }
+        printf("SEMANTIC ERROR --> Unexpected Set in expression\n"reset);
+        return "float";
+    }
+    else if (!strcmp(right->n_type, "set")) {
+        errors_sem++;
+        if (right->s_token) {
+            printf(BRED"[%03d:%03d] ", right->s_token->s_line, right->s_token->s_column);
+        }
+        else {
+            printf(BRED"[xxx:xxx] ");
+        }
+        printf("SEMANTIC ERROR --> Unexpected Set in expression\n"reset);
+        return "float";
+    }
+    // FIM DE TRATAMENTO DE SET
+    else {
+        return left->n_type;
+    }
+}
+extern void argsFinder(Node* node, int line, int column, int index) {
+    if (!node) {
+        return;
+    }
+    if (node->node1) {
+        argsFinder(node->node1, line, column, --index);
+        if (strcmp(node->node1->n_title, "call parameters")) {
+            // printf(" %d %s %s\n", index - 1, node->node1->n_title, node->node1->n_type);
+            if (strcmp(node->node1->n_type, typeParams[index - 1])) {
+                if (!((!strcmp(typeParams[index - 1], "set")
+                    && (!strcmp(node->node1->n_type, "int") || !strcmp(node->node1->n_type, "float")))
+                    || ((!strcmp(typeParams[index - 1], "int") || !strcmp(typeParams[index - 1], "float"))
+                        && !strcmp(node->node1->n_type, "set")))) {
+                    strcpy(node->node1->n_cast, typeParams[index - 1]);
+                }
+                else {
+                    errors_sem++;
+                    printf(BRED"[%03d:%03d] ", line, column);
+                    printf("SEMANTIC ERROR --> Unexpected type in function call\n"reset);
+                    printf(BRED"\t\t\t          GOT: %s\n"reset, node->node1->n_type);
+                }
+            }
+            // strcpy(typeArgs[index - 1], node->node1->n_type);
+        }
+        if (strcmp(node->node2->n_type, typeParams[index])) {
+            if (!((!strcmp(typeParams[index], "set")
+                && (!strcmp(node->node2->n_type, "int") || !strcmp(node->node2->n_type, "float")))
+                || ((!strcmp(typeParams[index], "int") || !strcmp(typeParams[index], "float"))
+                    && !strcmp(node->node2->n_type, "set")))) {
+                strcpy(node->node2->n_cast, typeParams[index]);
+            }
+            else {
+                errors_sem++;
+                printf(BRED"[%03d:%03d] ", line, column);
+                printf("SEMANTIC ERROR --> Unexpected type in function call\n"reset);
+                printf(BRED"\t\t\t          GOT: %s\n"reset, node->node2->n_type);
+            }
+        }
+        // printf(" %d %s %s\n", index, node->node2->n_title, node->node2->n_type);
+        // strcpy(typeArgs[index], node->node2->n_type);
+    }
+}
+extern void paramsHandler(Symbol* s, char* title, int line, int column, Node* node, int index) {
+    int pos = findEmpty(s);
+    for (int i = 0; i < pos; i++) {
+        if (!strcmp(s[i].s_funcvar, "Function")) {
+            if (!strcmp(title, s[i].s_title)) {
+                for (int j = 0; j < index; j++) {
+                    strcpy(typeParams[j], s[i].s_typeParams[j]);
+                }
+            }
+        }
+    }
+    argsFinder(node, line, column, index);
 }
 
 
-extern char* typeHandler(Node* node) {
+extern void typeHandler(Node* node, int nline, int ncolumn) {
+    if (!strcmp(node->n_title, "assignment operator")) {
+        strcpy(node->n_type, node->s_token->s_type);
+        if (strcmp(node->node1->n_type, node->s_token->s_type)) {
+            if (!((!strcmp(node->s_token->s_type, "set")
+                && (!strcmp(node->node1->n_type, "int") || !strcmp(node->node1->n_type, "float")))
+                || ((!strcmp(node->s_token->s_type, "int") || !strcmp(node->s_token->s_type, "float"))
+                    && !strcmp(node->node1->n_type, "set")))) {
+                strcpy(node->node1->n_cast, node->n_type);
+            }
+            else {
+                errors_sem++;
+                printf(BRED"[%03d:%03d] ", nline, ncolumn);
+                printf("SEMANTIC ERROR --> Unexpected type in \"%s\"\n"reset, node->n_title);
+            }
+        }
+    }
+    else if (!strcmp(node->n_title, "return statement")) {
+        strcpy(node->n_type, lastFType);
+        if (strcmp(node->node1->n_type, lastFType)) {
+            if (!((!strcmp(lastFType, "set")
+                && (!strcmp(node->node1->n_type, "int") || !strcmp(node->node1->n_type, "float")))
+                || ((!strcmp(lastFType, "int") || !strcmp(lastFType, "float"))
+                    && !strcmp(node->node1->n_type, "set")))) {
+                strcpy(node->node1->n_cast, node->n_type);
+            }
+            else {
+                errors_sem++;
+                printf(BRED"[%03d:%03d] ", nline, ncolumn);
+                printf("SEMANTIC ERROR --> Unexpected type in \"%s\"\n"reset, node->n_title);
+            }
+        }
+    }
+    else if (!strcmp(node->n_title, "in operator")) {
+        strcpy(node->n_type, "int");
+        expTypeHandler(node->node2);
+        expTypeHandler(node->node1);
+        if (strcmp(node->node2->n_type, "set") && strcmp(node->node2->n_type, "elem")) {
+            printf("TIPO = %s\n", node->node2->n_type);
+            errors_sem++;
+            printf(BRED"[%03d:%03d] ", nline, ncolumn);
+            printf("SEMANTIC ERROR --> Unexpected type in \"%s\"\n"reset, node->n_title);
+            if (!strcmp(node->node2->n_type, "elem")) {
+                strcpy(node->node2->n_cast, "set");
+            }
+        }
+    }
+}
+
+extern char* expTypeHandler(Node* node) {
     char leftType[11] = "";
     char rightType[11] = "";
     if (!node) {
         return NULL;
     }
-    if (node->node1) {
-        strcpy(leftType, typeHandler(node->node1));
+    if (strcmp(node->n_title, "add operator")
+        && strcmp(node->n_title, "remove operator")
+        && strcmp(node->n_title, "in operator")
+        && strcmp(node->n_title, "exists operator")
+        && strcmp(node->n_title, "is_set operator")) {
+        if (node->node1) {
+            strcpy(leftType, expTypeHandler(node->node1));
+        }
+        if (node->node2) {
+            strcpy(rightType, expTypeHandler(node->node2));
+        }
+        if (node->s_token) {
+            strcpy(node->n_type, node->s_token->s_type);
+            if (strcmp(node->n_title, "function call") && strcmp(node->n_title, "call parameters")) {
+                if (!stringNull(leftType)) {
+                    strcpy(node->node1->n_cast, node->n_type);
+                }
+                if (!stringNull(rightType)) {
+                    strcpy(node->node2->n_cast, node->n_type);
+                }
+            }
+        }
+        else {
+            if (strcmp(node->n_title, "call parameters")) {
+                if (!stringNull(leftType) && !stringNull(rightType)) {
+                    strcpy(node->n_type, typeConflict(node->node1, node->node2));
+                }
+                else if (!stringNull(rightType)) {
+                    strcpy(node->n_type, rightType);
+                }
+                else if (!stringNull(leftType)) {
+                    strcpy(node->n_type, leftType);
+                }
+            }
+        }
     }
-    if (node->node2) {
-        strcpy(rightType, typeHandler(node->node2));
-    }
-    if (node->s_token) {
-        strcpy(node->n_type, node->s_token->s_type);
-        if (!stringNull(leftType)) {
-            strcpy(node->node1->n_cast, node->n_type);
-        }
-        if (!stringNull(rightType)) {
-            strcpy(node->node2->n_cast, node->n_type);
-        }
-    }
-    else {
-        if (!stringNull(leftType) && !stringNull(rightType)) {
-            strcpy(node->n_type, rightType);
-            // strcpy(node->n_type, typeConflict(rightType, leftType));
-        }
-        else if (!stringNull(rightType)) {
-            strcpy(node->n_type, rightType);
-        }
-        else if (!stringNull(leftType)) {
-            strcpy(node->n_type, leftType);
-        }
-    }
-
     return node->n_type;
 }
 
