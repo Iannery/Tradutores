@@ -44,6 +44,9 @@
     extern int column;
     extern int errors;
     extern int context;
+    extern Stack scope;
+    extern Symbol symbolTable[1000];
+    extern Node* tree;
     int errors_sem;
     int qtdParams;
     char lastFType[6]; 
@@ -153,7 +156,7 @@ varDeclaration:
 funcDeclaration:
     simpleFDeclaration '(' {
         context++;
-        pushScopeStack(&scope, context);
+        pushStack(&scope, context);
     } 
     params ')' {
         populateParams(symbolTable);
@@ -162,7 +165,7 @@ funcDeclaration:
         $$->node1 = $1;
         $$->node2 = $4;
         $$->node3 = $7;
-        popScopeStack(&scope);
+        popStack(&scope);
     }
     | simpleFDeclaration '(' ')' compoundStmt {
         $$ = createNode("function declaration");
@@ -695,7 +698,7 @@ extern int qtdHandler(char* title, int line, int column){
 }
 
 extern char* scopeHandler(char* title, int line, int column){
-    int idx = searchScopeStack(&scope);
+    int idx = searchStack(&scope);
     int inContext = 0;
     int st_pos = 0;
     for(int i = idx - 1 ; i >= 0; i--){
@@ -717,8 +720,8 @@ int main(int argc, char **argv){
     errors_sem = 0;
     FILE *fp = fopen(argv[1], "r");
     initTable(symbolTable);
-    initScopeStack(&scope);
-    pushScopeStack(&scope, 0);
+    initStack(&scope);
+    pushStack(&scope, 0);
     if(argc > 1){
         if(fp){
             yyin = fp;

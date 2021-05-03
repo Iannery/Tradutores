@@ -7,10 +7,10 @@ compile:
 	gcc -g bison/clang_syntax.tab.c flex/lex.yy.c obj/stack.o obj/symbol_table.o obj/tree.o -I utils -I bison -I flex -Wall
 
 run:
-	./a.out tests/t_correct01.c
+	./a.out tests/t_correct02.c
 	
 debug:
-	valgrind -v --tool=memcheck --leak-check=full --log-file="logfile.out" --show-leak-kinds=all --track-origins=yes ./a.out tests/t_correct01.c
+	valgrind -v --tool=memcheck --leak-check=full --log-file="logfile.out" --show-leak-kinds=all --track-origins=yes ./a.out tests/t_correct02.c
 
 clean:
 	rm -f logfile.out ./bison/clang_syntax.output

@@ -16,14 +16,15 @@
   **/
 typedef struct {
     int stack[1000];
-} Scope;
-Scope scope;
+} Stack;
 
-extern void initScopeStack(Scope* s);
-extern int emptyScopeStack(Scope* s);
-extern int searchScopeStack(Scope* s);
-extern void pushScopeStack(Scope* s, int context);
-extern int popScopeStack(Scope* s);
-extern int seeTop(Scope* s);
+
+extern void initStack(Stack* s);
+extern int emptyStack(Stack* s);
+extern int searchStack(Stack* s);
+extern void pushStack(Stack* s, int context);
+extern int popStack(Stack* s);
+extern int seeTop(Stack* s);
+extern int incrementStackValue(Stack* s);
 
 #endif

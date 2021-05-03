@@ -37,11 +37,6 @@ typedef struct Node {
   char   n_type[6];
   char   n_cast[6];
 } Node;
-Node* tree;
-Node* nodeArray[100000];
-char typeParams[100][6];
-extern int errors_sem;
-extern char lastFType[6];
 extern Node* createNode(char* n_title);
 extern int stringNull(char* str);
 extern void printTree(Node* node, int depth);

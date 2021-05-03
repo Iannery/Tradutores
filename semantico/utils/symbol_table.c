@@ -9,7 +9,8 @@
 #include "clang_syntax.tab.h"
 #include "symbol_table.h"
 #include "stack.h"
-
+Symbol symbolTable[1000];
+extern int errors;
 extern void populateParams(Symbol* s) {
     int pos = findEmpty(s);
     int funcpos = -1;

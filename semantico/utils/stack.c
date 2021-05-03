@@ -6,10 +6,10 @@
 #include <stdio.h>
 #include <string.h>
 #include "stack.h"
-
+Stack scope;
  // Initializes a scope stack with -1 as their value, since the scopes
  // start at zero.
-extern void initScopeStack(Scope* s) {
+extern void initStack(Stack* s) {
     for (int i = 0; i < 1000; i++) {
         s->stack[i] = -1;
     }
@@ -17,12 +17,12 @@ extern void initScopeStack(Scope* s) {
 
 // Returns if the stack is empty, that is, 
 // if the first stack element is -1.
-extern int emptyScopeStack(Scope* s) {
+extern int emptyStack(Stack* s) {
     return (s->stack[0] == -1);
 }
 
 // Returns the first non-occupied position in the stack.
-extern int searchScopeStack(Scope* s) {
+extern int searchStack(Stack* s) {
     for (int i = 0; i < 1000; i++) {
         if (s->stack[i] == -1) {
             return i;
@@ -32,8 +32,8 @@ extern int searchScopeStack(Scope* s) {
 }
 
 // Pushes a context value into the stack, to generate the scope.
-extern void pushScopeStack(Scope* s, int context) {
-    int idx = searchScopeStack(s);
+extern void pushStack(Stack* s, int context) {
+    int idx = searchStack(s);
     if (idx >= 0) {
         s->stack[idx] = context;
     }
@@ -43,8 +43,8 @@ extern void pushScopeStack(Scope* s, int context) {
 }
 
 // Pops a context value out of the stack. 
-extern int popScopeStack(Scope* s) {
-    int idx = searchScopeStack(s);
+extern int popStack(Stack* s) {
+    int idx = searchStack(s);
     if (idx > 0) {
         idx--;
         int val = s->stack[idx];
@@ -58,8 +58,8 @@ extern int popScopeStack(Scope* s) {
 }
 
 // See the top of the scope stack.
-extern int seeTop(Scope* s) {
-    int idx = searchScopeStack(s);
+extern int seeTop(Stack* s) {
+    int idx = searchStack(s);
     if (idx > 0) {
         idx--;
         int val = s->stack[idx];

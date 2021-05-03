@@ -39,8 +39,6 @@ typedef struct Symbol {
     int     s_numParams;
     char    s_typeParams[100][6];
 } Symbol;
-Symbol symbolTable[1000];
-extern int errors;
 extern void populateParams(Symbol* s);
 extern int findArgs(Symbol* s, char* title);
 extern int findMain(Symbol* s);

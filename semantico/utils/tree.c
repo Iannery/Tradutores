@@ -9,6 +9,11 @@
 #include "tree.h"
 #include "symbol_table.h"
 #include "clang_syntax.tab.h"
+Node* tree;
+Node* nodeArray[100000];
+char typeParams[100][6];
+extern int errors_sem;
+extern char lastFType[6];
  /**
   * This method created a node, based on a given title as a parameter.
   *

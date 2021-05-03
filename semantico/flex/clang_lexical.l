@@ -22,7 +22,7 @@
     int     column  = 1;
     int     errors  = 0;
     int     context = 0;
-    extern Scope scope;
+    extern Stack scope;
     extern Symbol symbolTable[1000];
 %}
 
@@ -244,7 +244,7 @@ OUT     write|writeln
     yylval.token.t_column = column;
     strcpy(yylval.token.t_title, yytext);
     context++;
-    pushScopeStack(&scope, context);
+    pushStack(&scope, context);
     column += yyleng;
     return '{';
 }
@@ -253,7 +253,7 @@ OUT     write|writeln
     yylval.token.t_line = line;
     yylval.token.t_column = column;
     strcpy(yylval.token.t_title, yytext);
-    popScopeStack(&scope);
+    popStack(&scope);
     column += yyleng;
     return '}';
 }
