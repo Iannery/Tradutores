@@ -3,3 +3,4 @@ sintatico/test
 .gitignore
 sintatico/teste.h
 sintatico/tests/t_c01.c
+TAC/tac
