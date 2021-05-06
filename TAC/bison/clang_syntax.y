@@ -30,6 +30,7 @@
     #include "symbol_table.h"
     #include "stack.h"
     #include "tree.h"
+    #include "tac.h"
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
@@ -39,6 +40,7 @@
     extern int yylex_destroy();
     extern void yyerror(const char* a);
     extern char* scopeHandler(char* title, int line, int column);
+    extern int scopeHandler2(char* title);
     extern int qtdHandler(char* title, int line, int column);
     extern int line;
     extern int column;
@@ -49,6 +51,8 @@
     extern Node* tree;
     int errors_sem;
     int qtdParams;
+    int indexCharString = 0;
+    int indexReg = 0;
     char lastFType[6]; 
     extern FILE *yyin;
 %}
@@ -222,6 +226,9 @@ simpleVDeclaration:
                         $2.t_line, 
                         $2.t_column,
                         $2.t_context);
+
+        $$->ta_isTable = 1;
+        sprintf($$->ta_table,"%s %s_%d",$1.t_title, $2.t_title, $2.t_context);
     }
 ;
 
@@ -478,6 +485,17 @@ assignExp:
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, typestr);
         $$->node1 = $3;
         typeHandler($$, $1.t_line, $1.t_column);
+
+        if(strcmp(typestr, "")){
+            $$->ta_isSymbol = 1;
+            sprintf($$->ta_val,"%s_%d",$1.t_title, scopeHandler2($1.t_title));
+            if($$->node1->ta_isSymbol){
+                sprintf($$->ta_code, "mov %s, %s", $$->ta_val, $$->node1->ta_val);
+            }
+            else if($$->node1->ta_isAux){
+                sprintf($$->ta_code, "mov %s, $%d", $$->ta_val, $$->node1->ta_reg);
+            }
+        }
     }
 ;
 
@@ -495,10 +513,14 @@ constOP:
     INT {
         $$ = createNode("CONST");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, "int");
+        $$->ta_isSymbol = 1;
+        strcpy($$->ta_val, $1.t_title);
     }
     | FLOAT {
         $$ = createNode("CONST");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, "float");
+        $$->ta_isSymbol = 1;
+        strcpy($$->ta_val, $1.t_title);
     }
     | EMPTY {
         $$ = createNode("CONST");
@@ -520,6 +542,24 @@ outOP:
         $$ = createNode("write/writeln");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
         $$->node1 = $3;
+        if(strcmp($$->node1->n_title, "CONST STRING")){
+            if(!strcmp($1.t_title, "write")){
+                if($$->node1->ta_isSymbol){
+                    sprintf($$->ta_code, "print %s", $$->node1->ta_val);
+                }
+                else if($$->node1->ta_isAux){
+                    sprintf($$->ta_code, "print $%d", $$->node1->ta_reg);
+                }
+            }
+            else if(!strcmp($1.t_title, "writeln")){
+                if($$->node1->ta_isSymbol){
+                    sprintf($$->ta_code, "println %s", $$->node1->ta_val);
+                }
+                else if($$->node1->ta_isAux){
+                    sprintf($$->ta_code, "println $%d", $$->node1->ta_reg);
+                }
+            }
+        }
     }
 ;
 
@@ -527,10 +567,19 @@ outConst:
     STRING {
         $$ = createNode("CONST STRING");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
+        $$->ta_isTable = 1;
+        int size = (int) strlen($1.t_title) - 2;
+        indexCharString++;
+        sprintf($$->ta_table,"char _str%d[] = %s\nint _str%d_size = %d",indexCharString, $1.t_title,indexCharString , size);
     }
     | CHAR {
         $$ = createNode("CONST CHAR");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
+        $$->ta_isTable = 1;
+        indexCharString++;
+        sprintf($$->ta_table,"char _str%d = %s", indexCharString, $1.t_title);
+        $$->ta_isSymbol = 1;
+        sprintf($$->ta_val, "_str%d", indexCharString);
     }
     | simpleExp {
         $$ = $1;
@@ -543,6 +592,51 @@ binLogicalExp:
         // $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
         $$->node1 = $1;
         $$->node2 = $3;
+
+        if(!strcmp($2.t_title, "&&")){
+            if($$->node1->ta_isSymbol){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "and $%d, %s, %s", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "and $%d, %s, $%d", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_reg);
+                }
+            }
+            else if($$->node1->ta_isAux){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "and $%d, $%d, %s", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "and $%d, $%d, $%d", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_reg);
+                }
+            }
+        }
+        else if(!strcmp($2.t_title, "||")){
+            if($$->node1->ta_isSymbol){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "or $%d, %s, %s", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "or $%d, %s, $%d", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_reg);
+                }
+            }
+            else if($$->node1->ta_isAux){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "or $%d, $%d, %s", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "or $%d, $%d, $%d", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_reg);
+                }
+            }
+        }
     }
     | unLogicalExp {
         $$ = $1;
@@ -554,6 +648,17 @@ unLogicalExp:
         $$ = createNode("unary expression");
         // $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
         $$->node1 = $2;
+
+        if($$->node1->ta_isSymbol){
+            $$->ta_isAux = 1;
+            $$->ta_reg = indexReg++;
+            sprintf($$->ta_code, "not $%d, %s", $$->ta_reg, $$->node1->ta_val);
+        }
+        else if($$->node1->ta_isAux){
+            $$->ta_isAux = 1;
+            $$->ta_reg = indexReg++;
+            sprintf($$->ta_code, "not $%d, $%d", $$->ta_reg, $$->node1->ta_reg);
+        }
     }
     | relationalExp {
         $$ = $1;
@@ -566,6 +671,141 @@ relationalExp:
         // $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
         $$->node1 = $1;
         $$->node2 = $3;
+
+        if(!strcmp($2.t_title, "==")){
+            if($$->node1->ta_isSymbol){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "seq $%d, %s, %s", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "seq $%d, %s, $%d", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_reg);
+                }
+            }
+            else if($$->node1->ta_isAux){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "seq $%d, $%d, %s", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "seq $%d, $%d, $%d", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_reg);
+                }
+            }
+        }
+        if(!strcmp($2.t_title, "!=")){
+            if($$->node1->ta_isSymbol){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "seq $%d, %s, %s\nnot $%d, $%d", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_val,$$->ta_reg,$$->ta_reg);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "seq $%d, %s, $%d\nnot $%d, $%d", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_reg,$$->ta_reg,$$->ta_reg);
+                }
+            }
+            else if($$->node1->ta_isAux){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "seq $%d, $%d, %s\nnot $%d, $%d", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_val,$$->ta_reg,$$->ta_reg);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "seq $%d, $%d, $%d\nnot $%d, $%d", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_reg,$$->ta_reg,$$->ta_reg);
+                }
+            }
+        }
+
+        else if(!strcmp($2.t_title, ">=")){
+            if($$->node1->ta_isSymbol){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "slt $%d, %s, %s\nnot $%d, $%d", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_val,$$->ta_reg,$$->ta_reg);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "slt $%d, %s, $%d\nnot $%d, $%d", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_reg,$$->ta_reg,$$->ta_reg);
+                }
+            }
+            else if($$->node1->ta_isAux){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "slt $%d, $%d, %s\nnot $%d, $%d", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_val,$$->ta_reg,$$->ta_reg);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "slt $%d, $%d, $%d\nnot $%d, $%d", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_reg,$$->ta_reg,$$->ta_reg);
+                }
+            }
+        }
+
+        else if(!strcmp($2.t_title, ">")){
+            if($$->node1->ta_isSymbol){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "sleq $%d, %s, %s\nnot $%d, $%d", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_val,$$->ta_reg,$$->ta_reg);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "sleq $%d, %s, $%d\nnot $%d, $%d", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_reg,$$->ta_reg,$$->ta_reg);
+                }
+            }
+            else if($$->node1->ta_isAux){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "sleq $%d, $%d, %s\nnot $%d, $%d", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_val,$$->ta_reg,$$->ta_reg);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "sleq $%d, $%d, $%d\nnot $%d, $%d", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_reg,$$->ta_reg,$$->ta_reg);
+                }
+            }
+        }
+        else if(!strcmp($2.t_title, "<")){
+            if($$->node1->ta_isSymbol){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "slt $%d, %s, %s", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "slt $%d, %s, $%d", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_reg);
+                }
+            }
+            else if($$->node1->ta_isAux){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "slt $%d, $%d, %s", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "slt $%d, $%d, $%d", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_reg);
+                }
+            }
+        }
+        else if(!strcmp($2.t_title, "<=")){
+            if($$->node1->ta_isSymbol){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "sleq $%d, %s, %s", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "sleq $%d, %s, $%d", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_reg);
+                }
+            }
+            else if($$->node1->ta_isAux){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "sleq $%d, $%d, %s", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "sleq $%d, $%d, $%d", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_reg);
+                }
+            }
+        }
     }
     | sumExp {
         $$ = $1;
@@ -578,6 +818,51 @@ sumExp:
         // $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
         $$->node1 = $1;
         $$->node2 = $3;
+
+        if(!strcmp($2.t_title, "+")){
+            if($$->node1->ta_isSymbol){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "add $%d, %s, %s", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "add $%d, %s, $%d", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_reg);
+                }
+            }
+            else if($$->node1->ta_isAux){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "add $%d, $%d, %s", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "add $%d, $%d, $%d", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_reg);
+                }
+            }
+        }
+        else if(!strcmp($2.t_title, "-")){
+            if($$->node1->ta_isSymbol){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "sub $%d, %s, %s", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "sub $%d, %s, $%d", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_reg);
+                }
+            }
+            else if($$->node1->ta_isAux){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "sub $%d, $%d, %s", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "sub $%d, $%d, $%d", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_reg);
+                }
+            }
+        }
     }
     | mulExp {
         $$ = $1;
@@ -590,6 +875,51 @@ mulExp:
         // $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
         $$->node1 = $1;
         $$->node2 = $3;
+        if(!strcmp($2.t_title, "*")){
+            if($$->node1->ta_isSymbol){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "mul $%d, %s, %s", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "mul $%d, %s, $%d", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_reg);
+                }
+            }
+            else if($$->node1->ta_isAux){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "mul $%d, $%d, %s", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "mul $%d, $%d, $%d", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_reg);
+                }
+            }
+        }
+        else if(!strcmp($2.t_title, "/")){
+            if($$->node1->ta_isSymbol){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "div $%d, %s, %s", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "div $%d, %s, $%d", $$->ta_reg, $$->node1->ta_val, $$->node2->ta_reg);
+                }
+            }
+            else if($$->node1->ta_isAux){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                if($$->node2->ta_isSymbol){
+                    sprintf($$->ta_code, "div $%d, $%d, %s", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_val);
+                }
+                else if($$->node2->ta_isAux){
+                    sprintf($$->ta_code, "div $%d, $%d, $%d", $$->ta_reg, $$->node1->ta_reg, $$->node2->ta_reg);
+                }
+            }
+        }
+
     }
     | signedFactor {
         $$ = $1;
@@ -603,9 +933,34 @@ signedFactor:
     | SUM_OP signedFactor {
         char auxstr[100];
         strcpy(auxstr, "signed factor ");
-        
         $$ = createNode(strcat(auxstr, $1.t_title));
         $$->node1 = $2;
+        if(!strcmp($1.t_title, "-")){
+            if($$->node1->ta_isSymbol){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                sprintf($$->ta_code, "minus $%d, %s", $$->ta_reg, $$->node1->ta_val);
+            }
+            else if($$->node1->ta_isAux){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                sprintf($$->ta_code, "minus $%d, $%d", $$->ta_reg, $$->node1->ta_reg);
+
+            }
+        }
+        else{
+            if($$->node1->ta_isSymbol){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                sprintf($$->ta_code, "mov $%d, %s", $$->ta_reg, $$->node1->ta_val);
+            }
+            else if($$->node1->ta_isAux){
+                $$->ta_isAux = 1;
+                $$->ta_reg = indexReg++;
+                sprintf($$->ta_code, "mov $%d, $%d", $$->ta_reg, $$->node1->ta_reg);
+
+            }
+        }
     }
 ;
 
@@ -616,6 +971,10 @@ factor:
         $$ = createNode("ID");
 
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, typestr);
+        if(strcmp(typestr, "")){
+            $$->ta_isSymbol = 1;
+            sprintf($$->ta_val,"%s_%d",$1.t_title, scopeHandler2($1.t_title));
+        }
     }
     | functionCall {
         $$ = $1;
@@ -704,7 +1063,6 @@ extern char* scopeHandler(char* title, int line, int column){
     for(int i = idx - 1 ; i >= 0; i--){
         st_pos = searchVarContext(symbolTable, title, scope.stack[i]);
         if(st_pos >= 0){
-            // printf("S TYPE DO SCOPE HANDLER ACHOU ISSO AQUI OW %s\n", symbolTable[st_pos].s_type);
             return symbolTable[st_pos].s_type;
         }
     }
@@ -714,6 +1072,18 @@ extern char* scopeHandler(char* title, int line, int column){
         printf("SEMANTIC ERROR --> Undeclared variable in context: %s\n"reset, title);
     }
     return "";
+}
+
+extern int scopeHandler2(char* title){
+    int idx = searchStack(&scope);
+    int st_pos = 0;
+    for(int i = idx - 1 ; i >= 0; i--){
+        st_pos = searchVarContext(symbolTable, title, scope.stack[i]);
+        if(st_pos >= 0){
+            return symbolTable[st_pos].s_scope;
+        }
+    }
+    return -1;
 }
 
 int main(int argc, char **argv){
@@ -746,6 +1116,7 @@ int main(int argc, char **argv){
         printf("\t<type> \n");
         printf("\t(cast) \n\n");
         printTree(tree, 0);
+        writeFile();
     }
     else if(errors){
         printf(BRED"The Abstract Syntax Tree will not be shown if there are syntactic or lexical errors.\n");

@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "tree.h"
+#include "tac.h"
 #include "symbol_table.h"
 #include "clang_syntax.tab.h"
 Node* tree;
@@ -30,6 +31,13 @@ extern Node* createNode(char* n_title) {
     node->s_token = NULL;
     strcpy(node->n_type, "");
     strcpy(node->n_cast, "");
+    strcpy(node->ta_table, "");
+    strcpy(node->ta_code, "");
+    node->ta_isTable = 0;
+    node->ta_isSymbol = 0;
+    node->ta_isAux = 0;
+    node->ta_reg = -1;
+    strcpy(node->ta_val, "");
     appendNode(node);
     return node;
 }

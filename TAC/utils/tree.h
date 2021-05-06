@@ -27,6 +27,7 @@
   *
   *  The nodeArray methods are based in the ones made for the scope stack.
   **/
+
 typedef struct Node {
   struct Node* node1;
   struct Node* node2;
@@ -36,7 +37,15 @@ typedef struct Node {
   char   n_title[100];
   char   n_type[6];
   char   n_cast[6];
+  int    ta_isTable;
+  int    ta_isSymbol;
+  int    ta_isAux;
+  int    ta_reg;
+  char   ta_val[100];
+  char   ta_table[100];
+  char   ta_code[100];
 } Node;
+
 extern Node* createNode(char* n_title);
 extern int stringNull(char* str);
 extern void printTree(Node* node, int depth);
