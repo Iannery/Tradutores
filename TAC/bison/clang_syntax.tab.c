@@ -619,12 +619,12 @@ static const yytype_int16 yyrline[] =
      161,   174,   179,   186,   191,   197,   215,   236,   254,   260,
      265,   268,   274,   277,   280,   283,   286,   289,   292,   295,
      298,   301,   307,   313,   318,   322,   328,   333,   338,   346,
-     353,   361,   363,   367,   369,   373,   381,   387,   396,   399,
-     405,   413,   419,   422,   425,   432,   440,   448,   459,   464,
-     471,   474,   481,   503,   506,   513,   519,   525,   532,   541,
-     567,   575,   584,   590,   641,   647,   663,   669,   810,   816,
-     867,   873,   924,   930,   933,   968,   979,   982,   985,   988,
-     991,   994,  1000,  1000,  1013,  1024,  1031
+     353,   361,   363,   367,   369,   373,   389,   395,   404,   407,
+     413,   421,   427,   430,   433,   440,   448,   456,   467,   472,
+     479,   482,   489,   511,   514,   521,   527,   533,   540,   557,
+     591,   599,   608,   614,   665,   671,   687,   693,   832,   838,
+     889,   895,   946,   952,   955,   989,  1000,  1003,  1006,  1009,
+    1012,  1015,  1021,  1021,  1039,  1055,  1068
 };
 #endif
 
@@ -3479,112 +3479,120 @@ yyreduce:
         (yyval.node) = createNode("return statement");
         (yyval.node)->node1 = (yyvsp[-1].node);
         typeHandler((yyval.node), (yyvsp[-2].token).t_line, (yyvsp[-2].token).t_column);
-    }
-#line 3484 "bison/clang_syntax.tab.c"
-    break;
-
-  case 46: /* setStmt: forallOP  */
-#line 381 "bison/clang_syntax.y"
-             {
-        (yyval.node) = (yyvsp[0].node);
+        if((yyval.node)->node1->ta_isSymbol){
+            (yyval.node)->ta_isAux = 1;
+            sprintf((yyval.node)->ta_code, "return %s", (yyval.node)->node1->ta_val);
+        }
+        else if((yyval.node)->node1->ta_isAux){
+            (yyval.node)->ta_isAux = 1;
+            sprintf((yyval.node)->ta_code, "return $%d", (yyval.node)->node1->ta_reg);
+        }
     }
 #line 3492 "bison/clang_syntax.tab.c"
     break;
 
+  case 46: /* setStmt: forallOP  */
+#line 389 "bison/clang_syntax.y"
+             {
+        (yyval.node) = (yyvsp[0].node);
+    }
+#line 3500 "bison/clang_syntax.tab.c"
+    break;
+
   case 47: /* pertOP: simpleExp IN_KW factor  */
-#line 387 "bison/clang_syntax.y"
+#line 395 "bison/clang_syntax.y"
                            {
         (yyval.node) = createNode("in operator");
         (yyval.node)->node1 = (yyvsp[-2].node);
         (yyval.node)->node2 = (yyvsp[0].node);
         typeHandler((yyval.node), (yyvsp[-1].token).t_line, (yyvsp[-1].token).t_column);
     }
-#line 3503 "bison/clang_syntax.tab.c"
-    break;
-
-  case 48: /* setReturner: addOP  */
-#line 396 "bison/clang_syntax.y"
-          {
-        (yyval.node) = (yyvsp[0].node);
-    }
 #line 3511 "bison/clang_syntax.tab.c"
     break;
 
-  case 49: /* setReturner: remOP  */
-#line 399 "bison/clang_syntax.y"
-            {
+  case 48: /* setReturner: addOP  */
+#line 404 "bison/clang_syntax.y"
+          {
         (yyval.node) = (yyvsp[0].node);
     }
 #line 3519 "bison/clang_syntax.tab.c"
     break;
 
+  case 49: /* setReturner: remOP  */
+#line 407 "bison/clang_syntax.y"
+            {
+        (yyval.node) = (yyvsp[0].node);
+    }
+#line 3527 "bison/clang_syntax.tab.c"
+    break;
+
   case 50: /* typeOP: ISSET_KW '(' setParams ')'  */
-#line 405 "bison/clang_syntax.y"
+#line 413 "bison/clang_syntax.y"
                                {
         (yyval.node) = createNode("is_set operator");
         (yyval.node)->node1 = (yyvsp[-1].node);
         strcpy((yyval.node)->n_type, "int");
     }
-#line 3529 "bison/clang_syntax.tab.c"
+#line 3537 "bison/clang_syntax.tab.c"
     break;
 
   case 51: /* setParams: ID  */
-#line 413 "bison/clang_syntax.y"
+#line 421 "bison/clang_syntax.y"
        {
         char typestr[6];
         strcpy(typestr,scopeHandler((yyvsp[0].token).t_title, (yyvsp[0].token).t_line, (yyvsp[0].token).t_column));
         (yyval.node) = createNode("is_set parameter");
         (yyval.node)->s_token = emulateToken((yyvsp[0].token).t_title, (yyvsp[0].token).t_line, (yyvsp[0].token).t_column, typestr);
     }
-#line 3540 "bison/clang_syntax.tab.c"
-    break;
-
-  case 52: /* setParams: pertOP  */
-#line 419 "bison/clang_syntax.y"
-             {
-        (yyval.node) = (yyvsp[0].node);
-    }
 #line 3548 "bison/clang_syntax.tab.c"
     break;
 
-  case 53: /* setParams: setReturner  */
-#line 422 "bison/clang_syntax.y"
-                  {
+  case 52: /* setParams: pertOP  */
+#line 427 "bison/clang_syntax.y"
+             {
         (yyval.node) = (yyvsp[0].node);
     }
 #line 3556 "bison/clang_syntax.tab.c"
     break;
 
-  case 54: /* setParams: constOP  */
-#line 425 "bison/clang_syntax.y"
-              {
+  case 53: /* setParams: setReturner  */
+#line 430 "bison/clang_syntax.y"
+                  {
         (yyval.node) = (yyvsp[0].node);
     }
 #line 3564 "bison/clang_syntax.tab.c"
     break;
 
+  case 54: /* setParams: constOP  */
+#line 433 "bison/clang_syntax.y"
+              {
+        (yyval.node) = (yyvsp[0].node);
+    }
+#line 3572 "bison/clang_syntax.tab.c"
+    break;
+
   case 55: /* addOP: ADD_KW '(' pertOP ')'  */
-#line 432 "bison/clang_syntax.y"
+#line 440 "bison/clang_syntax.y"
                           {
         (yyval.node) = createNode("add operator");
         (yyval.node)->node1 = (yyvsp[-1].node);
         strcpy((yyval.node)->n_type, "set");
     }
-#line 3574 "bison/clang_syntax.tab.c"
+#line 3582 "bison/clang_syntax.tab.c"
     break;
 
   case 56: /* remOP: REMOVE_KW '(' pertOP ')'  */
-#line 440 "bison/clang_syntax.y"
+#line 448 "bison/clang_syntax.y"
                              {
         (yyval.node) = createNode("remove operator");
         (yyval.node)->node1 = (yyvsp[-1].node);
         strcpy((yyval.node)->n_type, "set");
     }
-#line 3584 "bison/clang_syntax.tab.c"
+#line 3592 "bison/clang_syntax.tab.c"
     break;
 
   case 57: /* selectOP: EXISTS_KW '(' ID IN_KW factor ')'  */
-#line 448 "bison/clang_syntax.y"
+#line 456 "bison/clang_syntax.y"
                                       {
         char typestr[6];
         strcpy(typestr,scopeHandler((yyvsp[-3].token).t_title, (yyvsp[-3].token).t_line, (yyvsp[-3].token).t_column));
@@ -3593,47 +3601,47 @@ yyreduce:
         (yyval.node)->s_token = emulateToken((yyvsp[-3].token).t_title, (yyvsp[-3].token).t_line, (yyvsp[-3].token).t_column, typestr);
         strcpy((yyval.node)->n_type, "int");
     }
-#line 3597 "bison/clang_syntax.tab.c"
+#line 3605 "bison/clang_syntax.tab.c"
     break;
 
   case 58: /* forallOP: FORALL_KW '(' pertOP ')' primitiveStmt  */
-#line 459 "bison/clang_syntax.y"
+#line 467 "bison/clang_syntax.y"
                                            {
         (yyval.node) = createNode("forall statement");
         (yyval.node)->node1 = (yyvsp[-2].node);
         (yyval.node)->node2 = (yyvsp[0].node);
     }
-#line 3607 "bison/clang_syntax.tab.c"
+#line 3615 "bison/clang_syntax.tab.c"
     break;
 
   case 59: /* forallOP: FORALL_KW '(' pertOP ')' '{' '}'  */
-#line 464 "bison/clang_syntax.y"
+#line 472 "bison/clang_syntax.y"
                                       {
         (yyval.node) = createNode("forall statement");
         (yyval.node)->node1 = (yyvsp[-3].node);
     }
-#line 3616 "bison/clang_syntax.tab.c"
-    break;
-
-  case 60: /* expression: assignExp  */
-#line 471 "bison/clang_syntax.y"
-              {
-        (yyval.node) = (yyvsp[0].node);
-    }
 #line 3624 "bison/clang_syntax.tab.c"
     break;
 
+  case 60: /* expression: assignExp  */
+#line 479 "bison/clang_syntax.y"
+              {
+        (yyval.node) = (yyvsp[0].node);
+    }
+#line 3632 "bison/clang_syntax.tab.c"
+    break;
+
   case 61: /* expression: simpleExp  */
-#line 474 "bison/clang_syntax.y"
+#line 482 "bison/clang_syntax.y"
                 {
         (yyval.node) = (yyvsp[0].node);
         expTypeHandler((yyval.node));
     }
-#line 3633 "bison/clang_syntax.tab.c"
+#line 3641 "bison/clang_syntax.tab.c"
     break;
 
   case 62: /* assignExp: ID ASS_OP expression  */
-#line 481 "bison/clang_syntax.y"
+#line 489 "bison/clang_syntax.y"
                          {
         char typestr[6];
         strcpy(typestr,scopeHandler((yyvsp[-2].token).t_title, (yyvsp[-2].token).t_line, (yyvsp[-2].token).t_column));
@@ -3653,69 +3661,77 @@ yyreduce:
             }
         }
     }
-#line 3657 "bison/clang_syntax.tab.c"
-    break;
-
-  case 63: /* simpleExp: binLogicalExp  */
-#line 503 "bison/clang_syntax.y"
-                  {
-        (yyval.node) = (yyvsp[0].node);
-    }
 #line 3665 "bison/clang_syntax.tab.c"
     break;
 
-  case 64: /* simpleExp: pertOP  */
-#line 506 "bison/clang_syntax.y"
-             {
+  case 63: /* simpleExp: binLogicalExp  */
+#line 511 "bison/clang_syntax.y"
+                  {
         (yyval.node) = (yyvsp[0].node);
     }
 #line 3673 "bison/clang_syntax.tab.c"
     break;
 
+  case 64: /* simpleExp: pertOP  */
+#line 514 "bison/clang_syntax.y"
+             {
+        (yyval.node) = (yyvsp[0].node);
+    }
+#line 3681 "bison/clang_syntax.tab.c"
+    break;
+
   case 65: /* constOP: INT  */
-#line 513 "bison/clang_syntax.y"
+#line 521 "bison/clang_syntax.y"
         {
         (yyval.node) = createNode("CONST");
         (yyval.node)->s_token = emulateToken((yyvsp[0].token).t_title, (yyvsp[0].token).t_line, (yyvsp[0].token).t_column, "int");
         (yyval.node)->ta_isSymbol = 1;
         strcpy((yyval.node)->ta_val, (yyvsp[0].token).t_title);
     }
-#line 3684 "bison/clang_syntax.tab.c"
+#line 3692 "bison/clang_syntax.tab.c"
     break;
 
   case 66: /* constOP: FLOAT  */
-#line 519 "bison/clang_syntax.y"
+#line 527 "bison/clang_syntax.y"
             {
         (yyval.node) = createNode("CONST");
         (yyval.node)->s_token = emulateToken((yyvsp[0].token).t_title, (yyvsp[0].token).t_line, (yyvsp[0].token).t_column, "float");
         (yyval.node)->ta_isSymbol = 1;
         strcpy((yyval.node)->ta_val, (yyvsp[0].token).t_title);
     }
-#line 3695 "bison/clang_syntax.tab.c"
+#line 3703 "bison/clang_syntax.tab.c"
     break;
 
   case 67: /* constOP: EMPTY  */
-#line 525 "bison/clang_syntax.y"
+#line 533 "bison/clang_syntax.y"
             {
         (yyval.node) = createNode("CONST");
         (yyval.node)->s_token = emulateToken((yyvsp[0].token).t_title, (yyvsp[0].token).t_line, (yyvsp[0].token).t_column, "set");
     }
-#line 3704 "bison/clang_syntax.tab.c"
+#line 3712 "bison/clang_syntax.tab.c"
     break;
 
   case 68: /* inOP: IN '(' ID ')' ';'  */
-#line 532 "bison/clang_syntax.y"
+#line 540 "bison/clang_syntax.y"
                       {
         char typestr[6];
         strcpy(typestr,scopeHandler((yyvsp[-2].token).t_title, (yyvsp[-2].token).t_line, (yyvsp[-2].token).t_column));
         (yyval.node) = createNode("read");
         (yyval.node)->s_token = emulateToken((yyvsp[-2].token).t_title, (yyvsp[-2].token).t_line, (yyvsp[-2].token).t_column, NULL);
+        if(!strcmp(typestr, "int")){
+            (yyval.node)->ta_isSymbol = 1;
+            sprintf((yyval.node)->ta_code,"scani %s_%d",(yyvsp[-2].token).t_title, scopeHandler2((yyvsp[-2].token).t_title));
+        }
+        else if(!strcmp(typestr, "float")){
+            (yyval.node)->ta_isSymbol = 1;
+            sprintf((yyval.node)->ta_code,"scanf %s_%d",(yyvsp[-2].token).t_title, scopeHandler2((yyvsp[-2].token).t_title));
+        }
     }
-#line 3715 "bison/clang_syntax.tab.c"
+#line 3731 "bison/clang_syntax.tab.c"
     break;
 
   case 69: /* outOP: OUT '(' outConst ')' ';'  */
-#line 541 "bison/clang_syntax.y"
+#line 557 "bison/clang_syntax.y"
                              {
         (yyval.node) = createNode("write/writeln");
         (yyval.node)->s_token = emulateToken((yyvsp[-4].token).t_title, (yyvsp[-4].token).t_line, (yyvsp[-4].token).t_column, NULL);
@@ -3738,25 +3754,33 @@ yyreduce:
                 }
             }
         }
+        else {
+            if(!strcmp((yyvsp[-4].token).t_title, "write")){
+                sprintf((yyval.node)->ta_code, "param _str%d_size\nmov $998, &_str%d\nparam $998\ncall _writeStr, 2", indexCharString, indexCharString);
+            }
+            else if(!strcmp((yyvsp[-4].token).t_title, "writeln")){
+                sprintf((yyval.node)->ta_code, "param _str%d_size\nmov $998, &_str%d\nparam $998\ncall _writelnStr, 2", indexCharString, indexCharString);
+            }
+        }
     }
-#line 3743 "bison/clang_syntax.tab.c"
+#line 3767 "bison/clang_syntax.tab.c"
     break;
 
   case 70: /* outConst: STRING  */
-#line 567 "bison/clang_syntax.y"
+#line 591 "bison/clang_syntax.y"
            {
         (yyval.node) = createNode("CONST STRING");
         (yyval.node)->s_token = emulateToken((yyvsp[0].token).t_title, (yyvsp[0].token).t_line, (yyvsp[0].token).t_column, NULL);
         (yyval.node)->ta_isTable = 1;
         int size = (int) strlen((yyvsp[0].token).t_title) - 2;
         indexCharString++;
-        sprintf((yyval.node)->ta_table,"char _str%d[] = %s\nint _str%d_size = %d",indexCharString, (yyvsp[0].token).t_title,indexCharString , size);
+        sprintf((yyval.node)->ta_table,"char _str%d[] = %s\nint _str%d_size = %d", indexCharString, (yyvsp[0].token).t_title, indexCharString, size);
     }
-#line 3756 "bison/clang_syntax.tab.c"
+#line 3780 "bison/clang_syntax.tab.c"
     break;
 
   case 71: /* outConst: CHAR  */
-#line 575 "bison/clang_syntax.y"
+#line 599 "bison/clang_syntax.y"
            {
         (yyval.node) = createNode("CONST CHAR");
         (yyval.node)->s_token = emulateToken((yyvsp[0].token).t_title, (yyvsp[0].token).t_line, (yyvsp[0].token).t_column, NULL);
@@ -3766,19 +3790,19 @@ yyreduce:
         (yyval.node)->ta_isSymbol = 1;
         sprintf((yyval.node)->ta_val, "_str%d", indexCharString);
     }
-#line 3770 "bison/clang_syntax.tab.c"
+#line 3794 "bison/clang_syntax.tab.c"
     break;
 
   case 72: /* outConst: simpleExp  */
-#line 584 "bison/clang_syntax.y"
+#line 608 "bison/clang_syntax.y"
                 {
         (yyval.node) = (yyvsp[0].node);
     }
-#line 3778 "bison/clang_syntax.tab.c"
+#line 3802 "bison/clang_syntax.tab.c"
     break;
 
   case 73: /* binLogicalExp: binLogicalExp BIN_LOG_OP unLogicalExp  */
-#line 590 "bison/clang_syntax.y"
+#line 614 "bison/clang_syntax.y"
                                           {
         (yyval.node) = createNode("binary expression");
         // $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
@@ -3830,19 +3854,19 @@ yyreduce:
             }
         }
     }
-#line 3834 "bison/clang_syntax.tab.c"
+#line 3858 "bison/clang_syntax.tab.c"
     break;
 
   case 74: /* binLogicalExp: unLogicalExp  */
-#line 641 "bison/clang_syntax.y"
+#line 665 "bison/clang_syntax.y"
                    {
         (yyval.node) = (yyvsp[0].node);
     }
-#line 3842 "bison/clang_syntax.tab.c"
+#line 3866 "bison/clang_syntax.tab.c"
     break;
 
   case 75: /* unLogicalExp: UN_LOG_OP unLogicalExp  */
-#line 647 "bison/clang_syntax.y"
+#line 671 "bison/clang_syntax.y"
                            {
         (yyval.node) = createNode("unary expression");
         // $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, NULL);
@@ -3859,19 +3883,19 @@ yyreduce:
             sprintf((yyval.node)->ta_code, "not $%d, $%d", (yyval.node)->ta_reg, (yyval.node)->node1->ta_reg);
         }
     }
-#line 3863 "bison/clang_syntax.tab.c"
+#line 3887 "bison/clang_syntax.tab.c"
     break;
 
   case 76: /* unLogicalExp: relationalExp  */
-#line 663 "bison/clang_syntax.y"
+#line 687 "bison/clang_syntax.y"
                     {
         (yyval.node) = (yyvsp[0].node);
     }
-#line 3871 "bison/clang_syntax.tab.c"
+#line 3895 "bison/clang_syntax.tab.c"
     break;
 
   case 77: /* relationalExp: relationalExp REL_OP sumExp  */
-#line 669 "bison/clang_syntax.y"
+#line 693 "bison/clang_syntax.y"
                                 {
         (yyval.node) = createNode("relational expression");
         // $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
@@ -3900,7 +3924,7 @@ yyreduce:
                 }
             }
         }
-        if(!strcmp((yyvsp[-1].token).t_title, "!=")){
+        else if(!strcmp((yyvsp[-1].token).t_title, "!=")){
             if((yyval.node)->node1->ta_isSymbol){
                 (yyval.node)->ta_isAux = 1;
                 (yyval.node)->ta_reg = indexReg++;
@@ -3922,7 +3946,6 @@ yyreduce:
                 }
             }
         }
-
         else if(!strcmp((yyvsp[-1].token).t_title, ">=")){
             if((yyval.node)->node1->ta_isSymbol){
                 (yyval.node)->ta_isAux = 1;
@@ -3945,7 +3968,6 @@ yyreduce:
                 }
             }
         }
-
         else if(!strcmp((yyvsp[-1].token).t_title, ">")){
             if((yyval.node)->node1->ta_isSymbol){
                 (yyval.node)->ta_isAux = 1;
@@ -4013,19 +4035,19 @@ yyreduce:
             }
         }
     }
-#line 4017 "bison/clang_syntax.tab.c"
+#line 4039 "bison/clang_syntax.tab.c"
     break;
 
   case 78: /* relationalExp: sumExp  */
-#line 810 "bison/clang_syntax.y"
+#line 832 "bison/clang_syntax.y"
              {
         (yyval.node) = (yyvsp[0].node);
     }
-#line 4025 "bison/clang_syntax.tab.c"
+#line 4047 "bison/clang_syntax.tab.c"
     break;
 
   case 79: /* sumExp: sumExp SUM_OP mulExp  */
-#line 816 "bison/clang_syntax.y"
+#line 838 "bison/clang_syntax.y"
                          {
         (yyval.node) = createNode("+/- operation");
         // $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
@@ -4077,19 +4099,19 @@ yyreduce:
             }
         }
     }
-#line 4081 "bison/clang_syntax.tab.c"
+#line 4103 "bison/clang_syntax.tab.c"
     break;
 
   case 80: /* sumExp: mulExp  */
-#line 867 "bison/clang_syntax.y"
+#line 889 "bison/clang_syntax.y"
              {
         (yyval.node) = (yyvsp[0].node);
     }
-#line 4089 "bison/clang_syntax.tab.c"
+#line 4111 "bison/clang_syntax.tab.c"
     break;
 
   case 81: /* mulExp: mulExp MUL_OP signedFactor  */
-#line 873 "bison/clang_syntax.y"
+#line 895 "bison/clang_syntax.y"
                                {
         (yyval.node) = createNode("*/÷ operation");
         // $$->s_token = emulateToken($2.t_title, $2.t_line, $2.t_column, NULL);
@@ -4141,27 +4163,27 @@ yyreduce:
         }
 
     }
-#line 4145 "bison/clang_syntax.tab.c"
+#line 4167 "bison/clang_syntax.tab.c"
     break;
 
   case 82: /* mulExp: signedFactor  */
-#line 924 "bison/clang_syntax.y"
+#line 946 "bison/clang_syntax.y"
                    {
         (yyval.node) = (yyvsp[0].node);
     }
-#line 4153 "bison/clang_syntax.tab.c"
+#line 4175 "bison/clang_syntax.tab.c"
     break;
 
   case 83: /* signedFactor: factor  */
-#line 930 "bison/clang_syntax.y"
+#line 952 "bison/clang_syntax.y"
            {
         (yyval.node) = (yyvsp[0].node);
     }
-#line 4161 "bison/clang_syntax.tab.c"
+#line 4183 "bison/clang_syntax.tab.c"
     break;
 
   case 84: /* signedFactor: SUM_OP signedFactor  */
-#line 933 "bison/clang_syntax.y"
+#line 955 "bison/clang_syntax.y"
                           {
         char auxstr[100];
         strcpy(auxstr, "signed factor ");
@@ -4177,7 +4199,6 @@ yyreduce:
                 (yyval.node)->ta_isAux = 1;
                 (yyval.node)->ta_reg = indexReg++;
                 sprintf((yyval.node)->ta_code, "minus $%d, $%d", (yyval.node)->ta_reg, (yyval.node)->node1->ta_reg);
-
             }
         }
         else{
@@ -4194,11 +4215,11 @@ yyreduce:
             }
         }
     }
-#line 4198 "bison/clang_syntax.tab.c"
+#line 4219 "bison/clang_syntax.tab.c"
     break;
 
   case 85: /* factor: ID  */
-#line 968 "bison/clang_syntax.y"
+#line 989 "bison/clang_syntax.y"
        {
         char typestr[6];
         strcpy(typestr,scopeHandler((yyvsp[0].token).t_title, (yyvsp[0].token).t_line, (yyvsp[0].token).t_column));
@@ -4210,67 +4231,67 @@ yyreduce:
             sprintf((yyval.node)->ta_val,"%s_%d",(yyvsp[0].token).t_title, scopeHandler2((yyvsp[0].token).t_title));
         }
     }
-#line 4214 "bison/clang_syntax.tab.c"
+#line 4235 "bison/clang_syntax.tab.c"
     break;
 
   case 86: /* factor: functionCall  */
-#line 979 "bison/clang_syntax.y"
+#line 1000 "bison/clang_syntax.y"
                    {
         (yyval.node) = (yyvsp[0].node);
     }
-#line 4222 "bison/clang_syntax.tab.c"
+#line 4243 "bison/clang_syntax.tab.c"
     break;
 
   case 87: /* factor: '(' simpleExp ')'  */
-#line 982 "bison/clang_syntax.y"
+#line 1003 "bison/clang_syntax.y"
                         {
         (yyval.node) = (yyvsp[-1].node);
     }
-#line 4230 "bison/clang_syntax.tab.c"
+#line 4251 "bison/clang_syntax.tab.c"
     break;
 
   case 88: /* factor: constOP  */
-#line 985 "bison/clang_syntax.y"
+#line 1006 "bison/clang_syntax.y"
               {
         (yyval.node) = (yyvsp[0].node);
     }
-#line 4238 "bison/clang_syntax.tab.c"
+#line 4259 "bison/clang_syntax.tab.c"
     break;
 
   case 89: /* factor: selectOP  */
-#line 988 "bison/clang_syntax.y"
+#line 1009 "bison/clang_syntax.y"
                {
         (yyval.node) = (yyvsp[0].node);
     }
-#line 4246 "bison/clang_syntax.tab.c"
+#line 4267 "bison/clang_syntax.tab.c"
     break;
 
   case 90: /* factor: typeOP  */
-#line 991 "bison/clang_syntax.y"
+#line 1012 "bison/clang_syntax.y"
              {
         (yyval.node) = (yyvsp[0].node);
     }
-#line 4254 "bison/clang_syntax.tab.c"
+#line 4275 "bison/clang_syntax.tab.c"
     break;
 
   case 91: /* factor: setReturner  */
-#line 994 "bison/clang_syntax.y"
+#line 1015 "bison/clang_syntax.y"
                   {
         (yyval.node) = (yyvsp[0].node);
     }
-#line 4262 "bison/clang_syntax.tab.c"
+#line 4283 "bison/clang_syntax.tab.c"
     break;
 
   case 92: /* $@3: %empty  */
-#line 1000 "bison/clang_syntax.y"
+#line 1021 "bison/clang_syntax.y"
            {
         qtdParams = 0;
     }
-#line 4270 "bison/clang_syntax.tab.c"
+#line 4291 "bison/clang_syntax.tab.c"
     break;
 
   case 93: /* functionCall: ID '(' $@3 callParams ')'  */
-#line 1003 "bison/clang_syntax.y"
+#line 1024 "bison/clang_syntax.y"
                    {
         char typestr[6];
         strcpy(typestr,scopeHandler((yyvsp[-4].token).t_title, (yyvsp[-4].token).t_line, (yyvsp[-4].token).t_column));
@@ -4279,13 +4300,18 @@ yyreduce:
         (yyval.node)->node1 = (yyvsp[-1].node);
         if(qtdHandler((yyvsp[-4].token).t_title, (yyvsp[-4].token).t_line, (yyvsp[-4].token).t_column)){
             paramsHandler(symbolTable, (yyvsp[-4].token).t_title, (yyvsp[-4].token).t_line, (yyvsp[-4].token).t_column, (yyvsp[-1].node), qtdParams);
+            // if(strcmp(typestr, "")){
+            //     $$->ta_isAux = 1;
+            //     $$->ta_reg = indexReg++;
+            //     sprintf($$->ta_code,"call _%s, %d\npop $%d",$1.t_title, $$->ta_reg, qtdParams);
+            // }
         }
     }
-#line 4285 "bison/clang_syntax.tab.c"
+#line 4311 "bison/clang_syntax.tab.c"
     break;
 
   case 94: /* functionCall: ID '(' ')'  */
-#line 1013 "bison/clang_syntax.y"
+#line 1039 "bison/clang_syntax.y"
                  {
         qtdParams = 0;
         char typestr[6];
@@ -4293,34 +4319,67 @@ yyreduce:
         (yyval.node) = createNode("function call");
         (yyval.node)->s_token = emulateToken((yyvsp[-2].token).t_title, (yyvsp[-2].token).t_line, (yyvsp[-2].token).t_column, typestr);
         qtdHandler((yyvsp[-2].token).t_title, (yyvsp[-2].token).t_line, (yyvsp[-2].token).t_column);
+        if(strcmp(typestr, "")){
+            (yyval.node)->ta_isAux = 1;
+            (yyval.node)->ta_reg = indexReg++;
+            sprintf((yyval.node)->ta_code,"call _%s, 0\npop $%d",(yyvsp[-2].token).t_title, (yyval.node)->ta_reg);
+        }
     }
-#line 4298 "bison/clang_syntax.tab.c"
+#line 4329 "bison/clang_syntax.tab.c"
     break;
 
   case 95: /* callParams: callParams ',' simpleExp  */
-#line 1024 "bison/clang_syntax.y"
+#line 1055 "bison/clang_syntax.y"
                             {
         qtdParams++;
         (yyval.node) = createNode("call parameters");
         (yyval.node)->node1 = (yyvsp[-2].node);
         (yyval.node)->node2 = (yyvsp[0].node);
         expTypeHandler((yyvsp[0].node));
+        // if($$->node2->ta_isSymbol){
+        //     sprintf($$->ta_code, "param %s", $$->node2->ta_val);
+        // }
+        // else if($$->node2->ta_isAux){
+        //     sprintf($$->ta_code, "param $%d", $$->node2->ta_reg);
+        // }
     }
-#line 4310 "bison/clang_syntax.tab.c"
+#line 4347 "bison/clang_syntax.tab.c"
     break;
 
   case 96: /* callParams: simpleExp  */
-#line 1031 "bison/clang_syntax.y"
+#line 1068 "bison/clang_syntax.y"
                 {
         qtdParams++;
         (yyval.node) = (yyvsp[0].node);
         expTypeHandler((yyval.node));
+        // if($$->s_token){
+        //     printf("ENTROU1\n");
+        //     //     if($$->node1->ta_isSymbol){
+        //     //     sprintf($$->ta_code, "param %s", $$->node1->ta_val);
+        //     // }
+        //     // else if($$->node1->ta_isAux){
+        //     //     sprintf($$->ta_code, "param $%d", $$->node1->ta_reg);
+        //     // }
+        //     $$->ta_isSymbol = 1;
+        //     sprintf($$->ta_code,"param %s_%d",$$->s_token->s_title, $$->s_token->s_scope);
+        // }
+        // else if($$->node1){
+        //     if($$->node1->ta_isSymbol){
+        //         $$->ta_isSymbol = 1;
+        //         sprintf($$->ta_code, "param %s", $$->node1->ta_val);
+        //     }
+        //     else if($$->node1->ta_isAux){
+        //         $$->ta_isAux = 1;
+        //         sprintf($$->ta_code, "param $%d", $$->node1->ta_reg);
+        //     }
+
+        // }
     }
-#line 4320 "bison/clang_syntax.tab.c"
+#line 4379 "bison/clang_syntax.tab.c"
     break;
 
 
-#line 4324 "bison/clang_syntax.tab.c"
+#line 4383 "bison/clang_syntax.tab.c"
 
       default: break;
     }
@@ -4545,7 +4604,7 @@ yyreturn:
   return yyresult;
 }
 
-#line 1038 "bison/clang_syntax.y"
+#line 1097 "bison/clang_syntax.y"
 
 extern void yyerror(const char* a) {
     printf(BRED"[%03d:%03d] ", line, column);
@@ -4574,7 +4633,6 @@ extern char* scopeHandler(char* title, int line, int column){
     for(int i = idx - 1 ; i >= 0; i--){
         st_pos = searchVarContext(symbolTable, title, scope.stack[i]);
         if(st_pos >= 0){
-            // printf("S TYPE DO SCOPE HANDLER ACHOU ISSO AQUI OW %s\n", symbolTable[st_pos].s_type);
             return symbolTable[st_pos].s_type;
         }
     }
@@ -4592,7 +4650,6 @@ extern int scopeHandler2(char* title){
     for(int i = idx - 1 ; i >= 0; i--){
         st_pos = searchVarContext(symbolTable, title, scope.stack[i]);
         if(st_pos >= 0){
-            // printf("S TYPE DO SCOPE HANDLER ACHOU ISSO AQUI OW %s\n", symbolTable[st_pos].s_type);
             return symbolTable[st_pos].s_scope;
         }
     }
@@ -4632,7 +4689,7 @@ int main(int argc, char **argv){
         writeFile();
     }
     else if(errors){
-        printf(BRED"The Abstract Syntax Tree will not be shown if there are syntactic or lexical errors.\n");
+        printf(BRED"The Abstract Syntax Tree will not be shown nor the TAC code will be generated if there are syntactic or lexical errors.\n");
         printf(reset);
     }
     else{
@@ -4641,6 +4698,8 @@ int main(int argc, char **argv){
         printf("\t<type> \n");
         printf("\t(cast) \n\n");
         printTree(tree, 0);
+        printf(BRED"\nThe TAC code will be generated if there are semantic errors.\n");
+        printf(reset);
     }
     printf("\n--------Symbol Table--------\n");
     printTable(symbolTable);

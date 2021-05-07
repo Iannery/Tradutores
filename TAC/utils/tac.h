@@ -10,4 +10,6 @@
 void writeFile();
 void writeTable(Node* node, FILE *fp);
 void writeCode(Node* node, FILE *fp);
+void writeMainReturn(FILE *fp);
+void writeConstFunction(FILE* fp);
 #endif

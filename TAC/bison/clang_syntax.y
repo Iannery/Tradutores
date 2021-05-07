@@ -374,6 +374,14 @@ returnStmt:
         $$ = createNode("return statement");
         $$->node1 = $2;
         typeHandler($$, $1.t_line, $1.t_column);
+        if($$->node1->ta_isSymbol){
+            $$->ta_isAux = 1;
+            sprintf($$->ta_code, "return %s", $$->node1->ta_val);
+        }
+        else if($$->node1->ta_isAux){
+            $$->ta_isAux = 1;
+            sprintf($$->ta_code, "return $%d", $$->node1->ta_reg);
+        }
     }
 ;
 
@@ -534,6 +542,14 @@ inOP:
         strcpy(typestr,scopeHandler($3.t_title, $3.t_line, $3.t_column));
         $$ = createNode("read");
         $$->s_token = emulateToken($3.t_title, $3.t_line, $3.t_column, NULL);
+        if(!strcmp(typestr, "int")){
+            $$->ta_isSymbol = 1;
+            sprintf($$->ta_code,"scani %s_%d",$3.t_title, scopeHandler2($3.t_title));
+        }
+        else if(!strcmp(typestr, "float")){
+            $$->ta_isSymbol = 1;
+            sprintf($$->ta_code,"scanf %s_%d",$3.t_title, scopeHandler2($3.t_title));
+        }
     }
 ;
 
@@ -560,6 +576,14 @@ outOP:
                 }
             }
         }
+        else {
+            if(!strcmp($1.t_title, "write")){
+                sprintf($$->ta_code, "param _str%d_size\nmov $998, &_str%d\nparam $998\ncall _writeStr, 2", indexCharString, indexCharString);
+            }
+            else if(!strcmp($1.t_title, "writeln")){
+                sprintf($$->ta_code, "param _str%d_size\nmov $998, &_str%d\nparam $998\ncall _writelnStr, 2", indexCharString, indexCharString);
+            }
+        }
     }
 ;
 
@@ -570,7 +594,7 @@ outConst:
         $$->ta_isTable = 1;
         int size = (int) strlen($1.t_title) - 2;
         indexCharString++;
-        sprintf($$->ta_table,"char _str%d[] = %s\nint _str%d_size = %d",indexCharString, $1.t_title,indexCharString , size);
+        sprintf($$->ta_table,"char _str%d[] = %s\nint _str%d_size = %d", indexCharString, $1.t_title, indexCharString, size);
     }
     | CHAR {
         $$ = createNode("CONST CHAR");
@@ -694,7 +718,7 @@ relationalExp:
                 }
             }
         }
-        if(!strcmp($2.t_title, "!=")){
+        else if(!strcmp($2.t_title, "!=")){
             if($$->node1->ta_isSymbol){
                 $$->ta_isAux = 1;
                 $$->ta_reg = indexReg++;
@@ -716,7 +740,6 @@ relationalExp:
                 }
             }
         }
-
         else if(!strcmp($2.t_title, ">=")){
             if($$->node1->ta_isSymbol){
                 $$->ta_isAux = 1;
@@ -739,7 +762,6 @@ relationalExp:
                 }
             }
         }
-
         else if(!strcmp($2.t_title, ">")){
             if($$->node1->ta_isSymbol){
                 $$->ta_isAux = 1;
@@ -945,7 +967,6 @@ signedFactor:
                 $$->ta_isAux = 1;
                 $$->ta_reg = indexReg++;
                 sprintf($$->ta_code, "minus $%d, $%d", $$->ta_reg, $$->node1->ta_reg);
-
             }
         }
         else{
@@ -1008,6 +1029,11 @@ functionCall:
         $$->node1 = $4;
         if(qtdHandler($1.t_title, $1.t_line, $1.t_column)){
             paramsHandler(symbolTable, $1.t_title, $1.t_line, $1.t_column, $4, qtdParams);
+            // if(strcmp(typestr, "")){
+            //     $$->ta_isAux = 1;
+            //     $$->ta_reg = indexReg++;
+            //     sprintf($$->ta_code,"call _%s, %d\npop $%d",$1.t_title, $$->ta_reg, qtdParams);
+            // }
         }
     }
     | ID '(' ')' {
@@ -1017,6 +1043,11 @@ functionCall:
         $$ = createNode("function call");
         $$->s_token = emulateToken($1.t_title, $1.t_line, $1.t_column, typestr);
         qtdHandler($1.t_title, $1.t_line, $1.t_column);
+        if(strcmp(typestr, "")){
+            $$->ta_isAux = 1;
+            $$->ta_reg = indexReg++;
+            sprintf($$->ta_code,"call _%s, 0\npop $%d",$1.t_title, $$->ta_reg);
+        }
     }
 ;
 
@@ -1027,11 +1058,39 @@ callParams:
         $$->node1 = $1;
         $$->node2 = $3;
         expTypeHandler($3);
+        // if($$->node2->ta_isSymbol){
+        //     sprintf($$->ta_code, "param %s", $$->node2->ta_val);
+        // }
+        // else if($$->node2->ta_isAux){
+        //     sprintf($$->ta_code, "param $%d", $$->node2->ta_reg);
+        // }
     }
     | simpleExp {
         qtdParams++;
         $$ = $1;
         expTypeHandler($$);
+        // if($$->s_token){
+        //     printf("ENTROU1\n");
+        //     //     if($$->node1->ta_isSymbol){
+        //     //     sprintf($$->ta_code, "param %s", $$->node1->ta_val);
+        //     // }
+        //     // else if($$->node1->ta_isAux){
+        //     //     sprintf($$->ta_code, "param $%d", $$->node1->ta_reg);
+        //     // }
+        //     $$->ta_isSymbol = 1;
+        //     sprintf($$->ta_code,"param %s_%d",$$->s_token->s_title, $$->s_token->s_scope);
+        // }
+        // else if($$->node1){
+        //     if($$->node1->ta_isSymbol){
+        //         $$->ta_isSymbol = 1;
+        //         sprintf($$->ta_code, "param %s", $$->node1->ta_val);
+        //     }
+        //     else if($$->node1->ta_isAux){
+        //         $$->ta_isAux = 1;
+        //         sprintf($$->ta_code, "param $%d", $$->node1->ta_reg);
+        //     }
+
+        // }
     }
 ;
 
@@ -1119,7 +1178,7 @@ int main(int argc, char **argv){
         writeFile();
     }
     else if(errors){
-        printf(BRED"The Abstract Syntax Tree will not be shown if there are syntactic or lexical errors.\n");
+        printf(BRED"The Abstract Syntax Tree will not be shown nor the TAC code will be generated if there are syntactic or lexical errors.\n");
         printf(reset);
     }
     else{
@@ -1128,6 +1187,8 @@ int main(int argc, char **argv){
         printf("\t<type> \n");
         printf("\t(cast) \n\n");
         printTree(tree, 0);
+        printf(BRED"\nThe TAC code will be generated if there are semantic errors.\n");
+        printf(reset);
     }
     printf("\n--------Symbol Table--------\n");
     printTable(symbolTable);
