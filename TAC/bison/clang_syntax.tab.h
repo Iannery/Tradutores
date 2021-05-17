@@ -88,8 +88,11 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 59 "bison/clang_syntax.y"
+#line 62 "bison/clang_syntax.y"
 
+    // so, things lex returns can only be tokens.
+    // Pretty self explanatory, but everything that is inside the grammar
+    // and is not a token, are nodes (to make a tree, duh).
     struct Token {
         int     t_line;
         int     t_column;
@@ -98,7 +101,7 @@ union YYSTYPE
     } token;
     struct Node* node;
 
-#line 102 "bison/clang_syntax.tab.h"
+#line 105 "bison/clang_syntax.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

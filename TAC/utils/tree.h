@@ -26,6 +26,15 @@
   *  array of nodes, used to free all nodes, even in case of syntax errors.
   *
   *  The nodeArray methods are based in the ones made for the scope stack.
+  * 
+  *  P.S.: As i implemented the rudimentary Three Address Code translator
+  *  without block structures in between a pretty bad burnout/mental breakdown,
+  *  i coded without much thought behind it, and now (about two weeks later)
+  *  even i cannot tell how it was done properly. But feel free to rollback
+  *  a few commits to see how the hell i implemented this. I'll try to remember it
+  *  while documenting the methods, but cannot guarantee anything, as atm i feel
+  *  scared by the amount of workarounds i implemented to make this assignment work.
+  * 
   **/
 
 typedef struct Node {
@@ -34,6 +43,8 @@ typedef struct Node {
   struct Node* node3;
   struct Node* node4;
   struct Symbol* s_token;
+  struct Block* ta_block; // does not work!
+  char   ta_if_else_for[10]; // does not work!
   char   n_title[100];
   char   n_type[6];
   char   n_cast[6];
@@ -45,6 +56,15 @@ typedef struct Node {
   char   ta_table[100];
   char   ta_code[100];
 } Node;
+
+/**
+ * So, the thing is block structures does not work, do not even bother trying to understand it.
+ **/
+typedef struct Block {
+  char b_if_cond[100];
+  char b_else_cond[100];
+  char b_return[30];
+} Block;
 
 extern Node* createNode(char* n_title);
 extern int stringNull(char* str);

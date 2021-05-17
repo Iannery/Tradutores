@@ -29,6 +29,7 @@ extern Node* createNode(char* n_title) {
     node->node3 = NULL;
     node->node4 = NULL;
     node->s_token = NULL;
+    node->ta_block = NULL;
     strcpy(node->n_type, "");
     strcpy(node->n_cast, "");
     strcpy(node->ta_table, "");
@@ -37,6 +38,7 @@ extern Node* createNode(char* n_title) {
     node->ta_isSymbol = 0;
     node->ta_isAux = 0;
     node->ta_reg = -1;
+    strcpy(node->ta_if_else_for, "");
     strcpy(node->ta_val, "");
     appendNode(node);
     return node;
@@ -264,12 +266,9 @@ extern char* expTypeHandler(Node* node) {
 
 /**
  * This method is also self-explanatory based on its name.
- *
- * It runs a dfs (depth-first search) on the tree, freeing
- * the existing nodes recursively.
 **/
 extern void freeNode(Node* node) {
-    // recursion base, if the node does not exist, return to the recursion stack.
+    // recursion base, if the node does not exist, return to the recursion stack (not a recursion anymore!).
     if (!node) {
         return;
     }
@@ -277,6 +276,9 @@ extern void freeNode(Node* node) {
     // i.e. it does not have any connected pointers within it.
     if (node->s_token) {
         free(node->s_token);
+    }
+    if (node->ta_block) {
+        free(node->ta_block);
     }
     // goes into the recursion to all four nodes.
     // ***********UPDATE************
@@ -378,25 +380,18 @@ extern void appendNode(Node* n) {
     }
 }
 
-// Goes through the whole tree and frees all the nodes, until the array is empty.
+/** Goes through the whole tree and frees all the nodes, until the array is empty.
+ * This is done through an array to make sure all nodes are freed, which should not be needed
+ * if you make a proper synctactic error detection (which i could not do). If an syntactic error
+ * occurs, it might break the whole tree, making it near impossible to run a DFS through it, so
+ * an array solves that issue, since every existing node is inside it. In case you really want to
+ * run a DFS through the tree, see the commented part inside the freeNode method.
+ */
 extern void freeTree() {
     for (int i = searchNodeArray(); !emptyNodeArray(); i--) {
-        // if(nodeArray[i]->s_token){
-        //     free(nodeArray[i]->s_token);
-        // }
-        // free(nodeArray[i]);
         freeNode(nodeArray[i]);
         nodeArray[i] = NULL;
     }
-    // int idx = searchNodeArray();
-    // if(idx > 0){
-    //     idx--;
-    //     int val = nodeArray[idx];
-    //     nodeArray[idx] = NULL;
-    // }
-    // else{
-    //     printf("Pop error!");
-    // }
 }
 
 // returns the last node not pointing to null inside the array.

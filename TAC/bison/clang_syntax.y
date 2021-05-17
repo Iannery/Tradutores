@@ -11,9 +11,13 @@
     * funny comments that I really hope brings you a little laugh
     * while reading and correcting it. It was really tough making 
     * this project alone, and it would not be possible without José's
-    * and all my colleagues' help. 
+    * and all my colleagues' (VerasThiago, vitordullens, Gguidini, and many others) help. 
     *
     * I believe this should be a group project.
+    *
+    * All in all, i really learnt a lot about the C language with this assignment,
+    * and how dumb shit can be done with it. I was really impressed at times, like when
+    * I found out one can declare functions inside functions.
     * 
     * All the jokes are means of relieving a little bit of the sanity
     * I lost while making this. If this and all the comments are unappreciated,
@@ -22,6 +26,13 @@
     * I hope you have a good one, whoever you might be,
     * 
     * Ian Nery Bandeira
+    *
+    * P.S. I was rewriting this, and realized it would be a fucking pain to document 
+    * the whole process, so i thought of making tutorials based on every assignment step, 
+    * in portuguese, for my friends that could not handle the stress and failed the subject 
+    * due to this assignment and for everyone else. I'll link it within the github readme 
+    * when its done! I wish all the luck for future UNB CS undergratuates that most likely 
+    * will need this material to get their diploma.
     **/
 
     // I'm afraid to comment inside this file, but it will be done eventually.
@@ -51,12 +62,18 @@
     extern Node* tree;
     int errors_sem;
     int qtdParams;
+    // this integer will be concatenated into a string, to make the TAC address unique.
     int indexCharString = 0;
+    // this one represents a register, if needed to perform an operation.
     int indexReg = 0;
+    // needed to make proper type casting with functions and returns.
     char lastFType[6]; 
     extern FILE *yyin;
 %}
 %union{
+    // so, things lex returns can only be tokens.
+    // Pretty self explanatory, but everything that is inside the grammar
+    // and is not a token, are nodes (to make a tree, duh).
     struct Token {
         int     t_line;
         int     t_column;
@@ -71,14 +88,18 @@
 %token <token> IN_KW ISSET_KW ADD_KW REMOVE_KW EXISTS_KW
 %token <token> OUT IN
 %token <token> TYPE ID
+// these left and right precedence are needed to make unary and binary logical operations.
 %left  <token> SUM_OP MUL_OP
 %left  <token> BIN_LOG_OP
 %right <token> UN_LOG_OP
+// this one is just magic, but works to concatenate if's and else's without brackets.
+// see cond_stmt for how it is supposed to be applied.
 %right THEN ELSE_KW
 %token <token> REL_OP ASS_OP
 %token <token> STRING CHAR
 %token <token> '{' '}' '(' ')' ';' ','
 
+// please PLEASE see the grammar inside the report to see how it is supposed to work before trying to do it alone.
 %type <node> program
 %type <node> declarationList
 %type <node> declaration
@@ -122,17 +143,26 @@
 %type <node> functionCall
 %type <node> callParams
 %type <node> setParams 
+/*
+    The code starts here. But first, a few notes:
 
+    I know it's tempting to start reading from the first lines and stuff,
+    but keep in mind that bison creates a tree and transverse it with a DFS,
+    so you should start reading it from the most simple leaves (factor, functionCall)
+    and then go up the tree afterwards.
+*/
 
 %%
 program:
     declarationList {
+        // this is where the program begins, and hell with it.
         tree = $$;
     }
 ;
 
 declarationList:
     declarationList declaration {
+        // 
         $$ = createNode("declaration list");
         $$->node1 = $1;
         $$->node2 = $2;
@@ -159,6 +189,7 @@ varDeclaration:
 
 funcDeclaration:
     simpleFDeclaration '(' {
+        // the scope stack is really important to make this shit work, so try to understand this.
         context++;
         pushStack(&scope, context);
     } 
@@ -226,9 +257,10 @@ simpleVDeclaration:
                         $2.t_line, 
                         $2.t_column,
                         $2.t_context);
-
-        $$->ta_isTable = 1;
-        sprintf($$->ta_table,"%s %s_%d",$1.t_title, $2.t_title, $2.t_context);
+        if(!strcmp($1.t_title, "int") || !strcmp($1.t_title, "float")){
+            $$->ta_isTable = 1;
+            sprintf($$->ta_table,"%s %s_%d",$1.t_title, $2.t_title, $2.t_context);
+        }
     }
 ;
 
@@ -1163,7 +1195,7 @@ int main(int argc, char **argv){
     else{
         printf("No Input Files.\n");
     }
-    fclose(yyin);
+    fclose(yyin); // REMEMBER TO CLOSE THE FILES, SHE DOES NOT LIKE LEAKS
     
     errors_sem += findMain(symbolTable);
 
@@ -1193,6 +1225,6 @@ int main(int argc, char **argv){
     printf("\n--------Symbol Table--------\n");
     printTable(symbolTable);
     freeTree();
-    yylex_destroy();
+    yylex_destroy(); // IMPORTANT
     return 0;
 }
