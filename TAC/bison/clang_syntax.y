@@ -239,6 +239,10 @@ param:
                         $2.t_line, 
                         $2.t_column,
                         $2.t_context);
+        if(!strcmp($1.t_title, "int") || !strcmp($1.t_title, "float")){
+            $$->ta_isTable = 1;
+            sprintf($$->ta_table,"%s %s_%d",$1.t_title, $2.t_title, $2.t_context);
+        }
     }
 ;
 
@@ -1219,7 +1223,7 @@ int main(int argc, char **argv){
         printf("\t<type> \n");
         printf("\t(cast) \n\n");
         printTree(tree, 0);
-        printf(BRED"\nThe TAC code will be generated if there are semantic errors.\n");
+        printf(BRED"\nThe TAC code will not be generated if there are semantic errors.\n");
         printf(reset);
     }
     printf("\n--------Symbol Table--------\n");

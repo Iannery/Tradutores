@@ -88,7 +88,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 62 "bison/clang_syntax.y"
+#line 73 "bison/clang_syntax.y"
 
     // so, things lex returns can only be tokens.
     // Pretty self explanatory, but everything that is inside the grammar
