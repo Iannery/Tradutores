@@ -1,0 +1,93 @@
+<program>            ::= <declarationList>
+
+<declarationList>    ::= <declarationList> <declaration> | <declaration>
+
+<declaration>        ::= <varDeclaration> | <funcDeclaration>
+
+<varDeclaration>     ::= <simpleVDeclaration> ";"
+
+<funcDeclaration>    ::= <simpleFDeclaration> "(" <params> ")" <compoundStmt> 
+                        | <simpleFDeclaration> "(" ")" <compoundStmt>
+
+<params>             ::= <params> "," <param> | <param>
+
+<param>              ::= <simpleVDeclaration>
+
+<simpleVDeclaration> ::= <simpleDeclaration>
+
+<simpleFDeclaration> ::= <simpleDeclaration>
+
+<simpleDeclaration>  ::= <TYPE> <ID>
+
+<compoundStmt>       ::= "{" <stmtList> "}"
+
+<stmtList>           ::= <stmtList> <primitiveStmt> | <primitiveStmt>
+
+<primitiveStmt>      ::= <exprStmt> | <compoundStmt> | <condStmt> | <iterStmt> 
+                        | <returnStmt> | <setStmt> | <inOP> | <outOP> 
+                        | <varDeclaration>
+
+<exprStmt>           ::= <expression> ";"
+
+<condStmt>           ::= "if" "(" <simpleExp> ")" <primitiveStmt> 
+                        | "if" "(" <expression> ")" <primitiveStmt> "else" <primitiveStmt>
+
+<iterStmt>           ::= "for" "(" <iterAssign> ";" <iterExp> ";" <iterAssign> ")" <primitiveStmt>
+
+<iterAssign>         ::= <assignExp> | ε
+
+<iterExp>            ::= <simpleExp> | ε
+
+<returnStmt>         ::= "return" <expression> ";"
+
+<setStmt>            ::= <forallOP>
+
+<pertOP>             ::= <simpleExp> "in" <factor>
+
+<setReturner>        ::= <addOP> | <remOP>
+
+<typeOP>             ::= "is_set" "(" <setParams> ")"
+
+<setParams>          ::= <ID> | <pertOP> | <setReturner> | <constOP>
+
+<addOP>              ::= "add" "(" <pertOP> ")"
+
+<remOP>              ::= "remove" "(" <pertOP> ")"
+
+<selectOP>           ::= "exists" "(" <pertOP> ")"
+
+<forallOP>           ::= "forall" "(" <pertOP> ")" <primitiveStmt>
+
+<expression>         ::= <assignExp> | <simpleExp>
+
+<assignExp>          ::= <ID> <ASSIGN_OP> <expression>
+
+<simpleExp>          ::= <binLogicalExp> | <pertOP>
+
+<constOP>            ::= <INT> | <FLOAT> | <EMPTY>
+
+<inOP>               ::= "read" "(" <ID> ")" ";"
+
+<outOP>              ::= "write" "(" <outConst> ")" ";" | "writeln""(" <outConst> ")" ";"
+
+<outConst>           ::= <STRING> | <CHAR> | <simpleExp>
+
+<binLogicalExp>      ::= <binLogicalExp> <BIN_LOGICAL_OP> <unLogicalExp> 
+                        | <unLogicalExp>
+
+<unLogicalExp>       ::= <UN_LOGICAL_OP> <unLogicalExp> | <relationalExp>
+
+<relationalExp>      ::= <relationalExp> <RELATIONAL_OP> <sumExp> | <sumExp>
+
+<sumExp>             ::= <sumExp> <SUM_OP> <mulExp> | <mulExp>
+
+<mulExp>             ::= <mulExp> <MUL_OP> <signedFactor> | <signedFactor>
+
+<signedFactor>       ::= <factor> | <SUM_OP> <factor>
+
+<factor>             ::= <ID> | <functionCall> | "(" <simpleExp> ")" | <constOP> 
+                        | <selectOP> | <typeOP> | <setReturner>
+
+<functionCall>       ::= <ID> "(" <callParams> ")" | <ID> "(" ")"
+
+<callParams>         ::= <callParams> "," <simpleExp> | <simpleExp>
