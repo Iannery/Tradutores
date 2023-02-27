@@ -1,9 +1,3 @@
-# Trabalho Tradutores
-
-
-
-Trabalho feito por Ian Nery Bandeira para a disciplina de Tradutores (que será chamada Compiladores em um futuro não tão distante), ministrada pela professora Claudia Nalon na Universidade de Brasília no semestre de 2020/2.
-
 
 
 - [X] Os tipos de dados da linguagem são int, float, elem e set. Os tipos int e float são simples. A declaração de uma variável do tipo set segue o padrão em C, sem tipo associado aos seus elementos. A declaração de uma variável do tipo elem é polimórfica. Como restrição em relação à sintaxe usual de C, a declaração de variáveis não poderá ser seguida de atribuição.
